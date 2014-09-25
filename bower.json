@@ -1,8 +1,10 @@
 {
   "name": "angular-ui-grid",
-  "version": "3.0.0-rc.8",
+  "version": "3.0.0-rc.10",
   "main": "./ui-grid.js",
+  "ignore": [],
   "dependencies": {
     "angular": ">= 1.2.16"
-  }
+  },
+  "homepage": "http://ui-grid.info"
 }
