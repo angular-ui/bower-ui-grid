@@ -1,7 +1,7 @@
 {
   "name": "angular-ui-grid",
   "version": "3.0.0-rc.12",
-  "main": "./ui-grid.js",
+  "main": ["./ui-grid.js","./ui-grid.css"],
   "ignore": [],
   "dependencies": {
     "angular": ">= 1.2.16"
