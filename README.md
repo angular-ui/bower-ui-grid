@@ -9,7 +9,7 @@ Please file issues and pull requests against that repo.
 Install with `bower`:
 
 ```shell
-bower install ui-grid
+bower install angular-ui-grid
 ```
 
 Add `<script>` and `<link>` tags to your `index.html`:
