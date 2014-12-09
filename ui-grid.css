@@ -212,7 +212,7 @@
   bottom: 0;
   right: 0;
 }
-.ui-grid-filter-container .ui-grid-filter-button [class^="ui-grid-icon"].right {
+.ui-grid-filter-container .ui-grid-filter-button [class^="ui-grid-icon"] {
   position: absolute;
   top: 50%;
   line-height: 32px;
@@ -220,7 +220,7 @@
   right: 10px;
   opacity: 0.66;
 }
-.ui-grid-filter-container .ui-grid-filter-button [class^="ui-grid-icon"].right:hover {
+.ui-grid-filter-container .ui-grid-filter-button [class^="ui-grid-icon"]:hover {
   opacity: 1;
 }
 input[type="text"].ui-grid-filter-input {
@@ -675,6 +675,14 @@ input[type="text"].ui-grid-filter-input:hover {
   left: 0;
   right: auto;
 }
+.ui-grid[dir="rtl"] .ui-grid-filter-container .ui-grid-filter-button {
+  right: initial;
+  left: 0;
+}
+.ui-grid[dir="rtl"] .ui-grid-filter-container .ui-grid-filter-button [class^="ui-grid-icon"] {
+  right: initial;
+  left: 10px;
+}
 /*
    Animation example, for spinners
 */
@@ -970,6 +978,89 @@ div.ui-grid-cell input.ng-valid {
   display: none;
 }
 
+.ui-grid-pager-panel {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.ui-grid-pager-container {
+  float: left;
+}
+.ui-grid-pager-control {
+  margin-right: 10px;
+  margin-left: 10px;
+  min-width: 135px;
+  float: left;
+}
+.ui-grid-pager-control button {
+  height: 25px;
+  min-width: 26px;
+}
+.ui-grid-pager-control input {
+  height: 26px;
+  width: 50px;
+  vertical-align: top;
+}
+.ui-grid-pager-control .first-bar {
+  width: 10px;
+  border-left: 2px solid #4d4d4d;
+  margin-top: -6px;
+  height: 12px;
+  margin-left: -3px;
+}
+.ui-grid-pager-control .first-triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 8.7px 5px 0;
+  border-color: transparent #4d4d4d transparent transparent;
+  margin-left: 2px;
+}
+.ui-grid-pager-control .next-triangle {
+  margin-left: 1px;
+}
+.ui-grid-pager-control .prev-triangle {
+  margin-left: 0;
+}
+.ui-grid-pager-control .last-triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5px 0 5px 8.7px;
+  border-color: transparent transparent transparent #4d4d4d;
+  margin-left: -1px;
+}
+.ui-grid-pager-control .last-bar {
+  width: 10px;
+  border-left: 2px solid #4d4d4d;
+  margin-top: -6px;
+  height: 12px;
+  margin-left: 1px;
+}
+.ui-grid-pager-row-count-picker {
+  float: left;
+}
+.ui-grid-pager-row-count-picker select {
+  height: 26px;
+  width: 60px;
+}
+.ui-grid-pager-row-count-picker .ui-grid-pager-row-count-label {
+  margin-top: 3px;
+}
+.ui-grid-pager-count-container {
+  float: right;
+  margin-top: 4px;
+  min-width: 50px;
+}
+.ui-grid-pager-count-container .ui-grid-pager-count {
+  margin-right: 10px;
+  margin-left: 10px;
+  float: right;
+}
+
 /* This file contains variable declarations (do not remove this line) */
 /*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 /**
@@ -1020,6 +1111,33 @@ div.ui-grid-cell input.ng-valid {
 }
 .ui-grid-pinned-container.ui-grid-pinned-container-left .ui-grid-header-cell:last-child .ui-grid-vertical-bar {
   right: -1px;
+  width: 1px;
+  background-color: #aeaeae;
+}
+.ui-grid-pinned-container.ui-grid-pinned-container-right .ui-grid-header-cell:first-child {
+  box-sizing: border-box;
+  border-left: 1px solid;
+  border-width: 1px;
+  border-color: #aeaeae;
+}
+.ui-grid-pinned-container.ui-grid-pinned-container-right .ui-grid-cell:first-child {
+  box-sizing: border-box;
+  border-left: 1px solid;
+  border-width: 1px;
+  border-color: #aeaeae;
+}
+.ui-grid-pinned-container.ui-grid-pinned-container-right .ui-grid-header-cell:not(:first-child) .ui-grid-vertical-bar,
+.ui-grid-pinned-container .ui-grid-cell:not(:first-child) .ui-grid-vertical-bar {
+  width: 1px;
+}
+.ui-grid-pinned-container.ui-grid-pinned-container-right .ui-grid-header-cell:not(:first-child) .ui-grid-vertical-bar {
+  background-color: #d4d4d4;
+}
+.ui-grid-pinned-container.ui-grid-pinned-container-right .ui-grid-cell:not(:last-child) .ui-grid-vertical-bar {
+  background-color: #aeaeae;
+}
+.ui-grid-pinned-container.ui-grid-pinned-container-first .ui-grid-header-cell:first-child .ui-grid-vertical-bar {
+  left: -1px;
   width: 1px;
   background-color: #aeaeae;
 }
@@ -1130,7 +1248,7 @@ div.ui-grid-cell input.ng-valid {
 * @section font library path
 */
 /*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-.ui-grid-row-selected .ui-grid-cell {
+.ui-grid-row-selected > div.ui-grid-cell {
   background-color: #c9dde1 !important;
 }
 .ui-grid-disable-selection {
