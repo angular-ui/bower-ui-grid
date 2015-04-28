@@ -1,6 +1,6 @@
 {
   "name": "angular-ui-grid",
-  "version": "3.0.0-rc.20",
+  "version": "3.0.0-rc.21",
   "main": [
     "./ui-grid.css",
     "./ui-grid.eot",
@@ -11,7 +11,7 @@
   ],
   "ignore": [],
   "dependencies": {
-    "angular": "1.2.16 - 1.3.x"
+    "angular": "~1.2.16"
   },
   "homepage": "http://ui-grid.info"
 }
