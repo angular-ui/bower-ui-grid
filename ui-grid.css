@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v3.0.0-rc.21 - 2015-04-28
+ * ui-grid - v3.0.0-rc.22 - 2015-06-15
  * Copyright (c) 2015 ; License: MIT 
  */
 .ui-grid {
@@ -44,6 +44,11 @@
 }
 .ui-grid-invisible {
   visibility: hidden;
+}
+.ui-grid-contents-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
 }
 .ui-grid-top-panel-background {
   background: #f3f3f3;
@@ -817,6 +822,10 @@ input[type="text"].ui-grid-filter-input:hover {
   outline: 0;
   background-color: #b3c4c7;
 }
+.ui-grid-focuser {
+  width: 0px;
+  height: 0px;
+}
 
 /* This file contains variable declarations (do not remove this line) */
 /*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
@@ -946,12 +955,8 @@ div.ui-grid-cell input.ng-valid {
 * @section font library path
 */
 /*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-.ui-grid-group-header-row {
+.ui-grid-tree-header-row {
   font-weight: bold !important;
-}
-.ui-grid-grouping-row-header-buttons.ui-grid-group-header {
-  cursor: pointer;
-  opacity: 1;
 }
 
 /* This file contains variable declarations (do not remove this line) */
@@ -1343,12 +1348,36 @@ div.ui-grid-cell input.ng-valid {
 * @section font library path
 */
 /*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-.ui-grid-group-header-row {
-  font-weight: bold !important;
-}
-.ui-grid-grouping-row-header-buttons.ui-grid-group-header {
+.ui-grid-tree-row-header-buttons.ui-grid-tree-header {
   cursor: pointer;
   opacity: 1;
+}
+
+/* This file contains variable declarations (do not remove this line) */
+/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
+/**
+* @section Grid styles
+*/
+/**
+* @section Header styles
+*/
+/** @description Colors for header gradient */
+/**
+* @section Grid body styles
+*/
+/** @description Colors used for row alternation */
+/**
+* @section Sort arrow colors
+*/
+/**
+* @section Scrollbar styles
+*/
+/**
+* @section font library path
+*/
+/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
+.ui-grid-tree-header-row {
+  font-weight: bold !important;
 }
 
 .ui-grid-icon-plus-squared:before {
