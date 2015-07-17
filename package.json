@@ -30,5 +30,6 @@
     "ui grid",
     "data grid"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "version": "3.0.1"
 }

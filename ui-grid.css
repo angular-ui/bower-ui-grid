@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v3.0.0-rc.22 - 2015-06-15
+ * ui-grid - v3.0.1 - 2015-07-17
  * Copyright (c) 2015 ; License: MIT 
  */
 .ui-grid {
@@ -22,6 +22,9 @@
 .ui-grid-header-cell:not(:last-child) .ui-grid-vertical-bar,
 .ui-grid-cell:not(:last-child) .ui-grid-vertical-bar {
   width: 1px;
+}
+.ui-grid-scrollbar-placeholder {
+  background-color: transparent;
 }
 .ui-grid-header-cell:not(:last-child) .ui-grid-vertical-bar {
   background-color: #d4d4d4;
