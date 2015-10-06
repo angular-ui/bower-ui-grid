@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v3.0.6 - 2015-09-10
+ * ui-grid - v3.0.7 - 2015-10-06
  * Copyright (c) 2015 ; License: MIT 
  */
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
@@ -155,6 +155,9 @@
 }
 .ui-grid-header-cell .sortable {
   cursor: pointer;
+}
+.ui-grid-header-cell .ui-grid-sort-priority-number {
+  margin-left: -8px;
 }
 .ui-grid-header .ui-grid-vertical-bar {
   top: 0;
@@ -1099,6 +1102,12 @@ div.ui-grid-cell input.ng-valid {
 .expandableRow .ui-grid-row:nth-child(even) .ui-grid-cell {
   background-color: #f3f3f3;
 }
+.ui-grid-cell.ui-grid-disable-selection.ui-grid-row-header-cell {
+  pointer-events: none;
+}
+.ui-grid-expandable-buttons-cell i {
+  pointer-events: all;
+}
 .scrollFiller {
   float: left;
   border: 1px solid #d4d4d4;
@@ -1526,7 +1535,7 @@ select[multiple].ui-grid-pager-control input {
   line-height: 1.5;
   border-radius: 3px;
   height: 26px;
-  width: 60px;
+  width: 67px;
   display: inline;
 }
 .ui-grid-pager-row-count-picker select:focus {
