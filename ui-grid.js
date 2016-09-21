@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v3.2.7 - 2016-09-09
+ * ui-grid - v3.2.9 - 2016-09-21
  * Copyright (c) 2016 ; License: MIT 
  */
 
@@ -5068,6 +5068,7 @@ angular.module('ui.grid')
         self.renderContainers[targetContainer].visibleRowCache.push(row);
       }
     }
+    self.api.core.raise.rowsVisibleChanged(this.api);
     self.api.core.raise.rowsRendered(this.api);
   };
 
@@ -7368,6 +7369,8 @@ angular.module('ui.grid')
      * - ariaLabel: String that will be set to the `<input>.ariaLabel` attribute. This is what is read as a label to screen reader users.
      * - noTerm: set this to true if you have defined a custom function in condition, and
      * your custom function doesn't require a term (so it can run even when the term is null)
+     * - rawTerm: set this to true if you have defined a custom function in condition, and
+     * your custom function requires access to the raw unmodified search term that was entered
      * - flags: only flag currently available is `caseSensitive`, set to false if you don't want
      * case sensitive matching
      * - type: defaults to {@link ui.grid.service:uiGridConstants#properties_filter uiGridConstants.filter.INPUT},
@@ -9680,7 +9683,11 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
     
         if ( !gridUtil.isNullOrUndefined(filter.term) ){
           // it is possible to have noTerm.
-          newFilter.term = rowSearcher.stripTerm(filter);
+          if ( filter.rawTerm ){
+            newFilter.term = filter.term;
+          } else {
+            newFilter.term = rowSearcher.stripTerm(filter);
+          }
         }
         newFilter.noTerm = filter.noTerm;
         
@@ -16760,7 +16767,7 @@ module.filter('px', function() {
                   $timeout(function () {
                     $elm[0].focus();
                     //only select text if it is not being replaced below in the cellNav viewPortKeyPress
-                    if ($elm[0].select && $scope.col.colDef.enableCellEditOnFocus || !(uiGridCtrl && uiGridCtrl.grid.api.cellNav)) {
+                    if ($elm[0].select && ($scope.col.colDef.enableCellEditOnFocus || !(uiGridCtrl && uiGridCtrl.grid.api.cellNav))) {
                       $elm[0].select();
                     }
                     else {
@@ -17549,8 +17556,9 @@ module.filter('px', function() {
                       }
                     }
                   }
-                  var expandedRowElement = $compile(template)($scope);
+                  var expandedRowElement = angular.element(template);
                   $elm.append(expandedRowElement);
+                  expandedRowElement = $compile(expandedRowElement)($scope);
                   $scope.row.expandedRendered = true;
               });
             },
