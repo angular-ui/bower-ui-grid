@@ -1,6 +1,6 @@
 /*!
  * ui-grid - v3.2.9 - 2016-09-21
- * Copyright (c) 2016 ; License: MIT 
+ * Copyright (c) 2016 ; License: MIT
  */
 
 (function () {
@@ -259,7 +259,7 @@ angular.module('ui.grid').directive('uiGridCell', ['$compile', '$parse', 'gridUt
           // No controller, compile the element manually (for unit tests)
           else {
             if ( uiGridCtrl && !$scope.col.compiledElementFn ){
-              // gridUtil.logError('Render has been called before precompile.  Please log a ui-grid issue');  
+              // gridUtil.logError('Render has been called before precompile.  Please log a ui-grid issue');
 
               $scope.col.getCompiledElementFn()
                 .then(function (compiledElementFn) {
@@ -302,10 +302,10 @@ angular.module('ui.grid').directive('uiGridCell', ['$compile', '$parse', 'gridUt
           if ($scope.col.cellClass) {
             updateClass();
           }
-          
+
           // Register a data change watch that would get triggered whenever someone edits a cell or modifies column defs
           var dataChangeDereg = $scope.grid.registerDataChangeCallback( updateClass, [uiGridConstants.dataChange.COLUMN, uiGridConstants.dataChange.EDIT]);
-          
+
           // watch the col and row to see if they change - which would indicate that we've scrolled or sorted or otherwise
           // changed the row/col that this cell relates to, and we need to re-evaluate cell classes and maybe other things
           var cellChangeFunction = function( n, o ){
@@ -329,14 +329,14 @@ angular.module('ui.grid').directive('uiGridCell', ['$compile', '$parse', 'gridUt
           var colWatchDereg = $scope.$watch( 'col', cellChangeFunction );
 */
           var rowWatchDereg = $scope.$watch( 'row', cellChangeFunction );
-          
-          
+
+
           var deregisterFunction = function() {
             dataChangeDereg();
 //            colWatchDereg();
-            rowWatchDereg(); 
+            rowWatchDereg();
           };
-          
+
           $scope.$on( '$destroy', deregisterFunction );
           $elm.on( '$destroy', deregisterFunction );
         }
@@ -940,7 +940,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
                 contents.removeClass( classAdded );
                 classAdded = null;
               }
-  
+
               if (angular.isFunction($scope.col.footerCellClass)) {
                 classAdded = $scope.col.footerCellClass($scope.grid, $scope.row, $scope.col, $scope.rowRenderIndex, $scope.colRenderIndex);
               }
@@ -949,7 +949,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
               }
               contents.addClass(classAdded);
             };
-  
+
             if ($scope.col.footerCellClass) {
               updateClass();
             }
@@ -1110,7 +1110,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
              gridUtil.getTemplate(groupPanelTemplate)
               .then(function (contents) {
                 var template = angular.element(contents);
-                
+
                 var newElm = $compile(template)($scope);
                 $elm.append(newElm);
               });
@@ -1540,19 +1540,19 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
             $scope.colContainer = containerCtrl.colContainer;
 
             updateHeaderReferences();
-            
+
             var headerTemplate;
             if (!$scope.grid.options.showHeader) {
               headerTemplate = emptyTemplate;
             }
             else {
-              headerTemplate = ($scope.grid.options.headerTemplate) ? $scope.grid.options.headerTemplate : defaultTemplate;            
+              headerTemplate = ($scope.grid.options.headerTemplate) ? $scope.grid.options.headerTemplate : defaultTemplate;
             }
 
             gridUtil.getTemplate(headerTemplate)
               .then(function (contents) {
                 var template = angular.element(contents);
-                
+
                 var newElm = $compile(template)($scope);
                 $elm.replaceWith(newElm);
 
@@ -1624,7 +1624,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
               // already being populated correctly
 
               var columnCache = containerCtrl.colContainer.visibleColumnCache;
-              
+
               // Build the CSS
               // uiGridCtrl.grid.columns.forEach(function (column) {
               var ret = '';
@@ -1635,13 +1635,13 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
               });
 
               containerCtrl.colContainer.canvasWidth = canvasWidth;
-              
+
               // Return the styles back to buildStyles which pops them into the `customStyles` scope variable
               return ret;
             }
-            
+
             containerCtrl.header = $elm;
-            
+
             var headerViewport = $elm[0].getElementsByClassName('ui-grid-header-viewport')[0];
             if (headerViewport) {
               containerCtrl.headerViewport = headerViewport;
@@ -6827,7 +6827,7 @@ angular.module('ui.grid')
   GridColumn.prototype.hideColumn = function() {
     this.colDef.visible = false;
   };
-  
+
 
   /**
    * @ngdoc method
@@ -8997,52 +8997,52 @@ angular.module('ui.grid')
     }
     return gridUtil.preEval(base + '.' + col.field);
   };
-  
-  
+
+
   /**
    * @ngdoc function
    * @name setRowInvisible
    * @methodOf  ui.grid.class:GridRow
    * @description Sets an override on the row that forces it to always
    * be invisible. Emits the rowsVisibleChanged event if it changed the row visibility.
-   * 
+   *
    * This method can be called from the api, passing in the gridRow we want
    * altered.  It should really work by calling gridRow.setRowInvisible, but that's
    * not the way I coded it, and too late to change now.  Changed to just call
    * the internal function row.setThisRowInvisible().
-   * 
+   *
    * @param {GridRow} row the row we want to set to invisible
-   * 
+   *
    */
   GridRow.prototype.setRowInvisible = function ( row ) {
     if (row && row.setThisRowInvisible){
       row.setThisRowInvisible( 'user' );
     }
   };
-  
-  
+
+
   /**
    * @ngdoc function
    * @name clearRowInvisible
    * @methodOf  ui.grid.class:GridRow
    * @description Clears an override on the row that forces it to always
    * be invisible. Emits the rowsVisibleChanged event if it changed the row visibility.
-   * 
+   *
    * This method can be called from the api, passing in the gridRow we want
    * altered.  It should really work by calling gridRow.clearRowInvisible, but that's
    * not the way I coded it, and too late to change now.  Changed to just call
    * the internal function row.clearThisRowInvisible().
-   * 
+   *
    * @param {GridRow} row the row we want to clear the invisible flag
-   * 
+   *
    */
   GridRow.prototype.clearRowInvisible = function ( row ) {
     if (row && row.clearThisRowInvisible){
       row.clearThisRowInvisible( 'user' );
     }
   };
-  
-  
+
+
   /**
    * @ngdoc function
    * @name setThisRowInvisible
@@ -9067,10 +9067,10 @@ angular.module('ui.grid')
    * @ngdoc function
    * @name clearRowInvisible
    * @methodOf ui.grid.class:GridRow
-   * @description Clears any override on the row visibility, returning it 
+   * @description Clears any override on the row visibility, returning it
    * to normal visibility calculations.  Emits the rowsVisibleChanged
    * event
-   * 
+   *
    * @param {string} reason the reason (usually the module) for the row to be invisible.
    * E.g. grouping, user, filter
    * @param {boolean} fromRowsProcessor whether we were called from a rowsProcessor, passed through to evaluateRowVisibility
@@ -9087,9 +9087,9 @@ angular.module('ui.grid')
    * @ngdoc function
    * @name evaluateRowVisibility
    * @methodOf ui.grid.class:GridRow
-   * @description Determines whether the row should be visible based on invisibleReason, 
+   * @description Determines whether the row should be visible based on invisibleReason,
    * and if it changes the row visibility, then emits the rowsVisibleChanged event.
-   * 
+   *
    * Queues a grid refresh, but doesn't call it directly to avoid hitting lots of grid refreshes.
    * @param {boolean} fromRowProcessor if true, then it won't raise events or queue the refresh, the
    * row processor does that already
@@ -9103,7 +9103,7 @@ angular.module('ui.grid')
         }
       });
     }
-    
+
     if ( typeof(this.visible) === 'undefined' || this.visible !== newVisibility ){
       this.visible = newVisibility;
       if ( !fromRowProcessor ){
@@ -9112,7 +9112,7 @@ angular.module('ui.grid')
       }
     }
   };
-  
+
 
   return GridRow;
 }]);
@@ -9368,7 +9368,7 @@ angular.module('ui.grid')
           if (grid.options.rowTemplate) {
             var rowTemplateFnPromise = $q.defer();
             grid.getRowTemplateFn = rowTemplateFnPromise.promise;
-            
+
             gridUtil.getTemplate(grid.options.rowTemplate)
               .then(
                 function (template) {
@@ -9437,7 +9437,7 @@ angular.module('ui.grid')
             } else {
               col[providedType] = colDef[templateType];
             }
- 
+
              templateGetPromises.push(gridUtil.getTemplate(col[providedType])
                 .then(
                 function (template) {
@@ -9511,7 +9511,7 @@ angular.module('ui.grid')
 
           return $q.all(templateGetPromises);
         },
-        
+
 
         rowTemplateAssigner: function rowTemplateAssigner(row) {
           var grid = this;
@@ -9535,7 +9535,7 @@ angular.module('ui.grid')
               .then(function (template) {
                 // Compile the template
                 var rowTemplateFn = $compile(template);
-                
+
                 // Resolve the compiled template function promise
                 perRowTemplateFnPromise.resolve(rowTemplateFn);
               },
@@ -9587,7 +9587,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
    */
   rowSearcher.getTerm = function getTerm(filter) {
     if (typeof(filter.term) === 'undefined') { return filter.term; }
-    
+
     var term = filter.term;
 
     // Strip leading and trailing whitespace if the term is a string
@@ -9616,7 +9616,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
       return term;
     }
   };
-  
+
 
   /**
    * @ngdoc function
@@ -9635,7 +9635,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
     }
 
     var term = rowSearcher.getTerm(filter);
-    
+
     if (/\*/.test(term)) {
       var regexpFlags = '';
       if (!filter.flags || !filter.flags.caseSensitive) {
@@ -9650,8 +9650,8 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
       return defaultCondition;
     }
   };
-  
-  
+
+
   /**
    * @ngdoc function
    * @name setupFilters
@@ -9659,28 +9659,28 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
    * @description For a given columns filters (either col.filters, or [col.filter] can be passed in),
    * do all the parsing and pre-processing and store that data into a new filters object.  The object
    * has the condition, the flags, the stripped term, and a parsed reg exp if there was one.
-   * 
-   * We could use a forEach in here, since it's much less performance sensitive, but since we're using 
+   *
+   * We could use a forEach in here, since it's much less performance sensitive, but since we're using
    * for loops everywhere else in this module...
-   * 
+   *
    * @param {array} filters the filters from the column (col.filters or [col.filter])
    * @returns {array} An array of parsed/preprocessed filters
    */
   rowSearcher.setupFilters = function setupFilters( filters ){
     var newFilters = [];
-    
+
     var filtersLength = filters.length;
     for ( var i = 0; i < filtersLength; i++ ){
       var filter = filters[i];
-      
+
       if ( filter.noTerm || !gridUtil.isNullOrUndefined(filter.term) ){
         var newFilter = {};
-        
+
         var regexpFlags = '';
         if (!filter.flags || !filter.flags.caseSensitive) {
           regexpFlags += 'i';
         }
-    
+
         if ( !gridUtil.isNullOrUndefined(filter.term) ){
           // it is possible to have noTerm.
           if ( filter.rawTerm ){
@@ -9690,7 +9690,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
           }
         }
         newFilter.noTerm = filter.noTerm;
-        
+
         if ( filter.condition ){
           newFilter.condition = filter.condition;
         } else {
@@ -9702,7 +9702,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
         if (newFilter.condition === uiGridConstants.filter.STARTS_WITH) {
           newFilter.startswithRE = new RegExp('^' + newFilter.term, regexpFlags);
         }
-        
+
          if (newFilter.condition === uiGridConstants.filter.ENDS_WITH) {
           newFilter.endswithRE = new RegExp(newFilter.term + '$', regexpFlags);
         }
@@ -9714,13 +9714,13 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
         if (newFilter.condition === uiGridConstants.filter.EXACT) {
           newFilter.exactRE = new RegExp('^' + newFilter.term + '$', regexpFlags);
         }
-        
+
         newFilters.push(newFilter);
       }
     }
     return newFilters;
   };
-  
+
 
   /**
    * @ngdoc function
@@ -9728,7 +9728,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
    * @methodOf ui.grid.service:rowSearcher
    * @description Runs a single pre-parsed filter against a cell, returning true
    * if the cell matches that one filter.
-   * 
+   *
    * @param {Grid} grid the grid we're working against
    * @param {GridRow} row the row we're matching against
    * @param {GridCol} column the column that we're working against
@@ -9824,7 +9824,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
    * @propertyOf ui.grid.class:GridOptions
    * @description False by default. When enabled, this setting suppresses the internal filtering.
    * All UI logic will still operate, allowing filter conditions to be set and modified.
-   * 
+   *
    * The external filter logic can listen for the `filterChange` event, which fires whenever
    * a filter has been adjusted.
    */
@@ -9832,7 +9832,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
    * @ngdoc function
    * @name searchColumn
    * @methodOf ui.grid.service:rowSearcher
-   * @description Process provided filters on provided column against a given row. If the row meets 
+   * @description Process provided filters on provided column against a given row. If the row meets
    * the conditions on all the filters, return true.
    * @param {Grid} grid Grid to search in
    * @param {GridRow} row Row to search on
@@ -9849,7 +9849,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
     for (var i = 0; i < filtersLength; i++) {
       var filter = filters[i];
 
-      if ( !gridUtil.isNullOrUndefined(filter.term) && filter.term !== '' || filter.noTerm ){ 
+      if ( !gridUtil.isNullOrUndefined(filter.term) && filter.term !== '' || filter.noTerm ){
         var ret = rowSearcher.runColumnFilter(grid, row, column, filter);
         if (!ret) {
           return false;
@@ -9865,7 +9865,7 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
    * @ngdoc function
    * @name search
    * @methodOf ui.grid.service:rowSearcher
-   * @description Run a search across the given rows and columns, marking any rows that don't 
+   * @description Run a search across the given rows and columns, marking any rows that don't
    * match the stored col.filters or col.filter as invisible.
    * @param {Grid} grid Grid instance to search inside
    * @param {Array[GridRow]} rows GridRows to filter
@@ -9924,14 +9924,14 @@ module.service('rowSearcher', ['gridUtil', 'uiGridConstants', function (gridUtil
       var foreachFilterCol = function(grid, filterData){
         var rowsLength = rows.length;
         for ( var i = 0; i < rowsLength; i++){
-          foreachRow(grid, rows[i], filterData.col, filterData.filters);  
+          foreachRow(grid, rows[i], filterData.col, filterData.filters);
         }
       };
 
       // nested loop itself - foreachFilterCol, which in turn calls foreachRow
       var filterDataLength = filterData.length;
       for ( var j = 0; j < filterDataLength; j++){
-        foreachFilterCol( grid, filterData[j] );  
+        foreachFilterCol( grid, filterData[j] );
       }
 
       if (grid.api.core.raise.rowsVisibleChanged) {
@@ -14030,7 +14030,7 @@ module.filter('px', function() {
           },
           sizes: 'Sayfadaki nesne sayısı',
           totalItems: 'kayıtlar',
-          through: '', //note(fsw) : turkish dont have this preposition 
+          through: '', //note(fsw) : turkish dont have this preposition
           of: '' //note(fsw) : turkish dont have this preposition
         },
         grouping: {
@@ -15387,7 +15387,7 @@ module.filter('px', function() {
 
                   if (grid.cellNav.lastRowCol === null || grid.cellNav.lastRowCol.row !== newRowCol.row || grid.cellNav.lastRowCol.col !== newRowCol.col){
                     grid.api.cellNav.raise.navigate(newRowCol, grid.cellNav.lastRowCol);
-                    grid.cellNav.lastRowCol = newRowCol;  
+                    grid.cellNav.lastRowCol = newRowCol;
                   }
                   if (uiGridCtrl.grid.options.modifierKeysToMultiSelectCells && modifierDown) {
                     grid.cellNav.focusedCells.push(rowCol);
@@ -27721,7 +27721,7 @@ module.filter('px', function() {
 
 (function () {
   'use strict';
-  
+
   /**
    * @ngdoc overview
    * @name ui.grid.validate
@@ -27737,7 +27737,7 @@ module.filter('px', function() {
    * -------------------
    *
    * Validation is not based on angularjs validation, since it would work only when editing the field.
-   * 
+   *
    * Instead it adds custom properties to any field considered as invalid.
    *
    * <br/>
@@ -27747,8 +27747,8 @@ module.filter('px', function() {
    */
 
   var module = angular.module('ui.grid.validate', ['ui.grid']);
-  
-  
+
+
   /**
    *  @ngdoc service
    *  @name ui.grid.validate.service:uiGridValidateService
@@ -27758,7 +27758,7 @@ module.filter('px', function() {
   module.service('uiGridValidateService', ['$sce', '$q', '$http', 'i18nService', 'uiGridConstants', function ($sce, $q, $http, i18nService, uiGridConstants) {
 
     var service = {
-      
+
       /**
        *  @ngdoc object
        *  @name validatorFactories
@@ -27782,7 +27782,7 @@ module.filter('px', function() {
        */
       validatorFactories: {},
 
-      
+
       /**
        * @ngdoc service
        * @name setExternalFactoryFunction
@@ -27791,13 +27791,13 @@ module.filter('px', function() {
        * <p>Validators from this external service have a higher priority than default
        * ones
        * @param {function} externalFactoryFunction a function that accepts name and argument to pass to a
-       * validator factory and that returns an object with the same properties as 
+       * validator factory and that returns an object with the same properties as
        * you can see in {@link ui.grid.validate.service:uiGridValidateService#properties_validatorFactories validatorFactories}
        */
       setExternalFactoryFunction: function(externalFactoryFunction) {
         service.externalFactoryFunction = externalFactoryFunction;
       },
-      
+
       /**
        * @ngdoc service
        * @name clearExternalFactory
@@ -27820,7 +27820,7 @@ module.filter('px', function() {
       getValidatorFromExternalFactory: function(name, argument) {
         return service.externalFactoryFunction(name, argument).validatorFactory(argument);
       },
-      
+
       /**
        * @ngdoc service
        * @name getMessageFromExternalFactory
@@ -27832,7 +27832,7 @@ module.filter('px', function() {
       getMessageFromExternalFactory: function(name, argument) {
         return service.externalFactoryFunction(name, argument).messageFunction(argument);
       },
-      
+
       /**
        * @ngdoc service
        * @name setValidator
@@ -27876,7 +27876,7 @@ module.filter('px', function() {
        * @ngdoc service
        * @name getMessage
        * @methodOf ui.grid.validate.service:uiGridValidateService
-       * @description Returns the error message related to the validator 
+       * @description Returns the error message related to the validator
        * @param {string} name the name of the validator
        * @param {object} argument an argument to pass to the message function
        * @returns {string} the error message related to the validator
@@ -27895,7 +27895,7 @@ module.filter('px', function() {
        * @ngdoc service
        * @name isInvalid
        * @methodOf ui.grid.validate.service:uiGridValidateService
-       * @description Returns true if the cell (identified by rowEntity, colDef) is invalid 
+       * @description Returns true if the cell (identified by rowEntity, colDef) is invalid
        * @param {object} rowEntity the row entity of the cell
        * @param {object} colDef the colDef of the cell
        * @returns {boolean} true if the cell is invalid
@@ -27915,7 +27915,7 @@ module.filter('px', function() {
       setInvalid: function (rowEntity, colDef) {
         rowEntity['$$invalid'+colDef.name] = true;
       },
-    
+
       /**
        * @ngdoc service
        * @name setValid
@@ -27961,7 +27961,7 @@ module.filter('px', function() {
             delete rowEntity['$$errors'+colDef.name][validatorName];
         }
       },
-      
+
       /**
        * @ngdoc function
        * @name getErrorMessages
@@ -27981,10 +27981,10 @@ module.filter('px', function() {
         Object.keys(rowEntity['$$errors'+colDef.name]).sort().forEach(function(validatorName) {
           errors.push(service.getMessage(validatorName, colDef.validators[validatorName]));
         });
-        
+
         return errors;
       },
-      
+
       /**
        * @ngdoc function
        * @name getFormattedErrors
@@ -28000,11 +28000,11 @@ module.filter('px', function() {
         var msgString = "";
 
         var errors = service.getErrorMessages(rowEntity, colDef);
-        
+
         if (!errors.length) {
           return;
         }
-        
+
         errors.forEach(function(errorMsg) {
           msgString += errorMsg + "<br/>";
         });
@@ -28016,7 +28016,7 @@ module.filter('px', function() {
        * @ngdoc function
        * @name getTitleFormattedErrors
        * @methodOf ui.grid.validate.service:uiGridValidateService
-       * @description returns the error i18n-ed and formatted in javaScript to be shown inside an html 
+       * @description returns the error i18n-ed and formatted in javaScript to be shown inside an html
        * title attribute.
        * @param {object} rowEntity gridOptions.data[] array instance whose errors we are looking for
        * @param {object} colDef the column whose errors we are looking for
@@ -28028,13 +28028,13 @@ module.filter('px', function() {
         var newLine = "\n";
 
         var msgString = "";
-        
+
         var errors = service.getErrorMessages(rowEntity, colDef);
-        
+
         if (!errors.length) {
           return;
         }
-        
+
         errors.forEach(function(errorMsg) {
           msgString += errorMsg + newLine;
         });
@@ -28053,18 +28053,18 @@ module.filter('px', function() {
        * @param {object} oldValue the value the field had before
        */
       runValidators: function(rowEntity, colDef, newValue, oldValue, grid) {
-        
+
         if (newValue === oldValue) {
           // If the value has not changed we perform no validation
           return;
         }
-        
+
         if (typeof(colDef.name) === 'undefined' || !colDef.name) {
           throw new Error('colDef.name is required to perform validation');
         }
-        
+
         service.setValid(rowEntity, colDef);
-        
+
         var validateClosureFactory = function(rowEntity, colDef, validatorName) {
           return function(value) {
             if (!value) {
@@ -28083,14 +28083,14 @@ module.filter('px', function() {
           service.clearError(rowEntity, colDef, validatorName);
           var msg;
           var validatorFunction = service.getValidator(validatorName, colDef.validators[validatorName]);
-          // We pass the arguments as oldValue, newValue so they are in the same order 
+          // We pass the arguments as oldValue, newValue so they are in the same order
           // as ng-model validators (modelValue, viewValue)
           var promise = $q
                         .when(validatorFunction(oldValue, newValue, rowEntity, colDef))
                         .then(validateClosureFactory(rowEntity, colDef, validatorName));
           promises.push(promise);
         }
-        
+
         return $q.all(promises);
       },
 
@@ -28113,7 +28113,7 @@ module.filter('px', function() {
                                function(argument) {
                                  return i18nService.getSafeText('validate.minLength').replace('THRESHOLD', argument);
                                });
-        
+
         service.setValidator('maxLength',
                              function (argument) {
                                return function (oldValue, newValue, rowEntity, colDef) {
@@ -28126,7 +28126,7 @@ module.filter('px', function() {
                              function(threshold) {
                                return i18nService.getSafeText('validate.maxLength').replace('THRESHOLD', threshold);
                              });
-        
+
         service.setValidator('required',
                              function (argument) {
                                return function (oldValue, newValue, rowEntity, colDef) {
@@ -28143,16 +28143,16 @@ module.filter('px', function() {
 
       initializeGrid: function (scope, grid) {
         grid.validate = {
-        
+
           isInvalid: service.isInvalid,
 
           getFormattedErrors: service.getFormattedErrors,
-         
+
           getTitleFormattedErrors: service.getTitleFormattedErrors,
 
           runValidators: service.runValidators
         };
-        
+
         /**
          *  @ngdoc object
          *  @name ui.grid.validate.api:PublicApi
@@ -28166,7 +28166,7 @@ module.filter('px', function() {
                * @ngdoc event
                * @name validationFailed
                * @eventOf  ui.grid.validate.api:PublicApi
-               * @description raised when one or more failure happened during validation 
+               * @description raised when one or more failure happened during validation
                * <pre>
                *      gridApi.validate.on.validationFailed(scope, function(rowEntity, colDef, newValue, oldValue){...})
                * </pre>
@@ -28222,7 +28222,7 @@ module.filter('px', function() {
                * @ngdoc function
                * @name getTitleFormattedErrors
                * @methodOf  ui.grid.validate.api:PublicApi
-               * @description returns the error i18n-ed and formatted in javaScript to be shown inside an html 
+               * @description returns the error i18n-ed and formatted in javaScript to be shown inside an html
                * title attribute.
                * @param {object} rowEntity gridOptions.data[] array instance whose errors we are looking for
                * @param {object} colDef the column whose errors we are looking for
@@ -28232,10 +28232,10 @@ module.filter('px', function() {
               getTitleFormattedErrors: function (rowEntity, colDef) {
                 return grid.validate.getTitleFormattedErrors(rowEntity, colDef);
               }
-            } 
+            }
           }
         };
-        
+
         grid.api.registerEventsFromObject(publicApi.events);
         grid.api.registerMethodsFromObject(publicApi.methods);
 
@@ -28247,13 +28247,13 @@ module.filter('px', function() {
 
         service.createDefaultValidators();
       }
-      
+
     };
-  
+
     return service;
   }]);
-  
-  
+
+
   /**
    *  @ngdoc directive
    *  @name ui.grid.validate.directive:uiGridValidate
@@ -28414,7 +28414,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/uiGridRenderContainer',
-    "<div role=\"grid\" ui-grid-one-bind-id-grid=\"'grid-container'\" class=\"ui-grid-render-container\" ng-style=\"{ 'margin-left': colContainer.getMargin('left') + 'px', 'margin-right': colContainer.getMargin('right') + 'px' }\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
+    "<div role=\"grid\" ui-grid-one-bind-id-grid=\"'grid-container'\" class=\"ui-grid-render-container\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
   );
 
 
