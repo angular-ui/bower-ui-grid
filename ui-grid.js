@@ -8268,6 +8268,7 @@ angular.module('ui.grid')
 
   GridRenderContainer.prototype.registerViewportAdjuster = function registerViewportAdjuster(func) {
     this.viewportAdjusters.push(func);
+    this.margin = undefined // invalidate margin cache
   };
 
   /**
@@ -8283,6 +8284,7 @@ angular.module('ui.grid')
     if (idx > -1) {
       this.viewportAdjusters.splice(idx, 1);
     }
+    this.margin = undefined // invalidate margin cache
   };
 
   /**
@@ -8306,18 +8308,16 @@ angular.module('ui.grid')
 
   GridRenderContainer.prototype.getMargin = function getMargin(side) {
     var self = this;
+    if (!self.margin) {
+      self.margin = {}
+      self.viewportAdjusters.forEach(function (func) {
+        var adjustment = func.call(this, { height: 0, width: 0 });
 
-    var amount = 0;
-
-    self.viewportAdjusters.forEach(function (func) {
-      var adjustment = func.call(this, { height: 0, width: 0 });
-
-      if (adjustment.side && adjustment.side === side) {
-        amount += adjustment.width * -1;
-      }
-    });
-
-    return amount;
+        self.margin[adjustment.side] = self.margin[adjustment.side] || 0
+        self.margin[adjustment.side] += adjustment.width * -1;
+      });
+    }
+    return self.margin[side] || 0
   };
 
   GridRenderContainer.prototype.getViewportHeight = function getViewportHeight() {
@@ -8643,6 +8643,7 @@ angular.module('ui.grid')
     this.currentTopRow = renderedRange[0];
 
     this.setRenderedRows(rowArr);
+    this.margin = undefined
   };
 
   // Method for updating the visible columns
@@ -8655,6 +8656,7 @@ angular.module('ui.grid')
     this.currentFirstColumn = renderedRange[0];
 
     this.setRenderedColumns(columnArr);
+    this.margin = undefined
   };
 
   GridRenderContainer.prototype.headerCellWrapperStyle = function () {
@@ -28414,7 +28416,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/uiGridRenderContainer',
-    "<div role=\"grid\" ui-grid-one-bind-id-grid=\"'grid-container'\" class=\"ui-grid-render-container\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
+    "<div role=\"grid\" ui-grid-one-bind-id-grid=\"'grid-container'\" class=\"ui-grid-render-container\" ng-style=\"{ 'margin-left': colContainer.getMargin('left') + 'px', 'margin-right': colContainer.getMargin('right') + 'px' }\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
   );
 
 
