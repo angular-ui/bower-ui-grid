@@ -2,7 +2,7 @@
   "name": "angular-ui-grid",
   "description": "A data grid for Angular",
   "main": [
-    "4.0.0",
+    "4.0.1",
     "less",
     "ui-grid.css",
     "ui-grid.eot",

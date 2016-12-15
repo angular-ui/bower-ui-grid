@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.0.0 - 2016-12-09
+ * ui-grid - v4.0.1 - 2016-12-15
  * Copyright (c) 2016 ; License: MIT 
  */
 
@@ -3505,7 +3505,7 @@ function uiGridDirective($compile, $templateCache, $timeout, $window, gridUtil, 
               sizeChecks++;
             }
             else {
-              $timeout(init, 0, false);
+              $timeout(init);
             }
           }
 
@@ -5962,13 +5962,13 @@ angular.module('ui.grid')
         }
 
         p.resolve();
-      }, 0, false);
+      });
     }
     else {
       // Timeout still needs to be here to trigger digest after styles have been rebuilt
       $timeout(function() {
         p.resolve();
-      }, 0, false);
+      });
     }
 
     return p.promise;
@@ -11339,7 +11339,7 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
         } else {
           s.logWarn('[focus.byId] Element id ' + elementID + ' was not found.');
         }
-      }, 0, false);
+      });
       this.queue.push(promise);
       return promise;
     },
@@ -11364,7 +11364,7 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
         if (element){
           element[0].focus();
         }
-      }, 0, false);
+      });
       this.queue.push(promise);
       return promise;
     },
@@ -11394,8 +11394,8 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
       };
       this._purgeQueue();
       if (aSync){ //Do this asynchronysly
-        var promise = $timeout(focusBySelector, 0, false);
-        this.queue.push($timeout(focusBySelector), 0, false);
+        var promise = $timeout(focusBySelector);
+        this.queue.push($timeout(focusBySelector));
         return promise;
       } else {
         return focusBySelector();
