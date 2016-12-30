@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.0.1 - 2016-12-15
+ * ui-grid - v4.0.2 - 2016-12-30
  * Copyright (c) 2016 ; License: MIT 
  */
 
@@ -2120,8 +2120,15 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
     templateUrl: 'ui-grid/uiGridMenu',
     replace: false,
     link: function ($scope, $elm, $attrs, uiGridCtrl) {
-
       $scope.dynamicStyles = '';
+      if (uiGridCtrl && uiGridCtrl.grid && uiGridCtrl.grid.options && uiGridCtrl.grid.options.gridMenuTemplate) {
+        var gridMenuTemplate = uiGridCtrl.grid.options.gridMenuTemplate;
+        gridUtil.getTemplate(gridMenuTemplate).then(function (contents) {
+          var template = angular.element(contents);
+          var newElm = $compile(template)($scope);
+          $elm.replaceWith(newElm);
+        });
+      }
 
       var setupHeightStyle = function(gridHeight) {
         //menu appears under header row, so substract that height from it's total
@@ -2138,7 +2145,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
         setupHeightStyle(uiGridCtrl.grid.gridHeight);
         uiGridCtrl.grid.api.core.on.gridDimensionChanged($scope, function(oldGridHeight, oldGridWidth, newGridHeight, newGridWidth) {
           setupHeightStyle(newGridHeight);
-		});
+        });
       }
 
       $scope.i18n = {
@@ -2273,13 +2280,11 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
         angular.element($window).on('resize', applyHideMenu);
       }
 
-      $scope.$on('$destroy', function () {
-        angular.element(document).off('click touchstart', applyHideMenu);
-      });
-
-
-      $scope.$on('$destroy', function() {
+      $scope.$on('$destroy', function unbindEvents() {
         angular.element($window).off('resize', applyHideMenu);
+        angular.element(document).off('click touchstart', applyHideMenu);
+        $elm.off('keyup', checkKeyUp);
+        $elm.off('keydown', checkKeyDown);
       });
 
       if (uiGridCtrl) {
@@ -3214,7 +3219,9 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
             }
           }
 
-
+          $scope.$on('$destroy', function unbindEvents() {
+            $elm.off();
+          });
         },
         controller: ['$scope', function ($scope) {
           this.rowStyle = function (index) {
@@ -4784,7 +4791,7 @@ angular.module('ui.grid')
    * @methodOf ui.grid.class:Grid
    * @description returns the GridRow that contains the rowEntity
    * @param {object} rowEntity the gridOptions.data array element instance
-   * @param {array} rows [optional] the rows to look in - if not provided then
+   * @param {array} lookInRows [optional] the rows to look in - if not provided then
    * looks in grid.rows
    */
   Grid.prototype.getRow = function getRow(rowEntity, lookInRows) {
@@ -4849,13 +4856,20 @@ angular.module('ui.grid')
     self.rows.length = 0;
 
     newRawData.forEach( function( newEntity, i ) {
-      var newRow;
+      var newRow, oldRow;
+
       if ( self.options.enableRowHashing ){
         // if hashing is enabled, then this row will be in the hash if we already know about it
-        newRow = oldRowHash.get( newEntity );
+        oldRow = oldRowHash.get( newEntity );
       } else {
         // otherwise, manually search the oldRows to see if we can find this row
-        newRow = self.getRow(newEntity, oldRows);
+        oldRow = self.getRow(newEntity, oldRows);
+      }
+
+      // update newRow to have an entity
+      if ( oldRow ) {
+        newRow = oldRow;
+        newRow.entity = newEntity;
       }
 
       // if we didn't find the row, it must be new, so create it
@@ -8142,6 +8156,15 @@ angular.module('ui.grid')
        * </br>Refer to the custom row template tutorial for more information.
        */
       baseOptions.rowTemplate = baseOptions.rowTemplate || 'ui-grid/ui-grid-row';
+
+      /**
+      * @ngdoc string
+      * @name gridMenuTemplate
+      * @propertyOf ui.grid.class:GridOptions
+      * @description 'ui-grid/uiGridMenu' by default. When provided, this setting uses a
+      * custom grid menu template.
+      */
+      baseOptions.gridMenuTemplate = baseOptions.gridMenuTemplate || 'ui-grid/uiGridMenu';
 
       /**
        * @ngdoc object
@@ -11786,6 +11809,11 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
     for ( var i = mouseWheeltoBind.length; i; ) {
       $elm.on(mouseWheeltoBind[--i], cbs[fn]);
     }
+    $elm.on('$destroy', function unbindEvents() {
+      for ( var i = mouseWheeltoBind.length; i; ) {
+        $elm.off(mouseWheeltoBind[--i], cbs[fn]);
+      }
+    });
   };
   s.off.mousewheel = function (elm, fn) {
     var $elm = angular.element(elm);
@@ -16436,7 +16464,11 @@ module.filter('px', function() {
             });
 
 
-            $scope.$on( '$destroy', rowWatchDereg );
+            $scope.$on('$destroy', function destroyEvents() {
+              rowWatchDereg();
+              // unbind all jquery events in order to avoid memory leaks
+              $elm.off();
+            });
 
             function registerBeginEditEvents() {
               $elm.on('dblclick', beginEdit);
@@ -16971,6 +17003,11 @@ module.filter('px', function() {
 
                   return true;
                 });
+
+                $scope.$on('$destroy', function unbindEvents() {
+                  // unbind all jquery events in order to avoid memory leaks
+                  $elm.off();
+                });
               }
             };
           }
@@ -17114,6 +17151,11 @@ module.filter('px', function() {
                   }
                   return true;
                 });
+
+                $scope.$on('$destroy', function unbindEvents() {
+                  // unbind jquery events to prevent memory leaks
+                  $elm.off();
+                });
               }
             };
           }
@@ -17206,7 +17248,7 @@ module.filter('px', function() {
                   }
                 };
 
-                $elm[0].addEventListener('change', handleFileSelect, false);  // TODO: why the false on the end?  Google
+                $elm[0].addEventListener('change', handleFileSelect, false);
 
                 $scope.$on(uiGridEditConstants.events.BEGIN_CELL_EDIT, function () {
                   $elm[0].focus();
@@ -17216,13 +17258,17 @@ module.filter('px', function() {
                     $scope.$emit(uiGridEditConstants.events.END_CELL_EDIT);
                   });
                 });
+
+                $scope.$on('$destroy', function unbindEvents() {
+                  // unbind jquery events to prevent memory leaks
+                  $elm.off();
+                  $elm[0].removeEventListener('change', handleFileSelect, false);
+                });
               }
             };
           }
         };
       }]);
-
-
 })();
 
 (function () {
@@ -22385,6 +22431,8 @@ module.filter('px', function() {
                     movingElm.css({'width': reducedWidth + 'px'});
                   }
                 };
+
+                $scope.$on('$destroy', offAllEvents);
               }
             }
           };
@@ -25966,6 +26014,10 @@ module.filter('px', function() {
               window.setTimeout(function () { evt.target.onselectstart = null; }, 0);
             }
           }
+
+          $scope.$on('$destroy', function unbindEvents() {
+            $elm.off();
+          });
         }
       };
     }]);

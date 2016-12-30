@@ -2,16 +2,8 @@
   "name": "angular-ui-grid",
   "description": "A data grid for Angular",
   "main": [
-    "4.0.1",
-    "less",
-    "ui-grid.css",
-    "ui-grid.eot",
-    "ui-grid.js",
-    "ui-grid.min.css",
-    "ui-grid.min.js",
-    "ui-grid.svg",
-    "ui-grid.ttf",
-    "ui-grid.woff"
+    "./ui-grid.css",
+    "./ui-grid.js"
   ],
   "ignore": [],
   "dependencies": {
