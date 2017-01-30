@@ -643,9 +643,15 @@ function ( i18nService, uiGridConstants, gridUtil ) {
         }
       }
 
-      var left = positionData.left + renderContainerOffset - containerScrollLeft + positionData.parentLeft + positionData.width - myWidth + paddingRight;
+      let parentLeft = positionData.parentLeft;
+      let widthToSum = positionData.width;
+      if ($scope.grid.isRTL()) {
+      	parentLeft = parentLeft * -1;
+      	widthToSum = 0;
+      }
+      var left = positionData.left + renderContainerOffset - containerScrollLeft + parentLeft + widthToSum - myWidth + paddingRight;
       if (left < positionData.offset){
-        left = positionData.offset;
+      	left = positionData.offset;
       }
 
       $elm.css('left', left + 'px');
