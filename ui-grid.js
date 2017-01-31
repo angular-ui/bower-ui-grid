@@ -643,8 +643,8 @@ function ( i18nService, uiGridConstants, gridUtil ) {
         }
       }
 
-      let parentLeft = positionData.parentLeft;
-      let widthToSum = positionData.width;
+      var parentLeft = positionData.parentLeft;
+      var widthToSum = positionData.width;
       if ($scope.grid.isRTL()) {
       	parentLeft = parentLeft * -1;
       	widthToSum = 0;
