@@ -2,16 +2,16 @@
   "name": "angular-ui-grid",
   "description": "A data grid for Angular",
   "main": [
-    "3.2.10",
-    "fontello.eot",
-    "fontello.svg",
-    "fontello.ttf",
-    "fontello.woff",
+    "3.2.11",
     "less",
     "ui-grid.css",
+    "ui-grid.eot",
     "ui-grid.js",
     "ui-grid.min.css",
-    "ui-grid.min.js"
+    "ui-grid.min.js",
+    "ui-grid.svg",
+    "ui-grid.ttf",
+    "ui-grid.woff"
   ],
   "ignore": [],
   "dependencies": {
