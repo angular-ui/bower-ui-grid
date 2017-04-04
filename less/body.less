@@ -18,10 +18,6 @@
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 
-  // overflow-anchor is a new feature/bug in chrome 56. See https://www.chromestatus.com/feature/5700102471548928
-  // It causes ui-grid-viewport to scroll indefinitely. See https://github.com/angular-ui/ui-grid/issues/6017
-  overflow-anchor: none;
-
   &:focus {
     outline: none !important;
   }
@@ -35,6 +31,7 @@
 .ui-grid-row {
   //position: absolute;
   // border-bottom: 1px solid @borderColor;
+  clear: both; //prevent columns mixing after expand
 
   &:nth-child(odd) .ui-grid-cell {
     background-color: @rowColorOdd; //rgb(253, 253, 253);
