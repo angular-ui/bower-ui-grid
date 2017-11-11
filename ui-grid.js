@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.0.8 - 2017-11-06
+ * ui-grid - v4.0.10 - 2017-11-11
  * Copyright (c) 2017 ; License: MIT 
  */
 
@@ -19081,8 +19081,8 @@ module.filter('px', function() {
         loadAllDataIfNeeded: function (grid, rowTypes, colTypes) {
           if ( rowTypes === uiGridExporterConstants.ALL && grid.rows.length !== grid.options.totalItems && grid.options.exporterAllDataFn) {
             return grid.options.exporterAllDataFn()
-              .then(function() {
-                grid.modifyRows(grid.options.data);
+              .then(function(allData) {
+                grid.modifyRows(allData);
               });
           } else {
             var deferred = $q.defer();
@@ -23463,7 +23463,22 @@ module.filter('px', function() {
          *  <br/>Defaults to true
          */
         gridOptions.enablePinning = gridOptions.enablePinning !== false;
-
+        /**
+         *  @ngdoc object
+         *  @name hidePinLeft
+         *  @propertyOf  ui.grid.pinning.api:GridOptions
+         *  @description Hide Pin Left for the entire grid.
+         *  <br/>Defaults to false
+         */
+        gridOptions.hidePinLeft = gridOptions.enablePinning && gridOptions.hidePinLeft;
+        /**
+         *  @ngdoc object
+         *  @name hidePinRight
+         *  @propertyOf  ui.grid.pinning.api:GridOptions
+         *  @description Hide Pin Right pinning for the entire grid.
+         *  <br/>Defaults to false
+         */
+        gridOptions.hidePinRight = gridOptions.enablePinning && gridOptions.hidePinRight;
       },
 
       pinningColumnBuilder: function (colDef, col, gridOptions) {
@@ -23485,7 +23500,22 @@ module.filter('px', function() {
          *  <br/>Defaults to true
          */
         colDef.enablePinning = colDef.enablePinning === undefined ? gridOptions.enablePinning : colDef.enablePinning;
-
+        /**
+         *  @ngdoc object
+         *  @name hidePinLeft
+         *  @propertyOf  ui.grid.pinning.api:ColumnDef
+         *  @description Hide Pin Left for the individual column.
+         *  <br/>Defaults to false
+         */
+        colDef.hidePinLeft = colDef.hidePinLeft === undefined ? gridOptions.hidePinLeft : colDef.hidePinLeft;
+        /**
+         *  @ngdoc object
+         *  @name hidePinRight
+         *  @propertyOf  ui.grid.pinning.api:ColumnDef
+         *  @description Hide Pin Right for the individual column.
+         *  <br/>Defaults to false
+         */
+        colDef.hidePinRight = colDef.hidePinRight === undefined ? gridOptions.hidePinRight : colDef.hidePinRight;
 
         /**
          *  @ngdoc object
@@ -23551,10 +23581,11 @@ module.filter('px', function() {
           }
         };
 
-        if (!gridUtil.arrayContainsObjectWithProperty(col.menuItems, 'name', 'ui.grid.pinning.pinLeft')) {
+        //// Skip from menu if hidePinLeft or hidePinRight is true
+        if (!colDef.hidePinLeft && !gridUtil.arrayContainsObjectWithProperty(col.menuItems, 'name', 'ui.grid.pinning.pinLeft')) {
           col.menuItems.push(pinColumnLeftAction);
         }
-        if (!gridUtil.arrayContainsObjectWithProperty(col.menuItems, 'name', 'ui.grid.pinning.pinRight')) {
+        if (!colDef.hidePinRight && !gridUtil.arrayContainsObjectWithProperty(col.menuItems, 'name', 'ui.grid.pinning.pinRight')) {
           col.menuItems.push(pinColumnRightAction);
         }
         if (!gridUtil.arrayContainsObjectWithProperty(col.menuItems, 'name', 'ui.grid.pinning.unpin')) {
@@ -24145,13 +24176,14 @@ module.filter('px', function() {
 
                 if (width > maxWidth) {
                   maxWidth = width;
-                  xDiff = maxWidth - width;
                 }
               });
             });
 
           // check we're not outside the allowable bounds for this column
-          col.width = constrainWidth(col, maxWidth);
+          var newWidth = constrainWidth(col, maxWidth);
+          xDiff = newWidth - col.drawnWidth;
+          col.width = newWidth;
           col.hasCustomWidth = true;
 
           refreshCanvas(xDiff);
@@ -27051,9 +27083,10 @@ module.filter('px', function() {
                * @methodOf  ui.grid.treeBase.api:PublicApi
                * @description expand the immediate children of the specified row
                * @param {gridRow} row the row you wish to expand
+               * @param {boolean} recursive true if you wish to expand the row's ancients
                */
-              expandRow: function (row) {
-                service.expandRow(grid, row);
+              expandRow: function (row, recursive) {
+                service.expandRow(grid, row, recursive);
               },
 
               /**
@@ -27525,7 +27558,7 @@ module.filter('px', function() {
         if (row.treeNode.state === uiGridTreeBaseConstants.EXPANDED){
           service.collapseRow(grid, row);
         } else {
-          service.expandRow(grid, row);
+          service.expandRow(grid, row, false);
         }
 
         grid.queueGridRefresh();
@@ -27540,17 +27573,38 @@ module.filter('px', function() {
        *
        * @param {Grid} grid grid object
        * @param {GridRow} row the row we want to expand
+       * @param {boolean} recursive true if you wish to expand the row's ancients
        */
-      expandRow: function ( grid, row ){
-        if ( typeof(row.treeLevel) === 'undefined' || row.treeLevel === null || row.treeLevel < 0 ){
-          return;
-        }
+      expandRow: function ( grid, row, recursive ){
+        if ( recursive ){
+          var parents = [];
+          while ( row && typeof(row.treeLevel) !== 'undefined' && row.treeLevel !== null && row.treeLevel >= 0 && row.treeNode.state !== uiGridTreeBaseConstants.EXPANDED ){
+            parents.push(row);
+            row = row.treeNode.parentRow;
+          }
 
-        if ( row.treeNode.state !== uiGridTreeBaseConstants.EXPANDED ){
-          row.treeNode.state = uiGridTreeBaseConstants.EXPANDED;
-          grid.api.treeBase.raise.rowExpanded(row);
-          grid.treeBase.expandAll = service.allExpanded(grid.treeBase.tree);
-          grid.queueGridRefresh();
+          if ( parents.length > 0 ){
+            row = parents.pop();
+            while ( row ){
+                row.treeNode.state = uiGridTreeBaseConstants.EXPANDED;
+                grid.api.treeBase.raise.rowExpanded(row);
+                row = parents.pop();
+            }
+
+            grid.treeBase.expandAll = service.allExpanded(grid.treeBase.tree);
+            grid.queueGridRefresh();
+          }
+        } else {
+          if ( typeof(row.treeLevel) === 'undefined' || row.treeLevel === null || row.treeLevel < 0 ){
+            return;
+          }
+
+          if ( row.treeNode.state !== uiGridTreeBaseConstants.EXPANDED ){
+            row.treeNode.state = uiGridTreeBaseConstants.EXPANDED;
+            grid.api.treeBase.raise.rowExpanded(row);
+            grid.treeBase.expandAll = service.allExpanded(grid.treeBase.tree);
+            grid.queueGridRefresh();
+          }
         }
       },
 
@@ -29352,7 +29406,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/selectionRowHeaderButtons',
-    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\">role=\"checkbox\" ng-model=\"row.isSelected\"> &nbsp;</div>"
+    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
   );
 
 
