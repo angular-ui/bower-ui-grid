@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.0.11 - 2017-11-20
+ * ui-grid - v4.1.0 - 2017-12-18
  * Copyright (c) 2017 ; License: MIT 
  */
 
@@ -2787,17 +2787,17 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
 
             // Verify that the render container for this element exists
             if (!$scope.rowContainerName) {
-              throw "No row render container name specified";
+              throw new Error("No row render container name specified");
             }
             if (!$scope.colContainerName) {
-              throw "No column render container name specified";
+              throw new Error("No column render container name specified");
             }
 
             if (!grid.renderContainers[$scope.rowContainerName]) {
-              throw "Row render container '" + $scope.rowContainerName + "' is not registered.";
+              throw new Error("Row render container '" + $scope.rowContainerName + "' is not registered.");
             }
             if (!grid.renderContainers[$scope.colContainerName]) {
-              throw "Column render container '" + $scope.colContainerName + "' is not registered.";
+              throw new Error("Column render container '" + $scope.colContainerName + "' is not registered.");
             }
 
             var rowContainer = $scope.rowContainer = grid.renderContainers[$scope.rowContainerName];
@@ -5115,7 +5115,9 @@ angular.module('ui.grid')
           else {
             finished.resolve(processedRows);
           }
-        }).catch(angular.noop);
+        }).catch(function(error) {
+          throw error;
+        });
     }
 
     // Start on the first processor
@@ -19088,31 +19090,31 @@ module.filter('px', function() {
             {
               title: i18nService.getSafeText('gridMenu.exporterAllAsExcel'),
               action: function ($event) {
-                this.grid.api.exporter.excelExport( uiGridExporterConstants.ALL, uiGridExporterConstants.ALL );
+                grid.api.exporter.excelExport( uiGridExporterConstants.ALL, uiGridExporterConstants.ALL );
               },
               shown: function() {
-                return this.grid.options.exporterMenuExcel && this.grid.options.exporterMenuAllData;
+                return grid.options.exporterMenuExcel && grid.options.exporterMenuAllData;
               },
               order: grid.options.exporterMenuItemOrder + 6
             },
             {
               title: i18nService.getSafeText('gridMenu.exporterVisibleAsExcel'),
               action: function ($event) {
-                this.grid.api.exporter.excelExport( uiGridExporterConstants.VISIBLE, uiGridExporterConstants.VISIBLE );
+                grid.api.exporter.excelExport( uiGridExporterConstants.VISIBLE, uiGridExporterConstants.VISIBLE );
               },
               shown: function() {
-                return this.grid.options.exporterMenuExcel && this.grid.options.exporterMenuVisibleData;
+                return grid.options.exporterMenuExcel && grid.options.exporterMenuVisibleData;
               },
               order: grid.options.exporterMenuItemOrder + 7
             },
             {
               title: i18nService.getSafeText('gridMenu.exporterSelectedAsExcel'),
               action: function ($event) {
-                this.grid.api.exporter.excelExport( uiGridExporterConstants.SELECTED, uiGridExporterConstants.VISIBLE );
+                grid.api.exporter.excelExport( uiGridExporterConstants.SELECTED, uiGridExporterConstants.VISIBLE );
               },
               shown: function() {
-                return this.grid.options.exporterMenuExcel && this.grid.options.exporterMenuSelectedData &&
-                  ( this.grid.api.selection && this.grid.api.selection.getSelectedRows().length > 0 );
+                return grid.options.exporterMenuExcel && grid.options.exporterMenuSelectedData &&
+                  ( grid.api.selection && grid.api.selection.getSelectedRows().length > 0 );
               },
               order: grid.options.exporterMenuItemOrder + 8
             }

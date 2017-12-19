@@ -4,7 +4,7 @@
   "main": "index.js",
   "ignore": [],
   "dependencies": {
-    "angular": ">=1.4.0 1.5.x"
+    "angular": ">=1.4.0 1.6.x"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "data grid"
   ],
   "license": "MIT",
-  "version": "4.0.11",
+  "version": "4.1.0",
   "files": [
     "less",
     "ui-grid.css",
