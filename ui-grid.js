@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.1.2 - 2017-12-21
+ * ui-grid - v4.1.3 - 2017-12-23
  * Copyright (c) 2017 ; License: MIT 
  */
 
@@ -8870,7 +8870,10 @@ angular.module('ui.grid')
         asteriskNum = 0,
         usedWidthSum = 0,
         ret = '',
-        pinRightColumn = false;
+        pinRightColumn = false,
+        fixedNumberArray = [],
+        percentageArray = [],
+        totalPercentage = 0;
 
     // Get the width of the viewport
     var availableWidth = self.grid.getViewportWidth() - self.grid.scrollbarWidth;
@@ -8878,12 +8881,12 @@ angular.module('ui.grid')
     // get all the columns across all render containers, we have to calculate them all or one render container
     // could consume the whole viewport
     var columnCache = [];
-    angular.forEach(self.grid.renderContainers, function( container, name){
+    angular.forEach(self.grid.renderContainers, function (container, name) {
       columnCache = columnCache.concat(container.visibleColumnCache);
     });
 
     // look at each column, process any manual values or %, put the * into an array to look at later
-    columnCache.forEach(function(column, i) {
+    columnCache.forEach(function (column, i) {
       var width = 0;
       // Skip hidden columns
       if (!column.visible) { return; }
@@ -8902,21 +8905,26 @@ angular.module('ui.grid')
         usedWidthSum = usedWidthSum + width;
         column.drawnWidth = width;
 
+        fixedNumberArray.push(column);
       } else if (gridUtil.endsWith(column.width, "%")) {
         // percentage width, set to percentage of the viewport
         // round down to int - some browsers don't play nice with float maxWidth
-        width = parseInt(parseInt(column.width.replace(/%/g, ''), 10) / 100 * availableWidth);
+        var percentageIntegerValue = parseInt(column.width.replace(/%/g, ''), 10);
+        width = parseInt(percentageIntegerValue / 100 * availableWidth);
 
-        if ( width > column.maxWidth ){
+        if (width > column.maxWidth) {
           width = column.maxWidth;
         }
 
-        if ( width < column.minWidth ){
+        if (width < column.minWidth) {
           width = column.minWidth;
         }
 
         usedWidthSum = usedWidthSum + width;
         column.drawnWidth = width;
+
+        totalPercentage = totalPercentage + percentageIntegerValue;
+        percentageArray.push(column);
       } else if (angular.isString(column.width) && column.width.indexOf('*') !== -1) {
         // is an asterisk column, the gridColumn already checked the string consists only of '****'
         asteriskNum = asteriskNum + column.width.length;
@@ -8933,15 +8941,15 @@ angular.module('ui.grid')
       // the width that each asterisk value would be assigned (this can be negative)
       var asteriskVal = remainingWidth / asteriskNum;
 
-      asterisksArray.forEach(function( column ){
+      asterisksArray.forEach(function (column) {
         var width = parseInt(column.width.length * asteriskVal, 10);
 
-        if ( width > column.maxWidth ){
-          width = column.maxWidth;
+        if (width > column.maxWidth) {
+            width = column.maxWidth;
         }
 
-        if ( width < column.minWidth ){
-          width = column.minWidth;
+        if (width < column.minWidth) {
+            width = column.minWidth;
         }
 
         usedWidthSum = usedWidthSum + width;
@@ -8949,45 +8957,56 @@ angular.module('ui.grid')
       });
     }
 
-    // If the grid width didn't divide evenly into the column widths and we have pixels left over, or our
-    // calculated widths would have the grid narrower than the available space,
-    // dole the remainder out one by one to make everything fit
-    var processColumnUpwards = function(column){
-      if ( column.drawnWidth < column.maxWidth && leftoverWidth > 0) {
-        column.drawnWidth++;
-        usedWidthSum++;
-        leftoverWidth--;
-        columnsToChange = true;
-      }
-    };
-
-    var leftoverWidth = availableWidth - usedWidthSum;
-    var columnsToChange = true;
-
-    while (leftoverWidth > 0 && columnsToChange) {
-      columnsToChange = false;
-      asterisksArray.forEach(processColumnUpwards);
+    // If there are no columns with asterisk widths then check if there are any with % widths and
+    // use them as a fallback for adjusting column widths up or down if we have remaining grid width
+    // or need to claw some width back
+    var variableWidthColumnArray;
+    if (asterisksArray.length > 0) {
+      variableWidthColumnArray = asterisksArray;
+    } else if (percentageArray.length > 0 && fixedNumberArray.length === 0 && totalPercentage === 100) {
+      variableWidthColumnArray = percentageArray;
     }
 
-    // We can end up with too much width even though some columns aren't at their max width, in this situation
-    // we can trim the columns a little
-    var processColumnDownwards = function(column){
-      if ( column.drawnWidth > column.minWidth && excessWidth > 0) {
-        column.drawnWidth--;
-        usedWidthSum--;
-        excessWidth--;
-        columnsToChange = true;
+    if (!angular.isUndefined(variableWidthColumnArray)) {
+      // If the grid width didn't divide evenly into the column widths and we have pixels left over, or our
+      // calculated widths would have the grid narrower than the available space,
+      // dole the remainder out one by one to make everything fit
+      var processColumnUpwards = function (column) {
+        if (column.drawnWidth < column.maxWidth && leftoverWidth > 0) {
+          column.drawnWidth++;
+          usedWidthSum++;
+          leftoverWidth--;
+          columnsToChange = true;
+        }
+      };
+
+      var leftoverWidth = availableWidth - usedWidthSum;
+      var columnsToChange = true;
+
+      while (leftoverWidth > 0 && columnsToChange) {
+        columnsToChange = false;
+        variableWidthColumnArray.forEach(processColumnUpwards);
       }
-    };
 
-    var excessWidth =  usedWidthSum - availableWidth;
-    columnsToChange = true;
+      // We can end up with too much width even though some columns aren't at their max width, in this situation
+      // we can trim the columns a little
+      var processColumnDownwards = function (column) {
+        if (column.drawnWidth > column.minWidth && excessWidth > 0) {
+          column.drawnWidth--;
+          usedWidthSum--;
+          excessWidth--;
+          columnsToChange = true;
+        }
+      };
 
-    while (excessWidth > 0 && columnsToChange) {
-      columnsToChange = false;
-      asterisksArray.forEach(processColumnDownwards);
+      var excessWidth = usedWidthSum - availableWidth;
+      columnsToChange = true;
+
+      while (excessWidth > 0 && columnsToChange) {
+        columnsToChange = false;
+        variableWidthColumnArray.forEach(processColumnDownwards);
+      }
     }
-
 
     // all that was across all the renderContainers, now we need to work out what that calculation decided for
     // our renderContainer
@@ -15149,25 +15168,32 @@ module.filter('px', function() {
       require: 'uiGrid',
       scope: false,
       link: function($scope, $elm, $attrs, uiGridCtrl) {
+        var timeout = null;
 
-        $scope.$watch(function() {
-          return $elm[0].clientWidth;
-        }, function(newVal, oldVal) {
-          if (newVal !== oldVal) {
-            uiGridCtrl.grid.gridWidth = newVal;
+        var debounce = function(width, height) {
+          if (timeout !== null) {
+            clearTimeout(timeout);
+          }
+          timeout = setTimeout(function() {
+            uiGridCtrl.grid.gridWidth = width;
+            uiGridCtrl.grid.gridHeight = height;
             uiGridCtrl.grid.refresh();
+            timeout = null;
+          }, 400);
+        };
+
+        $scope.$watchGroup([
+          function() {
+            return gridUtil.elementWidth($elm);
+          },
+          function() {
+            return gridUtil.elementHeight($elm);
+          }
+        ], function(newValues, oldValues, scope) {
+          if (!angular.equals(newValues, oldValues)) {
+            debounce(newValues[0], newValues[1]);
           }
         });
-
-        $scope.$watch(function() {
-          return $elm[0].clientHeight;
-        }, function(newVal, oldVal) {
-          if (newVal !== oldVal) {
-            uiGridCtrl.grid.gridHeight = newVal;
-            uiGridCtrl.grid.refresh();
-          }
-        });
-
       }
     };
   }]);
@@ -29557,7 +29583,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
     "    }\n" +
     "\n" +
     "    .grid{{ grid.id }} .ui-grid-row:last-child .ui-grid-cell {\n" +
-    "      border-bottom-width: {{ ((grid.getTotalRowHeight() < grid.getViewportHeight()) && '1') || '0' }}px;\n" +
+    "      border-bottom-width: {{ (((grid.getVisibleRowCount() * grid.options.rowHeight) < grid.getViewportHeight()) && '1') || '0' }}px;\n" +
     "    }\n" +
     "\n" +
     "    {{ grid.verticalScrollbarStyles }}\n" +
