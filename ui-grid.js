@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.2.0 - 2018-01-15
+ * ui-grid - v4.2.1 - 2018-01-17
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -798,9 +798,9 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
         $scope.hideMenu();
       };
 
-      //Since we are hiding this column the default hide action will fail so we need to focus somewhere else.
+      // Since we are hiding this column the default hide action will fail so we need to focus somewhere else.
       var setFocusOnHideColumn = function(){
-        $scope.$applyAsync(function() {
+        $timeout(function() {
           // Get the UID of the first
           var focusToGridMenu = function(){
             return gridUtil.focus.byId('grid-menu', $scope.grid);
@@ -2174,7 +2174,8 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
            */
           $scope.shown = true;
 
-          $scope.$applyAsync(function() {
+          // Must be a timeout in order to work properly in Firefox. Issue #6533
+          $timeout(function() {
             $scope.shownMid = true;
             $scope.$emit('menu-shown');
           });
@@ -8305,7 +8306,7 @@ angular.module('ui.grid')
     self.prevScrollleftPercentage = 0;
     self.prevColumnScrollIndex = 0;
 
-    self.columnStyles = "";
+    self.columnStyles = '';
 
     self.viewportAdjusters = [];
 
@@ -8391,7 +8392,7 @@ angular.module('ui.grid')
 
     var min = 0;
     var totalWidth = 0;
-    // self.columns.forEach(function(col, i) {
+
     for (var i = 0; i < self.visibleColumnCache.length; i++) {
       var col = self.visibleColumnCache[i];
 
@@ -8549,7 +8550,7 @@ angular.module('ui.grid')
 
     var oldCanvasHeight = self.$$canvasHeight;
 
-    self.$$canvasHeight =  0;
+    self.$$canvasHeight = 0;
 
     self.visibleRowCache.forEach(function(row){
       self.$$canvasHeight += row.height;
@@ -8574,9 +8575,7 @@ angular.module('ui.grid')
   GridRenderContainer.prototype.getCanvasWidth = function getCanvasWidth() {
     var self = this;
 
-    var ret = self.canvasWidth;
-
-    return ret;
+    return self.canvasWidth;
   };
 
   GridRenderContainer.prototype.setRenderedRows = function setRenderedRows(newRows) {
@@ -8636,7 +8635,6 @@ angular.module('ui.grid')
     var horizScrollPercentage = -1;
 
     // Handle RTL here
-
     if (newScrollLeft !== this.prevScrollLeft) {
       var xDiff = newScrollLeft - this.prevScrollLeft;
 
@@ -8727,11 +8725,9 @@ angular.module('ui.grid')
           return;
         }
       }
-      var rangeStart = {};
-      var rangeEnd = {};
 
-      rangeStart = Math.max(0, rowIndex - self.grid.options.excessRows);
-      rangeEnd = Math.min(rowCache.length, rowIndex + minRows + self.grid.options.excessRows);
+      var rangeStart = Math.max(0, rowIndex - self.grid.options.excessRows);
+      var rangeEnd = Math.min(rowCache.length, rowIndex + minRows + self.grid.options.excessRows);
 
       newRange = [rangeStart, rangeEnd];
     }
@@ -8884,12 +8880,12 @@ angular.module('ui.grid')
     // get all the columns across all render containers, we have to calculate them all or one render container
     // could consume the whole viewport
     var columnCache = [];
-    angular.forEach(self.grid.renderContainers, function (container, name) {
+    angular.forEach(self.grid.renderContainers, function (container) {
       columnCache = columnCache.concat(container.visibleColumnCache);
     });
 
     // look at each column, process any manual values or %, put the * into an array to look at later
-    columnCache.forEach(function (column, i) {
+    columnCache.forEach(function (column) {
       var width = 0;
       // Skip hidden columns
       if (!column.visible) { return; }
@@ -8909,7 +8905,7 @@ angular.module('ui.grid')
         column.drawnWidth = width;
 
         fixedNumberArray.push(column);
-      } else if (gridUtil.endsWith(column.width, "%")) {
+      } else if (gridUtil.endsWith(column.width, '%')) {
         // percentage width, set to percentage of the viewport
         // round down to int - some browsers don't play nice with float maxWidth
         var percentageIntegerValue = parseInt(column.width.replace(/%/g, ''), 10);
@@ -8937,8 +8933,6 @@ angular.module('ui.grid')
 
     // Get the remaining width (available width subtracted by the used widths sum)
     var remainingWidth = availableWidth - usedWidthSum;
-
-    var i, column, colWidth;
 
     if (asterisksArray.length > 0) {
       // the width that each asterisk value would be assigned (this can be negative)
@@ -9071,13 +9065,10 @@ angular.module('ui.grid')
       self.hasVScrollbar = !self.grid.isRTL() ? self.grid.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER : false;
     }
 
-    styles['overflow-x'] = self.hasHScrollbar ? 'auto' : 'hidden';
-    styles['overflow-y'] = self.hasVScrollbar ? 'auto' : 'hidden';
-
+    styles['overflow-x'] = self.hasHScrollbar ? 'scroll' : 'hidden';
+    styles['overflow-y'] = self.hasVScrollbar ? 'scroll' : 'hidden';
 
     return styles;
-
-
   };
 
   return GridRenderContainer;
@@ -16931,8 +16922,9 @@ module.filter('px', function() {
 
                 cellNavNavigateDereg = uiGridCtrl.grid.api.cellNav.on.navigate($scope, function (newRowCol, oldRowCol, evt) {
                   if ($scope.col.colDef.enableCellEditOnFocus) {
+                    // Don't begin edit if the cell hasn't changed
                     if (newRowCol.row === $scope.row && newRowCol.col === $scope.col && evt && (evt.type === 'click' || evt.type === 'keydown')) {
-                      $scope.$applyAsync(function () {
+                      $timeout(function() {
                         beginEdit(evt);
                       });
                     }
@@ -17231,8 +17223,8 @@ module.filter('px', function() {
               });
 
               $scope.$broadcast(uiGridEditConstants.events.BEGIN_CELL_EDIT, triggerEvent);
-              $scope.$applyAsync(function () {
-                // execute in a apply async to give any complex editor templates a cycle to completely render
+              $timeout(function () {
+                // execute in a timeout to give any complex editor templates a cycle to completely render
                 $scope.grid.api.edit.raise.beginCellEdit($scope.row.entity, $scope.col.colDef, triggerEvent);
               });
             }
@@ -17332,7 +17324,8 @@ module.filter('px', function() {
 
                 //set focus at start of edit
                 $scope.$on(uiGridEditConstants.events.BEGIN_CELL_EDIT, function (evt,triggerEvent) {
-                  $scope.$applyAsync(function () {
+                  // must be in a timeout since it requires a new digest cycle
+                  $timeout(function () {
                     $elm[0].focus();
                     //only select text if it is not being replaced below in the cellNav viewPortKeyPress
                     if ($elm[0].select && ($scope.col.colDef.enableCellEditOnFocus || !(uiGridCtrl && uiGridCtrl.grid.api.cellNav))) {
@@ -17533,8 +17526,8 @@ module.filter('px', function() {
    *
    */
   module.directive('uiGridEditDropdown',
-    ['uiGridConstants', 'uiGridEditConstants',
-      function (uiGridConstants, uiGridEditConstants) {
+    ['uiGridConstants', 'uiGridEditConstants', '$timeout',
+      function (uiGridConstants, uiGridEditConstants, $timeout) {
         return {
           require: ['?^uiGrid', '?^uiGridRenderContainer'],
           scope: true,
@@ -17549,7 +17542,7 @@ module.filter('px', function() {
 
                 //set focus at start of edit
                 $scope.$on(uiGridEditConstants.events.BEGIN_CELL_EDIT, function () {
-                  $scope.$applyAsync(function(){
+                  $timeout(function(){
                     $elm[0].focus();
                   });
 
@@ -17631,12 +17624,7 @@ module.filter('px', function() {
 
               },
               post: function ($scope, $elm, $attrs, controllers) {
-                var uiGridCtrl, renderContainerCtrl;
-                if (controllers[0]) { uiGridCtrl = controllers[0]; }
-                if (controllers[1]) { renderContainerCtrl = controllers[1]; }
-                var grid = uiGridCtrl.grid;
-
-                var handleFileSelect = function( event ){
+                function handleFileSelect(event) {
                   var target = event.srcElement || event.target;
 
                   if (target && target.files && target.files.length > 0) {
@@ -17687,7 +17675,7 @@ module.filter('px', function() {
                   } else {
                     $scope.$emit(uiGridEditConstants.events.CANCEL_CELL_EDIT);
                   }
-                };
+                }
 
                 $elm[0].addEventListener('change', handleFileSelect, false);
 
@@ -22054,28 +22042,42 @@ module.filter('px', function() {
       return {
         replace: true,
         priority: 0,
-        require: '^uiGrid',
+        require: '?^uiGrid',
         scope: false,
         templateUrl: 'ui-grid/importerMenuItem',
         link: function ($scope, $elm, $attrs, uiGridCtrl) {
+          var grid;
+
           var handleFileSelect = function( event ){
             var target = event.srcElement || event.target;
 
             if (target && target.files && target.files.length === 1) {
               var fileObject = target.files[0];
-              uiGridImporterService.importThisFile( grid, fileObject );
-              target.form.reset();
+
+              // Define grid if the uiGrid controller is present
+              if (typeof(uiGridCtrl) !== 'undefined' && uiGridCtrl) {
+                grid = uiGridCtrl.grid;
+
+                uiGridImporterService.importThisFile( grid, fileObject );
+                target.form.reset();
+              } else {
+                gridUtil.logError('Could not import file because UI Grid was not found.');
+              }
             }
           };
 
           var fileChooser = $elm[0].querySelectorAll('.ui-grid-importer-file-chooser');
-          var grid = uiGridCtrl.grid;
 
           if ( fileChooser.length !== 1 ){
             gridUtil.logError('Found > 1 or < 1 file choosers within the menu item, error, cannot continue');
           } else {
-            fileChooser[0].addEventListener('change', handleFileSelect, false);  // TODO: why the false on the end?  Google
+            fileChooser[0].addEventListener('change', handleFileSelect, false);
           }
+
+          $scope.$on('$destroy', function unbindEvents() {
+            // unbind jquery events to prevent memory leaks
+            fileChooser[0].removeEventListener('change', handleFileSelect, false);
+          });
         }
       };
     }
@@ -26863,11 +26865,9 @@ module.filter('px', function() {
                 self.api.selection.selectRowByVisibleIndex(0, evt);
               }
               self.selection.selectAll = false;
-            } else {
-              if (self.options.multiSelect) {
-                self.api.selection.selectAllVisibleRows(evt);
-                self.selection.selectAll = true;
-              }
+            } else if (self.options.multiSelect) {
+              self.api.selection.selectAllVisibleRows(evt);
+              self.selection.selectAll = true;
             }
           };
         }
@@ -29741,7 +29741,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/selectionSelectAllButtons',
-    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
+    "<div role=\"button\" class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
   );
 
 
