@@ -1,3 +1,19 @@
+<a name="v4.2.3"></a>
+### v4.2.3 (2018-02-02)
+
+
+#### Bug Fixes
+
+* **exporter:** Fix bug where selection column width was included ([d6aeb166](http://github.com/angular-ui/ng-grid/commit/d6aeb166c9931d6da6f464807e6d6575b6b2addf))
+* **importer.js:** Remove unnecessary on destroy event. ([497a554b](http://github.com/angular-ui/ng-grid/commit/497a554bc01fe1148aa804732804c0b41b0c2ced))
+* **selection.js:** Allow selection in tables that use grouping (#6556) ([f3d2a7f1](http://github.com/angular-ui/ng-grid/commit/f3d2a7f1019d269df567047be901e07523cefcb4))
+* **ui-grid-header-cell:** Improved styles with grid menu. ([c6b8d3bc](http://github.com/angular-ui/ng-grid/commit/c6b8d3bcf5095e7543603e1622499aefa2d5c0a4))
+
+
+#### Features
+
+* **i18n:** Add Arabic translation (#6551) ([24be1fb6](http://github.com/angular-ui/ng-grid/commit/24be1fb6f78bc9c5c55af0b88dfa0ef87967c395))
+
 <a name="v4.2.2"></a>
 ### v4.2.2 (2018-01-17)
 
@@ -152,6 +168,12 @@
   * output aria text for cells that come from selection feature - works on IE with J ([151f32b9](http://github.com/angular-ui/ng-grid/commit/151f32b904145893c9e6d51c8350814be70b5dc8))
   * output aria text for cells that come from selection feature ([6d951b2a](http://github.com/angular-ui/ng-grid/commit/6d951b2a7ac33f53b8512a6f3ad5d5498cd079c9))
 * **gridEdit:** Pass triggerEvent to cellEditableCondition fn call ([219ea716](http://github.com/angular-ui/ng-grid/commit/219ea7165ff1f6030c7d125550020181fa1fc3ae))
+
+
+#### Breaking Changes
+
+* Menu Items's title should now be a function
+ ([df10da91](https://github.com/angular-ui/ui-grid/commit/df10da916eb52ffe5636041b56eb88242ecfdd0d#diff-3baddc9493adec1550b73c74401d4b46))
 
 <a name="v4.0.6"></a>
 ### v4.0.6 (2017-06-14)

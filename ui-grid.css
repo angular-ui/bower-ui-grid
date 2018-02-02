@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.2.2 - 2018-01-17
+ * ui-grid - v4.2.3 - 2018-02-02
  * Copyright (c) 2018 ; License: MIT 
  */
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
@@ -78,12 +78,7 @@
   border: 0;
 }
 .ui-grid-top-panel-background {
-  background: #f3f3f3;
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
-  background: -ms-linear-gradient(bottom, #eeeeee, #ffffff);
-  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
-  background: -o-linear-gradient(#ffffff, #eeeeee);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+  background-color: #f3f3f3;
 }
 .ui-grid-header {
   border-bottom: 1px solid #d4d4d4;
@@ -93,12 +88,7 @@
   position: relative;
   overflow: hidden;
   font-weight: bold;
-  background: #f3f3f3;
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
-  background: -ms-linear-gradient(bottom, #eeeeee, #ffffff);
-  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
-  background: -o-linear-gradient(#ffffff, #eeeeee);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+  background-color: #f3f3f3;
   -webkit-border-top-right-radius: -1px;
   -webkit-border-bottom-right-radius: 0;
   -webkit-border-bottom-left-radius: 0;
@@ -171,8 +161,17 @@
 .ui-grid-column-menu-button .ui-grid-icon-angle-down {
   vertical-align: sub;
 }
-.ui-grid-column-menu-button-last-col {
-  margin-right: 25px;
+.ui-grid-header-cell-last-col .ui-grid-cell-contents,
+.ui-grid-header-cell-last-col .ui-grid-filter-container,
+.ui-grid-header-cell-last-col .ui-grid-column-menu-button,
+.ui-grid-header-cell-last-col + .ui-grid-column-resizer.right {
+  margin-right: 13px;
+}
+.ui-grid-render-container-right .ui-grid-header-cell-last-col .ui-grid-cell-contents,
+.ui-grid-render-container-right .ui-grid-header-cell-last-col .ui-grid-filter-container,
+.ui-grid-render-container-right .ui-grid-header-cell-last-col .ui-grid-column-menu-button,
+.ui-grid-render-container-right .ui-grid-header-cell-last-col + .ui-grid-column-resizer.right {
+  margin-right: 28px;
 }
 .ui-grid-column-menu {
   position: absolute;
@@ -266,7 +265,7 @@
   opacity: 1;
 }
 input[type="text"].ui-grid-filter-input {
-  padding: 0;
+  padding: 0 18px 0 0;
   margin: 0;
   border: 0;
   width: 100%;
@@ -372,12 +371,7 @@ select.ui-grid-filter-select:hover {
   left: 0;
   right: 0;
   margin: 10%;
-  background: #f3f3f3;
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
-  background: -ms-linear-gradient(bottom, #eeeeee, #ffffff);
-  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
-  background: -o-linear-gradient(#ffffff, #eeeeee);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+  background-color: #f3f3f3;
   -webkit-border-top-right-radius: 0px;
   -webkit-border-bottom-right-radius: 0;
   -webkit-border-bottom-left-radius: 0;
@@ -442,12 +436,7 @@ select.ui-grid-filter-select:hover {
   border-bottom: solid 1px #d4d4d4;
 }
 .ui-grid-footer-panel-background {
-  background: #f3f3f3;
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
-  background: -ms-linear-gradient(bottom, #eeeeee, #ffffff);
-  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
-  background: -o-linear-gradient(#ffffff, #eeeeee);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+  background-color: #f3f3f3;
 }
 .ui-grid-footer-panel {
   position: relative;
@@ -455,12 +444,7 @@ select.ui-grid-filter-select:hover {
   border-top: 1px solid #d4d4d4;
   overflow: hidden;
   font-weight: bold;
-  background: #f3f3f3;
-  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
-  background: -ms-linear-gradient(bottom, #eeeeee, #ffffff);
-  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
-  background: -o-linear-gradient(#ffffff, #eeeeee);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#eeeeee', GradientType=0);
+  background-color: #f3f3f3;
   -webkit-border-top-right-radius: -1px;
   -webkit-border-bottom-right-radius: 0;
   -webkit-border-bottom-left-radius: 0;
@@ -517,7 +501,7 @@ select.ui-grid-filter-select:hover {
   border-right: 0;
 }
 input[type="text"].ui-grid-filter-input {
-  padding: 0;
+  padding: 0 18px 0 0;
   margin: 0;
   border: 0;
   width: 100%;
@@ -547,39 +531,45 @@ input[type="text"].ui-grid-filter-input:hover {
   right: 0;
   top: 0;
   background: #f3f3f3;
-  border: 1px solid #d4d4d4;
+  border: 0;
+  border-left: 1px solid #d4d4d4;
+  border-bottom: 1px solid #d4d4d4;
   cursor: pointer;
-  height: 31px;
+  height: 32px;
   font-weight: normal;
 }
 .ui-grid-menu-button .ui-grid-icon-container {
-  margin-top: 3px;
+  margin-top: 5px;
+  margin-left: 2px;
 }
 .ui-grid-menu-button .ui-grid-menu {
   right: 0;
 }
 .ui-grid-menu-button .ui-grid-menu .ui-grid-menu-mid {
   overflow: scroll;
-  border: 1px solid #d4d4d4;
 }
 .ui-grid-menu {
+  max-width: 320px;
   z-index: 2;
   position: absolute;
   padding: 0 10px 20px 10px;
   cursor: pointer;
   box-sizing: border-box;
 }
+.ui-grid-menu-item {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .ui-grid-menu .ui-grid-menu-inner {
-  background: #f3f3f3;
+  background: #ffffff;
   border: 1px solid #d4d4d4;
   position: relative;
   white-space: nowrap;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   border-radius: 0px;
-  -webkit-box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 12px 12px -14px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 12px 12px -14px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 12px 12px -14px rgba(0, 0, 0, 0.2);
 }
 .ui-grid-menu .ui-grid-menu-inner ul {
   margin: 0;
@@ -590,6 +580,7 @@ input[type="text"].ui-grid-filter-input:hover {
   padding: 0px;
 }
 .ui-grid-menu .ui-grid-menu-inner ul li button {
+  color: #000000;
   min-width: 100%;
   padding: 8px;
   text-align: left;
@@ -598,15 +589,10 @@ input[type="text"].ui-grid-filter-input:hover {
 }
 .ui-grid-menu .ui-grid-menu-inner ul li button:hover,
 .ui-grid-menu .ui-grid-menu-inner ul li button:focus {
-  -webkit-box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
-  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
+  background-color: #b3c4c7;
 }
 .ui-grid-menu .ui-grid-menu-inner ul li button.ui-grid-menu-item-active {
-  -webkit-box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
-  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.2);
-  background-color: #cecece;
+  background-color: #9cb2b6;
 }
 .ui-grid-menu .ui-grid-menu-inner ul li:not(:last-child) > button {
   border-bottom: 1px solid #d4d4d4;
@@ -893,6 +879,9 @@ input[type="text"].ui-grid-filter-input:hover {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -916,6 +905,9 @@ input[type="text"].ui-grid-filter-input:hover {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -980,6 +972,9 @@ input[type="text"].ui-grid-filter-input:hover {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1027,6 +1022,9 @@ div.ui-grid-cell input.ng-valid {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1056,6 +1054,9 @@ div.ui-grid-cell input.ng-valid {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -1097,6 +1098,9 @@ div.ui-grid-cell input.ng-valid {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1120,6 +1124,9 @@ div.ui-grid-cell input.ng-valid {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -1148,6 +1155,9 @@ div.ui-grid-cell input.ng-valid {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1171,6 +1181,9 @@ div.ui-grid-cell input.ng-valid {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -1204,6 +1217,9 @@ div.ui-grid-cell input.ng-valid {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -1586,6 +1602,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1677,6 +1696,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1733,6 +1755,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1765,6 +1790,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -1812,6 +1840,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 */
 /** @description Colors used for row alternation */
 /**
+* @section Grid Menu colors
+*/
+/**
 * @section Sort arrow colors
 */
 /**
@@ -1839,6 +1870,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
@@ -1869,6 +1903,9 @@ select[multiple].ui-grid-pager-row-count-picker select {
 * @section Grid body styles
 */
 /** @description Colors used for row alternation */
+/**
+* @section Grid Menu colors
+*/
 /**
 * @section Sort arrow colors
 */
