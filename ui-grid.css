@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.2.3 - 2018-02-02
+ * ui-grid - v4.2.4 - 2018-02-07
  * Copyright (c) 2018 ; License: MIT 
  */
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
@@ -76,6 +76,11 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+.ui-grid-icon-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
 }
 .ui-grid-top-panel-background {
   background-color: #f3f3f3;
@@ -434,6 +439,11 @@ select.ui-grid-filter-select:hover {
 .ui-grid-row .ui-grid-cell.ui-grid-row-header-cell {
   background-color: #f0f0ee;
   border-bottom: solid 1px #d4d4d4;
+}
+.ui-grid-cell-empty {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
 }
 .ui-grid-footer-panel-background {
   background-color: #f3f3f3;

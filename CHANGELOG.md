@@ -1,3 +1,16 @@
+<a name="v4.2.4"></a>
+### v4.2.4 (2018-02-07)
+
+
+#### Bug Fixes
+
+* **uiGridAutoResize:** Asking for grid $elm sizing in a digest loop always triggers `refresh`, not cond ([835153ce](http://github.com/angular-ui/ng-grid/commit/835153ce256fbeb5f58e20752ca7a4ea35b7a963), closes [#6561](http://github.com/angular-ui/ng-grid/issues/6561))
+
+
+#### Features
+
+* **expandAllButton:** Add ability to hide expand all button. ([343d7116](http://github.com/angular-ui/ng-grid/commit/343d711660e83b47c664e74fb8ec735da06a0a07))
+
 <a name="v4.2.3"></a>
 ### v4.2.3 (2018-02-02)
 
@@ -218,6 +231,7 @@
 * **protractor:** Fixing npm so protractor can be installed and run locally. ([724df352](http://github.com/angular-ui/ng-grid/commit/724df3520ccc1d5f585fcc42508a537935875da2))
 * **shell.js:** Adding windows support. ([5e438643](http://github.com/angular-ui/ng-grid/commit/5e438643ea06e06455e91f9d0368f0021b8ef9c8))
 * **sort:** Fixing sorting priority aria-label ([a364886f](http://github.com/angular-ui/ng-grid/commit/a364886f37a2685500643d5df05b4c936dcd42a5))
+* **ui-grid-menu.js:** Removed log debug statement (#5388) ([7efe5304](https://github.com/angular-ui/ui-grid/commit/7efe5304f015714c8ba742bafe9a96ba80971622))
 
 
 #### Features

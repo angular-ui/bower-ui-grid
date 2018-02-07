@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.2.3 - 2018-02-02
+ * ui-grid - v4.2.4 - 2018-02-07
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -15310,30 +15310,35 @@ module.filter('px', function() {
       require: 'uiGrid',
       scope: false,
       link: function($scope, $elm, $attrs, uiGridCtrl) {
-        var timeout = null;
+        var elementWidth,
+          elementHeight;
 
-        var debounce = function(width, height) {
-          if (timeout !== null) {
-            clearTimeout(timeout);
-          }
-          timeout = setTimeout(function() {
-            uiGridCtrl.grid.gridWidth = width;
-            uiGridCtrl.grid.gridHeight = height;
-            uiGridCtrl.grid.refresh();
-            timeout = null;
-          }, 400);
-        };
+        var updateWidth = gridUtil.throttle(function() {
+          elementWidth = gridUtil.elementWidth($elm);
+        }, 200);
+
+        var updateHeight = gridUtil.throttle(function() {
+          elementHeight = gridUtil.elementHeight($elm);
+        }, 200);
+
+        var refresh = gridUtil.throttle(function(width, height) {
+          uiGridCtrl.grid.gridWidth = width;
+          uiGridCtrl.grid.gridHeight = height;
+          uiGridCtrl.grid.refresh();
+        }, 300);
 
         $scope.$watchGroup([
           function() {
-            return gridUtil.elementWidth($elm);
+            updateWidth();
+            return elementWidth;
           },
           function() {
-            return gridUtil.elementHeight($elm);
+            updateHeight();
+            return elementHeight;
           }
         ], function(newValues, oldValues, scope) {
           if (!angular.equals(newValues, oldValues)) {
-            debounce(newValues[0], newValues[1]);
+            refresh(newValues[0], newValues[1]);
           }
         });
       }
@@ -18056,6 +18061,21 @@ module.filter('px', function() {
 
         /**
          *  @ngdoc object
+         *  @name showExpandAllButton
+         *  @propertyOf  ui.grid.expandable.api:GridOptions
+         *  @description Whether or not to display the expand all button, allows you to hide expand all button on specific grids
+         *  within your application, or in specific modes on _this_ grid. Defaults to true.
+         *  @example
+         *  <pre>
+         *    $scope.gridOptions = {
+         *      showExpandAllButton: false
+         *    }
+         *  </pre>
+         */
+        grid.options.showExpandAllButton = grid.options.showExpandAllButton !== false;
+
+        /**
+         *  @ngdoc object
          *  @name expandableRowHeight
          *  @propertyOf  ui.grid.expandable.api:GridOptions
          *  @description Height in pixels of the expanded subgrid.  Defaults to
@@ -18071,7 +18091,7 @@ module.filter('px', function() {
 
         /**
          *  @ngdoc object
-         *  @name
+         *  @name expandableRowHeaderWidth
          *  @propertyOf  ui.grid.expandable.api:GridOptions
          *  @description Width in pixels of the expandable column. Defaults to 40
          *  @example
@@ -29897,7 +29917,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/expandableTopRowHeader',
-    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><i ng-class=\"{ 'ui-grid-icon-plus-squared' : !grid.expandable.expandedAll, 'ui-grid-icon-minus-squared' : grid.expandable.expandedAll }\" ng-click=\"grid.api.expandable.toggleAllRows()\"></i></div></div>"
+    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><span class=\"ui-grid-cell-empty\" ng-if=\"!grid.options.showExpandAllButton\"></span> <button type=\"button\" class=\"ui-grid-icon-button\" ng-if=\"grid.options.showExpandAllButton\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !grid.expandable.expandedAll, 'ui-grid-icon-minus-squared' : grid.expandable.expandedAll }\" ng-click=\"grid.api.expandable.toggleAllRows()\"></button></div></div>"
   );
 
 
