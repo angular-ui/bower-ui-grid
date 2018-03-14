@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.2.4 - 2018-02-07
+ * ui-grid - v4.3.1 - 2018-03-14
  * Copyright (c) 2018 ; License: MIT 
  */
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
@@ -130,7 +130,6 @@
 }
 .ui-grid-header-cell-row {
   display: table-row;
-  position: relative;
 }
 .ui-grid-header-cell {
   position: relative;
@@ -184,10 +183,10 @@
 /* Slide up/down animations */
 .ui-grid-column-menu .ui-grid-menu .ui-grid-menu-mid.ng-hide-add,
 .ui-grid-column-menu .ui-grid-menu .ui-grid-menu-mid.ng-hide-remove {
-  -webkit-transition: all 0.05s linear;
-  -moz-transition: all 0.05s linear;
-  -o-transition: all 0.05s linear;
-  transition: all 0.05s linear;
+  -webkit-transition: all 0.04s linear;
+  -moz-transition: all 0.04s linear;
+  -o-transition: all 0.04s linear;
+  transition: all 0.04s linear;
   display: block !important;
 }
 .ui-grid-column-menu .ui-grid-menu .ui-grid-menu-mid.ng-hide-add.ng-hide-add-active,
@@ -209,10 +208,10 @@
 /* Slide up/down animations */
 .ui-grid-menu-button .ui-grid-menu .ui-grid-menu-mid.ng-hide-add,
 .ui-grid-menu-button .ui-grid-menu .ui-grid-menu-mid.ng-hide-remove {
-  -webkit-transition: all 0.05s linear;
-  -moz-transition: all 0.05s linear;
-  -o-transition: all 0.05s linear;
-  transition: all 0.05s linear;
+  -webkit-transition: all 0.04s linear;
+  -moz-transition: all 0.04s linear;
+  -o-transition: all 0.04s linear;
+  transition: all 0.04s linear;
   display: block !important;
 }
 .ui-grid-menu-button .ui-grid-menu .ui-grid-menu-mid.ng-hide-add.ng-hide-add-active,
@@ -559,9 +558,11 @@ input[type="text"].ui-grid-filter-input:hover {
   overflow: scroll;
 }
 .ui-grid-menu {
+  overflow: hidden;
   max-width: 320px;
   z-index: 2;
   position: absolute;
+  right: 100%;
   padding: 0 10px 20px 10px;
   cursor: pointer;
   box-sizing: border-box;
