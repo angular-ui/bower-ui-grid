@@ -27,8 +27,9 @@
     "data grid"
   ],
   "license": "MIT",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "files": [
+    "i18n",
     "less",
     "ui-grid.auto-resize.js",
     "ui-grid.auto-resize.min.js",

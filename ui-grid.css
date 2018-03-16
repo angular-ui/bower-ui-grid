@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.0 - 2018-03-16
+ * ui-grid - v4.4.1 - 2018-03-16
  * Copyright (c) 2018 ; License: MIT 
  */
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
@@ -1463,7 +1463,11 @@ select[multiple].ui-grid-pager-control input {
   vertical-align: bottom;
 }
 .ui-grid-pager-control .ui-grid-pager-max-pages-number > * {
-  vertical-align: middle;
+  vertical-align: bottom;
+}
+.ui-grid-pager-control .ui-grid-pager-max-pages-number abbr {
+  border-bottom: none;
+  text-decoration: none;
 }
 .ui-grid-pager-control .first-bar {
   width: 10px;
@@ -1597,6 +1601,10 @@ select[multiple].ui-grid-pager-row-count-picker select {
   margin-right: 10px;
   margin-left: 10px;
   float: right;
+}
+.ui-grid-pager-count-container .ui-grid-pager-count abbr {
+  border-bottom: none;
+  text-decoration: none;
 }
 
 /* This file contains variable declarations (do not remove this line) */
