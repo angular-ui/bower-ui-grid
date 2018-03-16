@@ -1,3 +1,25 @@
+<a name="v4.4.0"></a>
+## v4.4.0 (2018-03-15)
+
+
+#### Features
+
+* **concat.js:** Rename ui-grid.base.js to ui-grid.core.js. ([18c5ffb8](http://github.com/angular-ui/ng-grid/commit/18c5ffb8807122e6045643c73138b9d6c83b5f9e))
+* **i18n:** Separate language files from ui-grid.base.js ([1342f803](http://github.com/angular-ui/ng-grid/commit/1342f8031441647ef8533f66c7141b04bb0fafe6))
+
+
+#### Breaking Changes
+
+* ui-grid.base.js has been rename to ui-grid.core.js. Also, ui-grid.core.js no longer
+contains most of the language files available to UI-Grid. It only contains english as that is the
+default language of the grid. See tutorials for examples.
+ ([18c5ffb8](http://github.com/angular-ui/ng-grid/commit/18c5ffb8807122e6045643c73138b9d6c83b5f9e))
+
+<a name="v4.3.1"></a>
+### v4.3.1 (2018-03-15)
+
+* **release:** Released UI-Grid to NPM and bower ([e90a837](https://github.com/angular-ui/ui-grid/commit/e90a837b7e2414f456a3ec7b5482afe7697f4e29))
+
 <a name="v4.3.0"></a>
 ## v4.3.0 (2018-03-14)
 

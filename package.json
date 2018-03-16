@@ -27,15 +27,15 @@
     "data grid"
   ],
   "license": "MIT",
-  "version": "4.3.1",
+  "version": "4.4.0",
   "files": [
     "less",
     "ui-grid.auto-resize.js",
     "ui-grid.auto-resize.min.js",
-    "ui-grid.base.js",
-    "ui-grid.base.min.js",
     "ui-grid.cellnav.js",
     "ui-grid.cellnav.min.js",
+    "ui-grid.core.js",
+    "ui-grid.core.min.js",
     "ui-grid.css",
     "ui-grid.edit.js",
     "ui-grid.edit.min.js",
