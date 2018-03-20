@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.1 - 2018-03-16
+ * ui-grid - v4.4.2 - 2018-03-20
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -3923,11 +3923,11 @@ angular.module('ui.grid')
 
     self.scrollbarHeight = 0;
     self.scrollbarWidth = 0;
-    if (self.options.enableHorizontalScrollbar === uiGridConstants.scrollbars.ALWAYS) {
+    if (self.options.enableHorizontalScrollbar !== uiGridConstants.scrollbars.NEVER) {
       self.scrollbarHeight = gridUtil.getScrollbarWidth();
     }
 
-    if (self.options.enableVerticalScrollbar === uiGridConstants.scrollbars.ALWAYS) {
+    if (self.options.enableVerticalScrollbar !== uiGridConstants.scrollbars.NEVER) {
       self.scrollbarWidth = gridUtil.getScrollbarWidth();
     }
 
@@ -9054,6 +9054,9 @@ angular.module('ui.grid')
       containerBody;
 
     if (self.name === 'left' || self.name === 'right' && !this.hasHScrollbar && !this.grid.disableScrolling) {
+      if (self.grid.options.enableHorizontalScrollbar === uiGridConstants.scrollbars.ALWAYS) {
+        return true;
+      }
       containerBody = this.grid.element[0].querySelector('.ui-grid-render-container-body .ui-grid-viewport');
       return containerBody.scrollWidth > containerBody.offsetWidth;
     }

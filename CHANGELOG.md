@@ -1,3 +1,12 @@
+<a name="v4.4.2"></a>
+### v4.4.2 (2018-03-20)
+
+
+#### Bug Fixes
+
+* **GridRenderContainer.js:** needsHScrollbarPlaceholder accounts for WHEN_NEEDED ([403bf3ee](http://github.com/angular-ui/ng-grid/commit/403bf3ee145be349ca783f5e5cf86a5420b638bf))
+* **i18n:** change some strings in de.js due to typos ([9ebe1168](https://github.com/angular-ui/ui-grid/commit/9ebe116808ff2d56e18bc3623355121a934de080))
+
 <a name="v4.4.1"></a>
 ### v4.4.1 (2018-03-16)
 
@@ -232,6 +241,13 @@ Closes #2273, #2552, #3593, #3854, #4439
 * **ui-grid.info:**
   * Removing unknown broken link. ([2968158c](http://github.com/angular-ui/ng-grid/commit/2968158c5fec17576fe88f8be6e366ef7330fc98))
   * Fix broken customizer url on homepage (#5976) ([209fc1d6](http://github.com/angular-ui/ng-grid/commit/209fc1d68769fe1918d88f3accf5cd6e48f64acb))
+* **cellnav.js:** trim text of DOM element before checking ([84ea8fa](https://github.com/angular-ui/ui-grid/commit/84ea8fa8db9c9979ee46452a773ae7da028d0dc2))
+* **gridEdit.js:** verify that the keyCode is greater than zero ([5ccd7f3](https://github.com/angular-ui/ui-grid/commit/5ccd7f3645e20f1f514f2a549cf831b63e35aadf))
+* **Grid.js:**
+  * Fixed grid height growing indefinitely with auto-resize. ([553d72b](https://github.com/angular-ui/ui-grid/commit/553d72bc4153dc5945978c9f7ece8bcb0040cccc))
+  * "selectAll" header sync with the actual selection state of the row. ([aae3f9d](https://github.com/angular-ui/ui-grid/commit/aae3f9d965b1e39a32d1471fcd025afeb3d006b6))
+* **ui-grid-menu:** Menu Items's title can now be a function. ([df10da9](https://github.com/angular-ui/ui-grid/commit/df10da916eb52ffe5636041b56eb88242ecfdd0d))
+* **selection.less:** Focus on selection mark of unselected rows was hardly visible. ([d1aee28](https://github.com/angular-ui/ui-grid/commit/d1aee28b01782b42061e2599c5b285399ec144fa))
 
 
 #### Features
