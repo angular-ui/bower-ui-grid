@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.2 - 2018-03-20
+ * ui-grid - v4.4.3 - 2018-03-21
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -947,7 +947,7 @@
             };
 
             function registerRowSelectionEvents() {
-              if ($scope.grid.options.enableRowSelection && $scope.grid.options.enableFullRowSelection) {
+              if ($scope.grid.options.enableRowSelection && $scope.grid.options.enableFullRowSelection && !$elm.hasClass('ui-grid-row-header-cell')) {
                 $elm.addClass('ui-grid-disable-selection');
                 $elm.on('touchstart', touchStart);
                 $elm.on('touchend', touchEnd);
