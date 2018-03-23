@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.3 - 2018-03-21
+ * ui-grid - v4.4.4 - 2018-03-23
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -240,19 +240,17 @@
                  * @param {Event} evt object if raised from an event
                  */
                 selectAllRows: function (evt) {
-                  if (grid.options.multiSelect === false) {
-                    return;
+                  if (grid.options.multiSelect !== false) {
+                    var changedRows = [];
+                    grid.rows.forEach(function (row) {
+                      if (!row.isSelected && row.enableSelection !== false && grid.options.isRowSelectable(row) !== false) {
+                        row.setSelected(true);
+                        service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
+                      }
+                    });
+                    service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
+                    grid.selection.selectAll = true;
                   }
-
-                  var changedRows = [];
-                  grid.rows.forEach(function (row) {
-                    if (!row.isSelected && row.enableSelection !== false) {
-                      row.setSelected(true);
-                      service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
-                    }
-                  });
-                  service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
-                  grid.selection.selectAll = true;
                 },
                 /**
                  * @ngdoc function
@@ -266,7 +264,7 @@
                     var changedRows = [];
                     grid.rows.forEach(function(row) {
                       if (row.visible) {
-                        if (!row.isSelected && row.enableSelection !== false) {
+                        if (!row.isSelected && row.enableSelection !== false && grid.options.isRowSelectable(row) !== false) {
                           row.setSelected(true);
                           service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
                         }
