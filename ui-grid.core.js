@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.4 - 2018-03-23
+ * ui-grid - v4.4.5 - 2018-03-31
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1745,7 +1745,7 @@ angular.module('ui.grid')
 .service('uiGridGridMenuService', [ 'gridUtil', 'i18nService', 'uiGridConstants', function( gridUtil, i18nService, uiGridConstants ) {
   /**
    *  @ngdoc service
-   *  @name ui.grid.gridMenuService
+   *  @name ui.grid.uiGridGridMenuService
    *
    *  @description Methods for working with the grid menu
    */
@@ -1753,7 +1753,7 @@ angular.module('ui.grid')
   var service = {
     /**
      * @ngdoc method
-     * @methodOf ui.grid.gridMenuService
+     * @methodOf ui.grid.uiGridGridMenuService
      * @name initialize
      * @description Sets up the gridMenu. Most importantly, sets our
      * scope onto the grid object as grid.gridMenuScope, allowing us
@@ -1819,7 +1819,7 @@ angular.module('ui.grid')
     /**
      * @ngdoc function
      * @name addToGridMenu
-     * @propertyOf ui.grid.gridMenuService
+     * @propertyOf ui.grid.uiGridGridMenuService
      * @description add items to the grid menu.  Used by features
      * to add their menu items if they are enabled, can also be used by
      * end users to add menu items.  This method has the advantage of allowing
@@ -1827,7 +1827,7 @@ angular.module('ui.grid')
      * in the menu when.  (Noting that in most cases the shown and active functions
      * provide a better way to handle visibility of menu items)
      * @param {Grid} grid the grid on which we are acting
-     * @param {array} items menu items in the format as described in the tutorial, with
+     * @param {array} menuItems menu items in the format as described in the tutorial, with
      * the added note that if you want to use remove you must also specify an `id` field,
      * which is provided when you want to remove an item.  The id should be unique.
      *
@@ -1849,7 +1849,7 @@ angular.module('ui.grid')
     /**
      * @ngdoc function
      * @name removeFromGridMenu
-     * @methodOf ui.grid.gridMenuService
+     * @methodOf ui.grid.uiGridGridMenuService
      * @description Remove an item from the grid menu based on a provided id.  Assumes
      * that the id is unique, removes only the last instance of that id.  Does nothing if
      * the specified id is not found.  If there is no gridMenuScope or registeredMenuItems
@@ -1903,7 +1903,7 @@ angular.module('ui.grid')
      */
     /**
      * @ngdoc method
-     * @methodOf ui.grid.gridMenuService
+     * @methodOf ui.grid.uiGridGridMenuService
      * @name getMenuItems
      * @description Decides the menu items to show in the menu.  This is a
      * combination of:
@@ -1977,7 +1977,7 @@ angular.module('ui.grid')
      */
     /**
      * @ngdoc method
-     * @methodOf ui.grid.gridMenuService
+     * @methodOf ui.grid.uiGridGridMenuService
      * @name showHideColumns
      * @description Adds two menu items for each of the columns in columnDefs.  One
      * menu item for hide, one menu item for show.  Each is visible when appropriate
@@ -2042,7 +2042,7 @@ angular.module('ui.grid')
 
     /**
      * @ngdoc method
-     * @methodOf ui.grid.gridMenuService
+     * @methodOf ui.grid.uiGridGridMenuService
      * @name setMenuItemTitle
      * @description Handles the response from gridMenuTitleFilter, adding it directly to the menu
      * item if it returns a string, otherwise waiting for the promise to resolve or reject then
@@ -2073,7 +2073,7 @@ angular.module('ui.grid')
 
     /**
      * @ngdoc method
-     * @methodOf ui.grid.gridMenuService
+     * @methodOf ui.grid.uiGridGridMenuService
      * @name toggleColumnVisibility
      * @description Toggles the visibility of an individual column.  Expects to be
      * provided a context that has on it a gridColumn, which is the column that
@@ -2969,17 +2969,30 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
               ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-header-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
 
               if (renderContainer.explicitHeaderCanvasHeight) {
-                ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-header-canvas { height: ' + renderContainer.explicitHeaderCanvasHeight + 'px; }';
+                // get height from body container
+                var reHCHeight = document.querySelector(
+                  '.grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-body .ui-grid-header-canvas');
+
+                if (reHCHeight) {
+                  renderContainer.explicitHeaderCanvasHeight = reHCHeight.offsetHeight;
+                }
+
+                ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
+                  ' .ui-grid-header-canvas { height: ' + renderContainer.explicitHeaderCanvasHeight + 'px; }';
               }
               else {
                 ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-header-canvas { height: inherit; }';
               }
+  
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
+                ' .ui-grid-viewport { width: ' + viewportWidth + 'px; height: ' + viewportHeight + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
+                ' .ui-grid-header-viewport { width: ' + headerViewportWidth + 'px; }';
 
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-viewport { width: ' + viewportWidth + 'px; height: ' + viewportHeight + 'px; }';
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-header-viewport { width: ' + headerViewportWidth + 'px; }';
-
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-footer-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-footer-viewport { width: ' + footerViewportWidth + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
+                ' .ui-grid-footer-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
+                ' .ui-grid-footer-viewport { width: ' + footerViewportWidth + 'px; }';
 
               return ret;
             }
@@ -3620,7 +3633,7 @@ function uiGridDirective($window, gridUtil, uiGridConstants) {
             grid.gridHeight = $scope.gridHeight = gridUtil.elementHeight($elm);
 
             // If the grid isn't tall enough to fit a single row, it's kind of useless. Resize it to fit a minimum number of rows
-            if (grid.gridHeight <= grid.options.rowHeight && grid.options.enableMinHeightCheck) {
+            if (grid.gridHeight - grid.scrollbarHeight <= grid.options.rowHeight && grid.options.enableMinHeightCheck) {
               autoAdjustHeight();
             }
 
@@ -4732,8 +4745,7 @@ angular.module('ui.grid')
     var html = col.cellTemplate.replace(uiGridConstants.MODEL_COL_FIELD, self.getQualifiedColField(col));
     html = html.replace(uiGridConstants.COL_FIELD, 'grid.getCellValue(row, col)');
 
-    var compiledElementFn = $compile(html);
-    col.compiledElementFn = compiledElementFn;
+    col.compiledElementFn = $compile(html);
 
     if (col.compiledElementFnDefer) {
       col.compiledElementFnDefer.resolve(col.compiledElementFn);
@@ -5041,7 +5053,7 @@ angular.module('ui.grid')
    * @description registered a styleComputation function
    *
    * If the function returns a value it will be appended into the grid's `<style>` block
-   * @param {function($scope)} styleComputation function
+   * @param {function($scope)} styleComputationInfo function
    */
   Grid.prototype.registerStyleComputation = function registerStyleComputation(styleComputationInfo) {
     this.styleComputations.push(styleComputationInfo);
@@ -5082,7 +5094,7 @@ angular.module('ui.grid')
    * to alter the set of rows (sorting, etc) as long as the count is not
    * modified.
    *
-   * @param {function(renderedRowsToProcess, columns )} processorFunction rows processor function, which
+   * @param {function(renderedRowsToProcess, columns )} processor rows processor function, which
    * is run in the context of the grid (i.e. this for the function will be the grid), and must
    * return the updated rows list, which is passed to the next processor in the chain
    * @param {number} priority the priority of this processor.  In general we try to do them in 100s to leave room
@@ -5106,7 +5118,7 @@ angular.module('ui.grid')
    * @ngdoc function
    * @name removeRowsProcessor
    * @methodOf ui.grid.class:Grid
-   * @param {function(renderableRows)} rows processor function
+   * @param {function(renderableRows)} processor processor function
    * @description Remove a registered rows processor
    */
   Grid.prototype.removeRowsProcessor = function removeRowsProcessor(processor) {
@@ -5126,8 +5138,7 @@ angular.module('ui.grid')
    * Private Undocumented Method
    * @name processRowsProcessors
    * @methodOf ui.grid.class:Grid
-   * @param {Array[GridRow]} The array of "renderable" rows
-   * @param {Array[GridColumn]} The array of columns
+   * @param {Array[GridRow]} renderableRows The array of "renderable" rows
    * @description Run all the registered rows processors on the array of renderable rows
    */
   Grid.prototype.processRowsProcessors = function processRowsProcessors(renderableRows) {
@@ -5227,7 +5238,7 @@ angular.module('ui.grid')
    * @ngdoc function
    * @name registerColumnsProcessor
    * @methodOf ui.grid.class:Grid
-   * @param {function(renderedColumnsToProcess, rows)} columnProcessor column processor function, which
+   * @param {function(renderedColumnsToProcess, rows)} processor column processor function, which
    * is run in the context of the grid (i.e. this for the function will be the grid), and
    * which must return an updated renderedColumnsToProcess which can be passed to the next processor
    * in the chain
@@ -5952,8 +5963,8 @@ angular.module('ui.grid')
         }
 
         if (container.header || container.headerCanvas) {
-          container.explicitHeaderHeight = null;
-          container.explicitHeaderCanvasHeight = null;
+          container.explicitHeaderHeight = container.explicitHeaderHeight || null;
+          container.explicitHeaderCanvasHeight = container.explicitHeaderCanvasHeight || null;
 
           containerHeadersToRecalc.push(container);
         }
@@ -6132,6 +6143,14 @@ angular.module('ui.grid')
       return this.hasRightContainer() && this.renderContainers.right.renderedColumns.length > 0;
     };
 
+    // Turn the scroll position into a percentage and make it an argument for a scroll event
+    function getScrollPercentage(scrollPixels, scrollLength) {
+      var percentage = scrollPixels / scrollLength;
+
+      // if the percentage is greater than 1, set it to 1
+      return percentage <= 1 ? percentage : 1;
+    }
+
     /**
      * @ngdoc method
      * @methodOf  ui.grid.class:Grid
@@ -6198,7 +6217,7 @@ angular.module('ui.grid')
         // Don't let the pixels required to see the row be less than zero
         pixelsToSeeRow = (pixelsToSeeRow < 0) ? 0 : pixelsToSeeRow;
 
-        var scrollPixels, percentage;
+        var scrollPixels;
 
         // If the scroll position we need to see the row is LESS than the top boundary, i.e. obscured above the top of the self...
         if (pixelsToSeeRow < topBound) {
@@ -6206,11 +6225,7 @@ angular.module('ui.grid')
           //   to get the full position we need
           scrollPixels = self.renderContainers.body.prevScrollTop - (topBound - pixelsToSeeRow);
 
-          // Turn the scroll position into a percentage and make it an argument for a scroll event
-          percentage = scrollPixels / scrollLength;
-          if (percentage <= 1) {
-            scrollEvent.y = { percentage: percentage  };
-          }
+          scrollEvent.y = { percentage: getScrollPercentage(scrollPixels, scrollLength) };
         }
         // Otherwise if the scroll position we need to see the row is MORE than the bottom boundary, i.e. obscured below the bottom of the self...
         else if (pixelsToSeeRow > bottomBound) {
@@ -6218,11 +6233,7 @@ angular.module('ui.grid')
           //   to get the full position we need
           scrollPixels = pixelsToSeeRow - bottomBound + self.renderContainers.body.prevScrollTop;
 
-          // Turn the scroll position into a percentage and make it an argument for a scroll event
-          percentage = scrollPixels / scrollLength;
-          if (percentage <= 1) {
-            scrollEvent.y = { percentage: percentage  };
-          }
+          scrollEvent.y = { percentage: getScrollPercentage(scrollPixels, scrollLength) };
         }
       }
 
@@ -9187,13 +9198,14 @@ angular.module('ui.grid')
 .factory('GridRow', ['gridUtil', 'uiGridConstants', function(gridUtil, uiGridConstants) {
 
    /**
+   * @class GridRow
    * @ngdoc function
    * @name ui.grid.class:GridRow
    * @description GridRow is the viewModel for one logical row on the grid.  A grid Row is not necessarily a one-to-one
    * relation to gridOptions.data.
    * @param {object} entity the array item from GridOptions.data
    * @param {number} index the current position of the row in the array
-   * @param {Grid} reference to the parent grid
+   * @param {Grid} grid reference to the parent grid
    */
   function GridRow(entity, index, grid) {
 
@@ -9247,7 +9259,7 @@ angular.module('ui.grid')
     /**
      *  @ngdoc object
      *  @name height
-     *  @propertyOf  ui.grid.class:GridRow
+     *  @propertyOf ui.grid.class:GridRow
      *  @description height of each individual row. changing the height will flag all
      *  row renderContainers to recalculate their canvas height
      */
@@ -9269,7 +9281,7 @@ angular.module('ui.grid')
    * @methodOf ui.grid.class:GridRow
    * @description returns the qualified field name as it exists on scope
    * ie: row.entity.fieldA
-   * @param {GridCol} col column instance
+   * @param {GridColumn} col column instance
    * @returns {string} resulting name that can be evaluated on scope
    */
     GridRow.prototype.getQualifiedColField = function(col) {
@@ -9282,7 +9294,7 @@ angular.module('ui.grid')
      * @methodOf ui.grid.class:GridRow
      * @description returns the qualified field name minus the row path
      * ie: entity.fieldA
-     * @param {GridCol} col column instance
+     * @param {GridColumn} col column instance
      * @returns {string} resulting name that can be evaluated against a row
      */
   GridRow.prototype.getEntityQualifiedColField = function(col) {
@@ -9685,10 +9697,10 @@ angular.module('ui.grid')
           grid.registerRowsProcessor(function allRowsVisible(rows) {
             rows.forEach(function (row) {
               row.evaluateRowVisibility( true );
-            }, 50);
+            });
 
             return rows;
-          });
+          }, 50);
 
           grid.registerColumnsProcessor(function applyColumnVisibility(columns) {
             columns.forEach(function (column) {
