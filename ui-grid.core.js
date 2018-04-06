@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.5 - 2018-03-31
+ * ui-grid - v4.4.6 - 2018-04-06
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1991,6 +1991,10 @@ angular.module('ui.grid')
         return showHideColumns;
       }
 
+      function isColumnVisible(colDef) {
+        return colDef.visible === true || colDef.visible === undefined;
+      }
+
       // add header for columns
       showHideColumns.push({
         title: i18nService.getSafeText('gridMenu.columns'),
@@ -2003,34 +2007,23 @@ angular.module('ui.grid')
         if ( colDef.enableHiding !== false ){
           // add hide menu item - shows an OK icon as we only show when column is already visible
           var menuItem = {
-            icon: 'ui-grid-icon-ok',
+            icon: isColumnVisible(colDef) ? 'ui-grid-icon-ok' : 'ui-grid-icon-cancel',
             action: function($event) {
               $event.stopPropagation();
-              service.toggleColumnVisibility( this.context.gridCol );
-            },
-            shown: function() {
-              return this.context.gridCol.colDef.visible === true || this.context.gridCol.colDef.visible === undefined;
-            },
-            context: { gridCol: $scope.grid.getColumn(colDef.name || colDef.field) },
-            leaveOpen: true,
-            order: 301 + index * 2
-          };
-          service.setMenuItemTitle( menuItem, colDef, $scope.grid );
-          showHideColumns.push( menuItem );
 
-          // add show menu item - shows no icon as we only show when column is invisible
-          menuItem = {
-            icon: 'ui-grid-icon-cancel',
-            action: function($event) {
-              $event.stopPropagation();
               service.toggleColumnVisibility( this.context.gridCol );
+
+              if ($event.target && $event.target.firstChild) {
+                $event.target.firstChild.className = isColumnVisible(this.context.gridCol.colDef) ?
+                  'ui-grid-icon-ok' : 'ui-grid-icon-cancel';
+              }
             },
             shown: function() {
-              return !(this.context.gridCol.colDef.visible === true || this.context.gridCol.colDef.visible === undefined);
+              return this.context.gridCol.colDef.enableHiding !== false;
             },
             context: { gridCol: $scope.grid.getColumn(colDef.name || colDef.field) },
             leaveOpen: true,
-            order: 301 + index * 2 + 1
+            order: 301 + index
           };
           service.setMenuItemTitle( menuItem, colDef, $scope.grid );
           showHideColumns.push( menuItem );
@@ -2435,7 +2428,14 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
                 $scope.$emit('hide-menu');
               } else {
                 // Maintain focus on the selected item
-                gridUtil.focus.bySelector(angular.element($event.target.parentElement), 'button[type=button]', true);
+                var correctParent = $event.target.parentElement;
+
+                // nodeName of 'I' means target is i element, need the next parent
+                if (angular.element($event.target)[0].nodeName === 'I') {
+                  correctParent = correctParent.parentElement;
+                }
+
+                gridUtil.focus.bySelector(correctParent, 'button[type=button]', true);
               }
             }
           };
@@ -3437,10 +3437,12 @@ angular.module('ui.grid')
         // gridUtil.logDebug('dataWatch fired');
         var promises = [];
 
-        if (angular.isString($scope.uiGrid.data)) {
-          newData = self.grid.appScope[$scope.uiGrid.data];
-        } else {
-          newData = $scope.uiGrid.data;
+        if ( self.grid.options.fastWatch ) {
+          if (angular.isString($scope.uiGrid.data)) {
+            newData = self.grid.appScope.$eval($scope.uiGrid.data);
+          } else {
+            newData = $scope.uiGrid.data;
+          }
         }
 
         mostRecentData = newData;
@@ -6151,6 +6153,29 @@ angular.module('ui.grid')
       return percentage <= 1 ? percentage : 1;
     }
 
+    // Only returns the scroll Y position if the percentage is different from the previous
+    function getScrollY(scrollPixels, scrollLength, prevScrolltopPercentage) {
+      var scrollPercentage = getScrollPercentage(scrollPixels, scrollLength);
+
+      if (scrollPercentage !== prevScrolltopPercentage) {
+        return { percentage: getScrollPercentage(scrollPixels, scrollLength) };
+      }
+
+      return undefined;
+    }
+
+    // Only returns the scroll X position if the percentage is different from the previous
+    function getScrollX(horizScrollPixels, horizScrollLength, prevScrollleftPercentage) {
+      var horizPercentage = horizScrollPixels / horizScrollLength;
+      horizPercentage = (horizPercentage > 1) ? 1 : horizPercentage;
+
+      if (horizPercentage !== prevScrollleftPercentage) {
+        return { percentage: horizPercentage  };
+      }
+
+      return undefined;
+    }
+
     /**
      * @ngdoc method
      * @methodOf  ui.grid.class:Grid
@@ -6225,7 +6250,7 @@ angular.module('ui.grid')
           //   to get the full position we need
           scrollPixels = self.renderContainers.body.prevScrollTop - (topBound - pixelsToSeeRow);
 
-          scrollEvent.y = { percentage: getScrollPercentage(scrollPixels, scrollLength) };
+          scrollEvent.y = getScrollY(scrollPixels, scrollLength, self.renderContainers.body.prevScrolltopPercentage);
         }
         // Otherwise if the scroll position we need to see the row is MORE than the bottom boundary, i.e. obscured below the bottom of the self...
         else if (pixelsToSeeRow > bottomBound) {
@@ -6233,7 +6258,7 @@ angular.module('ui.grid')
           //   to get the full position we need
           scrollPixels = pixelsToSeeRow - bottomBound + self.renderContainers.body.prevScrollTop;
 
-          scrollEvent.y = { percentage: getScrollPercentage(scrollPixels, scrollLength) };
+          scrollEvent.y = getScrollY(scrollPixels, scrollLength,self.renderContainers.body.prevScrolltopPercentage);
         }
       }
 
@@ -6258,7 +6283,7 @@ angular.module('ui.grid')
         // Don't let the pixels required to see the column be less than zero
         columnRightEdge = (columnRightEdge < 0) ? 0 : columnRightEdge;
 
-        var horizScrollPixels, horizPercentage;
+        var horizScrollPixels;
 
         // If the scroll position we need to see the column is LESS than the left boundary, i.e. obscured before the left of the self...
         if (columnLeftEdge < leftBound) {
@@ -6267,9 +6292,7 @@ angular.module('ui.grid')
           horizScrollPixels = self.renderContainers.body.prevScrollLeft - (leftBound - columnLeftEdge);
 
           // Turn the scroll position into a percentage and make it an argument for a scroll event
-          horizPercentage = horizScrollPixels / horizScrollLength;
-          horizPercentage = (horizPercentage > 1) ? 1 : horizPercentage;
-          scrollEvent.x = { percentage: horizPercentage  };
+          scrollEvent.x = getScrollX(horizScrollPixels, horizScrollLength, self.renderContainers.body.prevScrollleftPercentage);
         }
         // Otherwise if the scroll position we need to see the column is MORE than the right boundary, i.e. obscured after the right of the self...
         else if (columnRightEdge > rightBound) {
@@ -6278,9 +6301,7 @@ angular.module('ui.grid')
           horizScrollPixels = columnRightEdge - rightBound + self.renderContainers.body.prevScrollLeft;
 
           // Turn the scroll position into a percentage and make it an argument for a scroll event
-          horizPercentage = horizScrollPixels / horizScrollLength;
-          horizPercentage = (horizPercentage > 1) ? 1 : horizPercentage;
-          scrollEvent.x = { percentage: horizPercentage  };
+          scrollEvent.x = getScrollX(horizScrollPixels, horizScrollLength, self.renderContainers.body.prevScrollleftPercentage);
         }
       }
 
