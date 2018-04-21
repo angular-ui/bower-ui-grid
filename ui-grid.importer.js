@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.6 - 2018-04-06
+ * ui-grid - v4.4.7 - 2018-04-20
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -170,7 +170,7 @@
            * of matching column names.  A null value in any given position means "don't import this column"
            *
            * <pre>
-           *      gridOptions.importerProcessHeaders: function( headerArray ) {
+           *      gridOptions.importerProcessHeaders: function( grid, headerArray ) {
            *        var myHeaderColumns = [];
            *        var thisCol;
            *        headerArray.forEach( function( value, index ) {

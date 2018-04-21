@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.6 - 2018-04-06
+ * ui-grid - v4.4.7 - 2018-04-20
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -6249,6 +6249,11 @@ angular.module('ui.grid')
           // Get the different between the top boundary and the required scroll position and subtract it from the current scroll position\
           //   to get the full position we need
           scrollPixels = self.renderContainers.body.prevScrollTop - (topBound - pixelsToSeeRow);
+
+          //Since scrollIfNecessary is called multiple times when enableCellEditOnFocus is true we need to make sure the scrollbarWidth and footerHeight is accounted for to not cause a loop.
+          if (gridCol && gridCol.colDef && gridCol.colDef.enableCellEditOnFocus) {
+            scrollPixels = scrollPixels - self.footerHeight - self.scrollbarWidth;
+          }
 
           scrollEvent.y = getScrollY(scrollPixels, scrollLength, self.renderContainers.body.prevScrolltopPercentage);
         }
@@ -14077,7 +14082,8 @@ module.filter('px', function() {
           aria: {
             defaultFilterLabel: 'Filtro por coluna',
             removeFilter: 'Remover filtro',
-            columnMenuButtonLabel: 'Menu coluna'
+            columnMenuButtonLabel: 'Menu coluna',
+            column: 'Coluna'
           },
           priority: 'Prioridade:',
           filterLabel: "Filtro por coluna: "
@@ -14089,6 +14095,10 @@ module.filter('px', function() {
           description: 'Arraste e solte uma coluna aqui para agrupar por essa coluna'
         },
         search: {
+          aria: {
+            selected: 'Linha selecionada',
+            notSelected: 'Linha não está selecionada'
+          },
           placeholder: 'Procurar...',
           showingItems: 'Mostrando os Itens:',
           selectedItems: 'Items Selecionados:',
@@ -14140,6 +14150,7 @@ module.filter('px', function() {
           exporterSelectedAsPdf: 'Exportar dados selecionados como pdf',
           exporterAllAsExcel: 'Exportar todos os dados como excel',
           exporterVisibleAsExcel: 'Exportar dados visíveis como excel',
+          exporterSelectedAsExcel: 'Exportar dados selecionados como excel',
           clearAllFilters: 'Limpar todos os filtros'
         },
         importer: {
@@ -14171,6 +14182,12 @@ module.filter('px', function() {
           aggregate_min: 'Agr: Min',
           aggregate_avg: 'Agr: Med',
           aggregate_remove: 'Agr: Remover'
+        },
+        validate: {
+          error: 'Erro:',
+          minLength: 'O valor deve ter, no minimo, THRESHOLD caracteres.',
+          maxLength: 'O valor deve ter, no máximo, THRESHOLD caracteres.',
+          required: 'Um valor é necessário.'
         }
       });
       return $delegate;
@@ -14186,7 +14203,8 @@ module.filter('px', function() {
           aria: {
             defaultFilterLabel: 'Filtro por coluna',
             removeFilter: 'Remover filtro',
-            columnMenuButtonLabel: 'Menu coluna'
+            columnMenuButtonLabel: 'Menu coluna',
+            column: 'Coluna'
           },
           priority: 'Prioridade:',
           filterLabel: "Filtro por coluna: "
@@ -14198,6 +14216,10 @@ module.filter('px', function() {
           description: 'Arraste e solte uma coluna aqui para agrupar por essa coluna'
         },
         search: {
+          aria: {
+            selected: 'Linha selecionada',
+            notSelected: 'Linha não está selecionada'
+          },
           placeholder: 'Procurar...',
           showingItems: 'Mostrando os Itens:',
           selectedItems: 'Itens Selecionados:',
@@ -14247,6 +14269,9 @@ module.filter('px', function() {
           exporterAllAsPdf: 'Exportar todos os dados como pdf',
           exporterVisibleAsPdf: 'Exportar dados visíveis como pdf',
           exporterSelectedAsPdf: 'Exportar dados selecionados como pdf',
+          exporterAllAsExcel: 'Exportar todos os dados como excel',
+          exporterVisibleAsExcel: 'Exportar dados visíveis como excel',
+          exporterSelectedAsExcel: 'Exportar dados selecionados como excel',
           clearAllFilters: 'Limpar todos os filtros'
         },
         importer: {
@@ -14278,6 +14303,12 @@ module.filter('px', function() {
           aggregate_min: 'Agr: Min',
           aggregate_avg: 'Agr: Med',
           aggregate_remove: 'Agr: Remover'
+        },
+        validate: {
+          error: 'Erro:',
+          minLength: 'O valor deve ter, no minimo, THRESHOLD caracteres.',
+          maxLength: 'O valor deve ter, no máximo, THRESHOLD caracteres.',
+          required: 'Um valor é necessário.'
         }
       });
       return $delegate;
@@ -18773,6 +18804,8 @@ module.filter('px', function() {
    */
   module.constant('uiGridExporterConstants', {
     featureName: 'exporter',
+    rowHeaderColName: 'treeBaseRowHeaderCol',
+    selectionRowHeaderColName: 'selectionRowHeaderCol',
     ALL: 'all',
     VISIBLE: 'visible',
     SELECTED: 'selected',
@@ -19269,6 +19302,18 @@ module.filter('px', function() {
            * </pre>
            */
           gridOptions.exporterFieldFormatCallback = gridOptions.exporterFieldFormatCallback ? gridOptions.exporterFieldFormatCallback : function( grid, row, col, value ) { return null; };
+
+          /**
+           * @ngdoc object
+           * @name exporterColumnScaleFactor
+           * @propertyOf  ui.grid.exporter.api:GridOptions
+           * @description A scaling factor to divide the drawnwidth of a column to convert to target excel column
+           * format size
+           * @example
+           * In this example we add a number to divide the drawnwidth of a column to get the excel width.
+           * <br/>Defaults to 3.5
+           */
+          gridOptions.exporterColumnScaleFactor = gridOptions.exporterColumnScaleFactor ? gridOptions.exporterColumnScaleFactor : 3.5;
 
           /**
            * @ngdoc object
@@ -20245,9 +20290,13 @@ module.filter('px', function() {
             // The standard column width in Microsoft Excel 2000 is 8.43 characters based on fixed-width Courier font
             // Width of 10 in excel is 75 pixels
             var colWidths = [];
-            var startDataIndex = grid.treeBase ? grid.treeBase.numberLevels : (grid.enableRowSelection !== false ? 1 : 0);
+            var startDataIndex = grid.treeBase ? grid.treeBase.numberLevels : (grid.enableRowSelection ? 1 : 0);
             for (var i = startDataIndex; i < grid.columns.length; i++) {
-              colWidths.push({width: (grid.columns[i].drawnWidth / 75) * 10});
+              if (grid.columns[i].field !== uiGridExporterConstants.rowHeaderColName &&
+                grid.columns[i].field !== uiGridExporterConstants.selectionRowHeaderColName) {
+
+                colWidths.push({width: (grid.columns[i].drawnWidth / grid.options.exporterColumnScaleFactor)});
+              }
             }
             sheet.setColumns(colWidths);
 
@@ -20263,7 +20312,8 @@ module.filter('px', function() {
             sheet.setData(sheet.data.concat(excelContent));
 
             ExcelBuilder.Builder.createFile(workbook, {type:"blob"}).then(function(result) {
-              self.downloadFile (grid.options.exporterExcelFilename, result, grid.options.exporterCsvColumnSeparator, grid.options.exporterOlderExcelCompatibility);
+              self.downloadFile (grid.options.exporterExcelFilename, result, grid.options.exporterCsvColumnSeparator,
+                grid.options.exporterOlderExcelCompatibility);
             });
 
           });
@@ -20284,7 +20334,12 @@ module.filter('px', function() {
       }
 
       function defaultExporterFieldCallback(grid, row, col, value) {
-        return col.cellFilter ? $filter(col.cellFilter)(value) : value;
+        // fix to handle cases with 'number : 1' or 'date:MM-dd-YYYY', etc.. We needed to split the string
+        if (col.cellFilter) {
+          return $filter(col.cellFilter.split(':')[0].trim())(value);
+        } else {
+          return value;
+        }
       }
 
       return service;
@@ -21788,7 +21843,7 @@ module.filter('px', function() {
            * of matching column names.  A null value in any given position means "don't import this column"
            *
            * <pre>
-           *      gridOptions.importerProcessHeaders: function( headerArray ) {
+           *      gridOptions.importerProcessHeaders: function( grid, headerArray ) {
            *        var myHeaderColumns = [];
            *        var thisCol;
            *        headerArray.forEach( function( value, index ) {
@@ -29955,7 +30010,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/uiGridRenderContainer',
-    "<div role=\"presentation\" ui-grid-one-bind-id-grid=\"'grid-container'\" class=\"ui-grid-render-container\" ng-style=\"{ 'margin-left': colContainer.getMargin('left') + 'px', 'margin-right': colContainer.getMargin('right') + 'px' }\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
+    "<div role=\"presentation\" ui-grid-one-bind-id-grid=\"containerId + '-grid-container'\" class=\"ui-grid-render-container\" ng-style=\"{ 'margin-left': colContainer.getMargin('left') + 'px', 'margin-right': colContainer.getMargin('right') + 'px' }\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
   );
 
 
