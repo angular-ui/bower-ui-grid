@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.7 - 2018-04-21
+ * ui-grid - v4.4.9 - 2018-04-30
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -248,8 +248,8 @@
                         service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
                       }
                     });
-                    service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
                     grid.selection.selectAll = true;
+                    service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
                   }
                 },
                 /**
@@ -273,8 +273,8 @@
                         service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
                       }
                     });
-                    service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
                     grid.selection.selectAll = true;
+                    service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
                   }
                 },
                 /**
@@ -297,7 +297,7 @@
                   return service.getSelectedRows(grid).map(function (gridRow) {
                     return gridRow.entity;
                   }).filter(function (entity) {
-                    return entity.hasOwnProperty('$$hashKey');
+                    return entity.hasOwnProperty('$$hashKey') || !angular.isObject(entity);
                   });
                 },
                 /**
@@ -581,9 +581,9 @@
               service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
             }
           });
-          service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
           grid.selection.selectAll = false;
           grid.selection.selectedCount = 0;
+          service.decideRaiseSelectionBatchEvent(grid, changedRows, evt);
         },
 
         /**
@@ -753,6 +753,7 @@
               uiGridSelectionService.toggleRowSelection(self, row, evt, self.options.multiSelect, self.options.noUnselect);
             }
             else if (row.groupHeader) {
+              uiGridSelectionService.toggleRowSelection(self, row, evt, self.options.multiSelect, self.options.noUnselect);
               for (var i = 0; i < row.treeNode.children.length; i++) {
                 uiGridSelectionService.toggleRowSelection(self, row.treeNode.children[i].row, evt, self.options.multiSelect, self.options.noUnselect);
               }
@@ -945,7 +946,7 @@
             };
 
             function registerRowSelectionEvents() {
-              if ($scope.grid.options.enableRowSelection && $scope.grid.options.enableFullRowSelection && !$elm.hasClass('ui-grid-row-header-cell')) {
+              if ($scope.grid.options.enableRowSelection && $scope.grid.options.enableFullRowSelection && $scope.col.colDef.name !== 'selectionRowHeaderCol') {
                 $elm.addClass('ui-grid-disable-selection');
                 $elm.on('touchstart', touchStart);
                 $elm.on('touchend', touchEnd);

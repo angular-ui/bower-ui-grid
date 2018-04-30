@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.7 - 2018-04-21
+ * ui-grid - v4.4.9 - 2018-04-30
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -461,7 +461,7 @@
          *  but will make the tree row header wider
          *  <br/>Defaults to 10
          */
-        gridOptions.treeIndent = gridOptions.treeIndent || 10;
+        gridOptions.treeIndent = (gridOptions.treeIndent != null) ? gridOptions.treeIndent : 10;
 
         /**
          *  @ngdoc object
@@ -989,11 +989,12 @@
        * @returns {array} the updated rows
        */
       treeRows: function( renderableRows ) {
-        if (renderableRows.length === 0){
+        var grid = this;
+
+        if (renderableRows.length === 0) {
+          service.updateRowHeaderWidth( grid );
           return renderableRows;
         }
-
-        var grid = this;
 
         grid.treeBase.tree = service.createTree( grid, renderableRows );
         service.updateRowHeaderWidth( grid );
@@ -1581,6 +1582,16 @@
       require: '^uiGrid',
       link: function($scope, $elm, $attrs, uiGridCtrl) {
         var self = uiGridCtrl.grid;
+        $scope.treeButtonClass = function(row) {
+          if ( ( self.options.showTreeExpandNoChildren && row.treeLevel > -1 ) || ( row.treeNode.children && row.treeNode.children.length > 0 ) ) {
+            if (row.treeNode.state === 'expanded' ) {
+              return 'ui-grid-icon-minus-squared';
+            }
+            if (row.treeNode.state === 'collapsed' ) {
+              return 'ui-grid-icon-plus-squared';
+            }
+          }
+        };
         $scope.treeButtonClick = function(row, evt) {
           evt.stopPropagation();
           uiGridTreeBaseService.toggleRowTreeState(self, row, evt);
@@ -1606,7 +1617,14 @@
       scope: false,
       link: function($scope, $elm, $attrs, uiGridCtrl) {
         var self = $scope.col.grid;
-
+        $scope.headerButtonClass = function() {
+          if (self.treeBase.numberLevels > 0 && self.treeBase.expandAll) {
+            return 'ui-grid-icon-minus-squared';
+          }
+          if (self.treeBase.numberLevels > 0 && !self.treeBase.expandAll) {
+            return 'ui-grid-icon-plus-squared';
+          }
+        };
         $scope.headerButtonClick = function(row, evt) {
           if ( self.treeBase.expandAll ){
             uiGridTreeBaseService.collapseAllRows(self, evt);

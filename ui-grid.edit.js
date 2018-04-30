@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.7 - 2018-04-21
+ * ui-grid - v4.4.9 - 2018-04-30
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -541,7 +541,7 @@
                   if ($scope.col.colDef.enableCellEditOnFocus) {
                     // Don't begin edit if the cell hasn't changed
                     if (newRowCol.row === $scope.row && newRowCol.col === $scope.col &&
-                      (!evt || (evt && (evt.type === 'click' || evt.type === 'keydown')))) {
+                      (evt === null || (evt && (evt.type === 'click' || evt.type === 'keydown')))) {
                       $timeout(function() {
                         beginEdit(evt);
                       });
