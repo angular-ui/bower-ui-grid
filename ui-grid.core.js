@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.9 - 2018-04-30
+ * ui-grid - v4.4.10 - 2018-05-15
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1998,7 +1998,8 @@ angular.module('ui.grid')
       // add header for columns
       showHideColumns.push({
         title: i18nService.getSafeText('gridMenu.columns'),
-        order: 300
+        order: 300,
+        templateUrl: 'ui-grid/ui-grid-menu-header-item'
       });
 
       $scope.grid.options.gridMenuTitleFilter = $scope.grid.options.gridMenuTitleFilter ? $scope.grid.options.gridMenuTitleFilter : function( title ) { return title; };
@@ -2354,7 +2355,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
 }])
 
 .directive('uiGridMenuItem', ['gridUtil', '$compile', 'i18nService', function (gridUtil, $compile, i18nService) {
-  var uiGridMenuItem = {
+  return {
     priority: 0,
     scope: {
       name: '=',
@@ -2455,8 +2456,6 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
       };
     }
   };
-
-  return uiGridMenuItem;
 }]);
 
 })();
@@ -11035,11 +11034,11 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
       return columnName.replace(/_+/g, ' ')
         // Replace a completely all-capsed word with a first-letter-capitalized version
         .replace(/^[A-Z]+$/, function (match) {
-          return angular.lowercase(angular.uppercase(match.charAt(0)) + match.slice(1));
+          return match.toLowerCase();
         })
         // Capitalize the first letter of words
         .replace(/([\w\u00C0-\u017F]+)/g, function (match) {
-          return angular.uppercase(match.charAt(0)) + match.slice(1);
+          return match.charAt(0).toUpperCase() + match.slice(1);
         })
         // Put a space in between words that have partial capilizations (i.e. 'firstName' becomes 'First Name')
         // .replace(/([A-Z]|[A-Z]\w+)([A-Z])/g, "$1 $2");
@@ -12676,6 +12675,11 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
   $templateCache.put('ui-grid/ui-grid-menu-button',
     "<div class=\"ui-grid-menu-button\"><div role=\"button\" ui-grid-one-bind-id-grid=\"'grid-menu'\" class=\"ui-grid-icon-container\" ng-click=\"toggleMenu()\" aria-haspopup=\"true\"><i class=\"ui-grid-icon-menu\" ui-grid-one-bind-aria-label=\"i18n.aria.buttonLabel\">&nbsp;</i></div><div ui-grid-menu menu-items=\"menuItems\"></div></div>"
+  );
+
+
+  $templateCache.put('ui-grid/ui-grid-menu-header-item',
+    "<li role=\"menuitem\"><div class=\"ui-grid-menu-item\" role=\"heading\" aria-level=\"2\" ng-show=\"itemShown()\"><i aria-hidden=\"true\">&nbsp; </i><span ng-bind=\"label()\"></span></div></li>"
   );
 
 
