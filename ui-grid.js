@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.11 - 2018-05-17
+ * ui-grid - v4.5.0 - 2018-06-15
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1994,6 +1994,10 @@ angular.module('ui.grid')
       function isColumnVisible(colDef) {
         return colDef.visible === true || colDef.visible === undefined;
       }
+      
+      function getColumnIcon(colDef) {
+        return isColumnVisible(colDef) ? 'ui-grid-icon-ok' : 'ui-grid-icon-cancel';
+      }
 
       // add header for columns
       showHideColumns.push({
@@ -2008,15 +2012,19 @@ angular.module('ui.grid')
         if ( colDef.enableHiding !== false ){
           // add hide menu item - shows an OK icon as we only show when column is already visible
           var menuItem = {
-            icon: isColumnVisible(colDef) ? 'ui-grid-icon-ok' : 'ui-grid-icon-cancel',
+            icon: getColumnIcon(colDef),
             action: function($event) {
               $event.stopPropagation();
 
               service.toggleColumnVisibility( this.context.gridCol );
 
               if ($event.target && $event.target.firstChild) {
-                $event.target.firstChild.className = isColumnVisible(this.context.gridCol.colDef) ?
-                  'ui-grid-icon-ok' : 'ui-grid-icon-cancel';
+                if (angular.element($event.target)[0].nodeName === 'I') {
+                  $event.target.className = getColumnIcon(this.context.gridCol.colDef);
+                }
+                else {
+                  $event.target.firstChild.className = getColumnIcon(this.context.gridCol.colDef);
+                }
               }
             },
             shown: function() {
@@ -3075,7 +3083,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
             });
           },
           post: function($scope, $elm, $attrs, controllers) {
-
+            $scope.row.element = $elm;
           }
         };
       }
@@ -3705,13 +3713,16 @@ function uiGridDirective($window, gridUtil, uiGridConstants) {
 (function(){
   'use strict';
 
-  // TODO: rename this file to ui-grid-pinned-container.js
-
   angular.module('ui.grid').directive('uiGridPinnedContainer', ['gridUtil', function (gridUtil) {
     return {
       restrict: 'EA',
       replace: true,
-      template: '<div class="ui-grid-pinned-container"><div ui-grid-render-container container-id="side" row-container-name="\'body\'" col-container-name="side" bind-scroll-vertical="true" class="{{ side }} ui-grid-render-container-{{ side }}"></div></div>',
+      template: '<div class="ui-grid-pinned-container">'
+              + '<div ui-grid-render-container container-id="side"'
+              + ' row-container-name="\'body\'" col-container-name="side"'
+              + ' bind-scroll-vertical="true"'
+              + ' class="{{ side }} ui-grid-render-container-{{ side }}"></div>'
+              + '</div>',
       scope: {
         side: '=uiGridPinnedContainer'
       },
@@ -6094,6 +6105,9 @@ angular.module('ui.grid')
     return p.promise;
   };
 
+  function getPrevScrollValue(rowsAdded, prevScrollVal) {
+    return rowsAdded || prevScrollVal > 0 ? prevScrollVal : null;
+  }
 
   /**
    * @ngdoc function
@@ -6109,18 +6123,16 @@ angular.module('ui.grid')
     var self = this;
 
     for (var i in self.renderContainers) {
-      var container = self.renderContainers[i];
+      var container = self.renderContainers[i],
+        prevScrollTop = getPrevScrollValue(rowsAdded, container.prevScrollTop),
+        prevScrollLeft = getPrevScrollValue(rowsAdded, container.prevScrollLeft),
+        prevScrolltopPercentage = rowsAdded || prevScrollTop > 0 ? null : container.prevScrolltopPercentage,
+        prevScrollleftPercentage = rowsAdded || prevScrollLeft > 0 ? null : container.prevScrollleftPercentage;
 
       // gridUtil.logDebug('redrawing container', i);
 
-      if (rowsAdded) {
-        container.adjustRows(container.prevScrollTop, null);
-        container.adjustColumns(container.prevScrollLeft, null);
-      }
-      else {
-        container.adjustRows(null, container.prevScrolltopPercentage);
-        container.adjustColumns(null, container.prevScrollleftPercentage);
-      }
+      container.adjustRows(prevScrollTop, prevScrolltopPercentage);
+      container.adjustColumns(prevScrollLeft, prevScrollleftPercentage);
     }
   };
 
@@ -6860,7 +6872,7 @@ angular.module('ui.grid')
    * @ngdoc property
    * @name displayName
    * @propertyOf ui.grid.class:GridColumn
-   * @description Column name that will be shown in the header.  If displayName is not
+   * @description Column name that will be shown in the header. If displayName is not
    * provided then one is generated using the name.
    *
    */
@@ -6869,7 +6881,7 @@ angular.module('ui.grid')
    * @ngdoc property
    * @name displayName
    * @propertyOf ui.grid.class:GridOptions.columnDef
-   * @description Column name that will be shown in the header.  If displayName is not
+   * @description Column name that will be shown in the header. If displayName is not
    * provided then one is generated using the name.
    *
    */
@@ -7262,6 +7274,13 @@ angular.module('ui.grid')
    *
    */
 
+  // Use colDef.displayName as long as it's not undefined, otherwise default to the field name
+  function getDisplayName(colDef) {
+    return (colDef.displayName === undefined)
+      ? gridUtil.readableColumnName(colDef.name)
+      : colDef.displayName;
+  }
+
   /**
    * @ngdoc method
    * @methodOf ui.grid.class:GridColumn
@@ -7282,7 +7301,7 @@ angular.module('ui.grid')
       throw new Error('colDef.name is required for column at index ' + self.grid.options.columnDefs.indexOf(colDef));
     }
 
-    self.displayName = (colDef.displayName === undefined) ? gridUtil.readableColumnName(colDef.name) : colDef.displayName;
+    self.displayName = getDisplayName(colDef);
 
     if (!angular.isNumber(self.width) || !self.hasCustomWidth || colDef.allowCustomWidthOverride) {
       var colDefWidth = colDef.width;
@@ -7356,9 +7375,7 @@ angular.module('ui.grid')
     }
 
     self.name = colDef.name;
-
-    // Use colDef.displayName as long as it's not undefined, otherwise default to the field name
-    self.displayName = (colDef.displayName === undefined) ? gridUtil.readableColumnName(colDef.name) : colDef.displayName;
+    self.displayName = getDisplayName(colDef);
 
     //self.originalIndex = index;
 
@@ -9700,7 +9717,7 @@ angular.module('ui.grid')
           if (grid.options.rowTemplate) {
             var rowTemplateFnPromise = $q.defer();
             grid.getRowTemplateFn = rowTemplateFnPromise.promise;
-            
+
             gridUtil.getTemplate(grid.options.rowTemplate)
               .then(
                 function (template) {
@@ -9774,10 +9791,12 @@ angular.module('ui.grid')
               .then(
                 function (template) {
                   if ( angular.isFunction(template) ) { template = template(); }
-                  var tooltipCall = ( tooltipType === 'cellTooltip' ) ? 'col.cellTooltip(row,col)' : 'col.headerTooltip(col)';
+                  var tooltipCall = ( tooltipType === 'cellTooltip' )
+                      ? 'col.cellTooltip(row,col)'
+                      : 'col.headerTooltip(col)';
                   if ( tooltipType && col[tooltipType] === false ){
                     template = template.replace(uiGridConstants.TOOLTIP, '');
-                  } else if ( tooltipType && col[tooltipType] ){
+                  } else if ( tooltipType && col[tooltipType] ) {
                     template = template.replace(uiGridConstants.TOOLTIP, 'title="{{' + tooltipCall + ' CUSTOM_FILTERS }}"');
                   }
 
@@ -9867,7 +9886,7 @@ angular.module('ui.grid')
               .then(function (template) {
                 // Compile the template
                 var rowTemplateFn = $compile(template);
-                
+
                 // Resolve the compiled template function promise
                 perRowTemplateFnPromise.resolve(rowTemplateFn);
               },
@@ -12584,6 +12603,11 @@ module.filter('px', function() {
           min: 'min: ',
           max: 'max: '
         },
+        pinning: {
+          pinLeft: 'Fastgør til venstre',
+          pinRight: 'Fastgør til højre',
+          unpin: 'Frigør'
+        },
         gridMenu: {
           columns: 'Kolonner:',
           importerTitle: 'Importer fil',
@@ -14533,13 +14557,27 @@ module.filter('px', function() {
   angular.module('ui.grid').config(['$provide', function($provide) {
     $provide.decorator('i18nService', ['$delegate', function($delegate) {
       $delegate.add('sk', {
-        aggregate: {
-          label: 'items'
+        headerCell: {
+          aria: {
+            defaultFilterLabel: 'Filter pre stĺpec',
+            removeFilter: 'Odstrániť filter',
+            columnMenuButtonLabel: 'Menu pre stĺpec',
+            column: 'Stĺpec'
+          },
+          priority: 'Priorita:',
+          filterLabel: "Filter pre stĺpec: "
+        },
+       aggregate: {
+          label: 'položky'             
         },
         groupPanel: {
           description: 'Pretiahni sem názov stĺpca pre zoskupenie podľa toho stĺpca.'
         },
         search: {
+          aria: {
+            selected: 'Označený riadok',
+            notSelected: 'Neoznačený riadok'
+          },
           placeholder: 'Hľadaj...',
           showingItems: 'Zobrazujem položky:',
           selectedItems: 'Vybraté položky:',
@@ -14556,36 +14594,82 @@ module.filter('px', function() {
         sort: {
           ascending: 'Zotriediť vzostupne',
           descending: 'Zotriediť zostupne',
+          none: 'Nezotriediť',
           remove: 'Vymazať triedenie'
         },
+        column: {
+          hide: 'Skryť stĺpec'
+        },
         aggregation: {
-          count: 'total rows: ',
-          sum: 'total: ',
+          count: 'počet riadkov: ',
+          sum: 'spolu: ',
           avg: 'avg: ',
           min: 'min: ',
           max: 'max: '
         },
+        pinning: {
+          pinLeft: 'Pripnúť vľavo',
+          pinRight: 'Pripnúť vpravo',
+          unpin: 'Odopnúť'
+        },
+        columnMenu: {
+          close: 'Zavrieť'
+        },
         gridMenu: {
-          columns: 'Columns:',
-          importerTitle: 'Import file',
-          exporterAllAsCsv: 'Export all data as csv',
-          exporterVisibleAsCsv: 'Export visible data as csv',
-          exporterSelectedAsCsv: 'Export selected data as csv',
-          exporterAllAsPdf: 'Export all data as pdf',
-          exporterVisibleAsPdf: 'Export visible data as pdf',
-          exporterSelectedAsPdf: 'Export selected data as pdf',
-          exporterAllAsExcel: 'Export all data as excel',
-          exporterVisibleAsExcel: 'Export visible data as excel',
-          exporterSelectedAsExcel: 'Export selected data as excel',
-          clearAllFilters: 'Clear all filters'
+          aria: {
+            buttonLabel: 'Grid Menu'
+          },
+          columns: 'Stĺpce:',
+          importerTitle: 'Importovať súbor',
+          exporterAllAsCsv: 'Exportovať všetky údaje ako CSV',
+          exporterVisibleAsCsv: 'Exportovť viditeľné údaje ako CSV',
+          exporterSelectedAsCsv: 'Exportovať označené údaje ako CSV',
+          exporterAllAsPdf: 'Exportovať všetky údaje ako pdf',
+          exporterVisibleAsPdf: 'Exportovať viditeľné údaje ako pdf',
+          exporterSelectedAsPdf: 'Exportovať označené údaje ako pdf', 
+          exporterAllAsExcel: 'Exportovať všetky údaje ako excel',
+          exporterVisibleAsExcel: 'Exportovať viditeľné údaje ako excel',
+          exporterSelectedAsExcel: 'Exportovať označené údaje ako excel',
+          clearAllFilters: 'Zrušiť všetky filtre'
         },
         importer: {
-          noHeaders: 'Column names were unable to be derived, does the file have a header?',
-          noObjects: 'Objects were not able to be derived, was there data in the file other than headers?',
-          invalidCsv: 'File was unable to be processed, is it valid CSV?',
-          invalidJson: 'File was unable to be processed, is it valid Json?',
-          jsonNotArray: 'Imported json file must contain an array, aborting.'
+          noHeaders: 'Názvy stĺpcov sa nedali odvodiť, má súbor hlavičku?',               
+          noObjects: 'Objekty nebolo možné odvodiť, existovali iné údaje v súbore ako hlavičky?',
+          invalidCsv: 'Súbor sa nepodarilo spracovať, je to platný súbor CSV?',
+          invalidJson: 'Súbor nebolo možné spracovať, je to platný súbor typu Json?',
+          jsonNotArray: 'Importovaný súbor json musí obsahovať pole, ukončujem.' 
+        },
+        pagination: {
+          aria: {
+            pageToFirst: 'Strana na začiatok',
+            pageBack: 'Strana dozadu',                   
+            pageSelected: 'Označená strana',
+            pageForward: 'Strana dopredu',
+            pageToLast: 'Strana na koniec'
+          },
+          sizes: 'položky na stranu',
+          totalItems: 'položky spolu',
+          through: 'do konca',
+          of: 'z'
+        },
+        grouping: {
+          group: 'Zoskupiť',                                         
+          ungroup: 'Zrušiť zoskupenie',
+          aggregate_count: 'Agg: Počet',
+
+          aggregate_sum: 'Agg: Suma',
+          aggregate_max: 'Agg: Max',
+          aggregate_min: 'Agg: Min',
+          aggregate_avg: 'Agg: Avg',
+          aggregate_remove: 'Agg: Zrušiť'
+        },
+        validate: {
+          error: 'Chyba:',
+          minLength: 'Hodnota by mala mať aspoň THRESHOLD znakov dlhá.',
+          maxLength: 'Hodnota by mala byť maximálne THRESHOLD znakov dlhá.',
+          required: 'Vyžaduje sa hodnota.'
         }
+
       });
       return $delegate;
     }]);
@@ -15458,35 +15542,31 @@ module.filter('px', function() {
       require: 'uiGrid',
       scope: false,
       link: function($scope, $elm, $attrs, uiGridCtrl) {
-        var elementWidth,
-          elementHeight;
+        var debouncedRefresh;
 
-        var updateWidth = gridUtil.throttle(function() {
-          elementWidth = gridUtil.elementWidth($elm);
-        }, 200);
+        function getDimensions() {
+          return {
+            width: gridUtil.elementWidth($elm),
+            height: gridUtil.elementHeight($elm)
+          };
+        }
 
-        var updateHeight = gridUtil.throttle(function() {
-          elementHeight = gridUtil.elementHeight($elm);
-        }, 200);
-
-        var refresh = gridUtil.throttle(function(width, height) {
-          uiGridCtrl.grid.gridWidth = width;
-          uiGridCtrl.grid.gridHeight = height;
-          uiGridCtrl.grid.refresh();
-        }, 300);
-
-        $scope.$watchGroup([
-          function() {
-            updateWidth();
-            return elementWidth;
-          },
-          function() {
-            updateHeight();
-            return elementHeight;
+        function refreshGrid(prevWidth, prevHeight, width, height) {
+          if ($elm[0].offsetParent !== null) {
+            uiGridCtrl.grid.gridWidth = width;
+            uiGridCtrl.grid.gridHeight = height;
+            uiGridCtrl.grid.queueGridRefresh()
+              .then(function() {
+                uiGridCtrl.grid.api.core.raise.gridDimensionChanged(prevHeight, prevWidth, height, width);
+              });
           }
-        ], function(newValues, oldValues, scope) {
+        }
+
+        debouncedRefresh = gridUtil.debounce(refreshGrid, 400);
+
+        $scope.$watchCollection(getDimensions, function(newValues, oldValues) {
           if (!angular.equals(newValues, oldValues)) {
-            refresh(newValues[0], newValues[1]);
+            debouncedRefresh(oldValues.width, oldValues.height, newValues.width, newValues.height);
           }
         });
       }
@@ -18181,7 +18261,7 @@ module.filter('px', function() {
    *
    *  @description Services for the expandable grid
    */
-  module.service('uiGridExpandableService', ['gridUtil', '$compile', function (gridUtil, $compile) {
+  module.service('uiGridExpandableService', ['gridUtil', function (gridUtil) {
     var service = {
       initializeGrid: function (grid) {
 
@@ -18189,7 +18269,20 @@ module.filter('px', function() {
         grid.expandable.expandedAll = false;
 
         /**
-         *  @ngdoc object
+         *  @ngdoc boolean
+         *  @name enableOnDblClickExpand
+         *  @propertyOf  ui.grid.expandable.api:GridOptions
+         *  @description Defaults to true.
+         *  @example
+         *  <pre>
+         *    $scope.gridOptions = {
+         *      onDblClickExpand: false
+         *    }
+         *  </pre>
+         */
+        grid.options.enableOnDblClickExpand = grid.options.enableOnDblClickExpand !== false;
+        /**
+         *  @ngdoc boolean
          *  @name enableExpandable
          *  @propertyOf  ui.grid.expandable.api:GridOptions
          *  @description Whether or not to use expandable feature, allows you to turn off expandable on specific grids
@@ -18292,26 +18385,41 @@ module.filter('px', function() {
                * @eventOf  ui.grid.expandable.api:PublicApi
                * @description raised when row is expanding or collapsing
                * <pre>
-               *      gridApi.expandable.on.rowExpandedBeforeStateChanged(scope,function(row){})
+               *      gridApi.expandable.on.rowExpandedBeforeStateChanged(scope,function(row, event){})
                * </pre>
                * @param {scope} scope the application scope
                * @param {GridRow} row the row that was expanded
+               * @param {Event} evt object if raised from an event
                */
-              rowExpandedBeforeStateChanged: function(scope, row){
-              },
+              rowExpandedBeforeStateChanged: function(scope, row, evt){},
+
               /**
                * @ngdoc event
                * @name rowExpandedStateChanged
                * @eventOf  ui.grid.expandable.api:PublicApi
                * @description raised when row expanded or collapsed
                * <pre>
-               *      gridApi.expandable.on.rowExpandedStateChanged(scope,function(row){})
+               *      gridApi.expandable.on.rowExpandedStateChanged(scope,function(row, event){})
                * </pre>
                * @param {scope} scope the application scope
                * @param {GridRow} row the row that was expanded
+               * @param {Event} evt object if raised from an event
                */
-              rowExpandedStateChanged: function (scope, row) {
-              }
+              rowExpandedStateChanged: function (scope, row, evt) {},
+
+              /**
+               * @ngdoc event
+               * @name rowExpandedRendered
+               * @eventOf  ui.grid.expandable.api:PublicApi
+               * @description raised when expanded row is rendered
+               * <pre>
+               *      gridApi.expandable.on.rowExpandedRendered(scope,function(row, event){})
+               * </pre>
+               * @param {scope} scope the application scope
+               * @param {GridRow} row the row that was expanded
+               * @param {Event} evt object if raised from an event
+               */
+              rowExpandedRendered: function (scope, row, evt) {}
             }
           },
 
@@ -18323,14 +18431,15 @@ module.filter('px', function() {
                * @methodOf  ui.grid.expandable.api:PublicApi
                * @description Toggle a specific row
                * <pre>
-               *      gridApi.expandable.toggleRowExpansion(rowEntity);
+               *      gridApi.expandable.toggleRowExpansion(rowEntity, event);
                * </pre>
                * @param {object} rowEntity the data entity for the row you want to expand
+               * @param {Event} [e] event (if exist)
                */
-              toggleRowExpansion: function (rowEntity) {
+              toggleRowExpansion: function (rowEntity, e) {
                 var row = grid.getRow(rowEntity);
                 if (row !== null) {
-                  service.toggleRowExpansion(grid, row);
+                  service.toggleRowExpansion(grid, row, e);
                 }
               },
 
@@ -18416,7 +18525,13 @@ module.filter('px', function() {
         grid.api.registerMethodsFromObject(publicApi.methods);
       },
 
-      toggleRowExpansion: function (grid, row) {
+      /**
+       *
+       * @param grid
+       * @param row
+       * @param {Event} [e] event (if exist)
+       */
+      toggleRowExpansion: function (grid, row, e) {
         // trigger the "before change" event. Can change row height dynamically this way.
         grid.api.expandable.raise.rowExpandedBeforeStateChanged(row);
         /**
@@ -18445,7 +18560,17 @@ module.filter('px', function() {
           row.height = row.grid.options.rowHeight;
           grid.expandable.expandedAll = false;
         }
-        grid.api.expandable.raise.rowExpandedStateChanged(row);
+        grid.api.expandable.raise.rowExpandedStateChanged(row, e);
+
+        // fire event on render complete
+        function _tWatcher(){
+          if (row.expandedRendered) {
+            grid.api.expandable.raise.rowExpandedRendered(row, e);
+          } else {
+            window.setTimeout(_tWatcher, 1e2);
+          }
+        }
+        _tWatcher();
       },
 
       expandAllRows: function(grid) {
@@ -18499,6 +18624,7 @@ module.filter('px', function() {
    *    }
    *  </pre>
    */
+
   module.directive('uiGridExpandable', ['uiGridExpandableService', '$templateCache',
     function (uiGridExpandableService, $templateCache) {
       return {
@@ -18522,16 +18648,14 @@ module.filter('px', function() {
                   exporterSuppressExport: true,
                   enableColumnResizing: false,
                   enableColumnMenu: false,
-                  width: uiGridCtrl.grid.options.expandableRowHeaderWidth || 40
+                  width: uiGridCtrl.grid.options.expandableRowHeaderWidth || 30
                 };
                 expandableRowHeaderColDef.cellTemplate = $templateCache.get('ui-grid/expandableRowHeader');
                 expandableRowHeaderColDef.headerCellTemplate = $templateCache.get('ui-grid/expandableTopRowHeader');
                 uiGridCtrl.grid.addRowHeaderColumn(expandableRowHeaderColDef, -90);
               }
-
             },
-            post: function ($scope, $elm, $attrs, uiGridCtrl) {
-            }
+            post: function ($scope, $elm, $attrs, uiGridCtrl) {}
           };
         }
       };
@@ -18555,7 +18679,8 @@ module.filter('px', function() {
 
               uiGridCtrl.grid.api.core.on.renderingComplete($scope, function() {
                 //if a parent grid row is on the scope, then add the parentRow property to this childGrid
-                if ($scope.row && $scope.row.grid && $scope.row.grid.options && $scope.row.grid.options.enableExpandable) {
+                if ($scope.row && $scope.row.grid && $scope.row.grid.options
+                  && $scope.row.grid.options.enableExpandable) {
 
                   /**
                    *  @ngdoc directive
@@ -18576,12 +18701,9 @@ module.filter('px', function() {
                  //   uiGridCtrl.grid.parentRow = newHeight;
                  // });
                 }
-
               });
             },
-            post: function ($scope, $elm, $attrs, uiGridCtrl) {
-
-            }
+            post: function ($scope, $elm, $attrs, uiGridCtrl) {}
           };
         }
       };
@@ -18590,17 +18712,16 @@ module.filter('px', function() {
   /**
    *  @ngdoc directive
    *  @name ui.grid.expandable.directive:uiGridExpandableRow
-   *  @description directive to render the expandable row template
+   *  @description directive to render the Row template on Expand
    */
   module.directive('uiGridExpandableRow',
-  ['uiGridExpandableService', '$timeout', '$compile', 'uiGridConstants','gridUtil','$interval', '$log',
-    function (uiGridExpandableService, $timeout, $compile, uiGridConstants, gridUtil, $interval, $log) {
+  ['uiGridExpandableService', '$compile', 'uiGridConstants','gridUtil',
+    function (uiGridExpandableService, $compile, uiGridConstants, gridUtil) {
 
       return {
         replace: false,
         priority: 0,
         scope: false,
-
         compile: function () {
           return {
             pre: function ($scope, $elm, $attrs, uiGridCtrl) {
@@ -18627,13 +18748,16 @@ module.filter('px', function() {
                     }
                   }
                   var expandedRowElement = angular.element(template);
-                  $elm.append(expandedRowElement);
+
                   expandedRowElement = $compile(expandedRowElement)($scope);
+                  $elm.append(expandedRowElement);
+                  $scope.row.element = $elm;
                   $scope.row.expandedRendered = true;
               });
             },
 
             post: function ($scope, $elm, $attrs, uiGridCtrl) {
+              $scope.row.element = $elm;
               $scope.$on('$destroy', function() {
                 $scope.row.expandedRendered = false;
               });
@@ -18665,14 +18789,27 @@ module.filter('px', function() {
                 $scope.expandableRow = {};
 
                 $scope.expandableRow.shouldRenderExpand = function () {
-                  var ret = $scope.colContainer.name === 'body' &&  $scope.grid.options.enableExpandable !== false && $scope.row.isExpanded && (!$scope.grid.isScrollingVertically || $scope.row.expandedRendered);
-                  return ret;
+                  return $scope.colContainer.name === 'body'
+                    && $scope.grid.options.enableExpandable !== false
+                    && $scope.row.isExpanded
+                    && (!$scope.grid.isScrollingVertically || $scope.row.expandedRendered);
                 };
 
                 $scope.expandableRow.shouldRenderFiller = function () {
-                  var ret = $scope.row.isExpanded && ( $scope.colContainer.name !== 'body' || ($scope.grid.isScrollingVertically && !$scope.row.expandedRendered));
-                  return ret;
+                  return $scope.row.isExpanded
+                    && (
+                      $scope.colContainer.name !== 'body'
+                      || ($scope.grid.isScrollingVertically && !$scope.row.expandedRendered));
                 };
+
+                if ($scope.grid.options.enableOnDblClickExpand) {
+                  $elm.on('dblclick', function (event) {
+                    // if necessary, it is possible for everyone to stop the processing of a single click OR
+                    // Inside the Config in the output agent to enter a line:
+                    // event.stopPropagation()
+                    $scope.grid.api.expandable.toggleRowExpansion($scope.row.entity, event);
+                  });
+                }
 
  /*
   * Commented out @PaulL1.  This has no purpose that I can see, and causes #2964.  If this code needs to be reinstated for some
@@ -18700,8 +18837,7 @@ module.filter('px', function() {
                   }*/
 
               },
-              post: function ($scope, $elm, $attrs, controllers) {
-              }
+              post: function ($scope, $elm, $attrs, controllers) {}
             };
           }
         };
@@ -26537,7 +26673,7 @@ module.filter('px', function() {
    *  @description constants available in selection module
    */
   module.constant('uiGridSelectionConstants', {
-    featureName: "selection",
+    featureName: 'selection',
     selectionRowHeaderColName: 'selectionRowHeaderCol'
   });
 
@@ -26566,10 +26702,17 @@ module.filter('px', function() {
        *  @ngdoc object
        *  @name isSelected
        *  @propertyOf  ui.grid.selection.api:GridRow
-       *  @description Selected state of row.  Should be readonly. Make any changes to selected state using setSelected().
+       *  @description Selected state of row. Should be readonly. Make any changes to selected state using setSelected().
        *  <br/>Defaults to false
        */
 
+      /**
+       *  @ngdoc object
+       *  @name isFocused
+       *  @propertyOf  ui.grid.selection.api:GridRow
+       *  @description Focused state of row. Should be readonly. Make any changes to focused state using setFocused().
+       *  <br/>Defaults to false
+       */
 
       /**
        * @ngdoc function
@@ -26577,12 +26720,28 @@ module.filter('px', function() {
        * @methodOf ui.grid.selection.api:GridRow
        * @description Sets the isSelected property and updates the selectedCount
        * Changes to isSelected state should only be made via this function
-       * @param {bool} selected value to set
+       * @param {Boolean} selected value to set
        */
       $delegate.prototype.setSelected = function (selected) {
         if (selected !== this.isSelected) {
           this.isSelected = selected;
           this.grid.selection.selectedCount += selected ? 1 : -1;
+        }
+      };
+
+      /**
+       * @ngdoc function
+       * @name setFocused
+       * @methodOf ui.grid.selection.api:GridRow
+       * @description Sets the isFocused property
+       * Changes to isFocused state should only be made via this function
+       * @param {Boolean} val value to set
+       */
+      $delegate.prototype.setFocused = function(val) {
+        if (val !== this.isFocused) {
+          this.grid.selection.focusedRow && (this.grid.selection.focusedRow.isFocused = false);
+          this.grid.selection.focusedRow = val ? this : null;
+          this.isFocused = val;
         }
       };
 
@@ -26598,7 +26757,6 @@ module.filter('px', function() {
    */
   module.service('uiGridSelectionService', ['$q', '$templateCache', 'uiGridSelectionConstants', 'gridUtil',
     function ($q, $templateCache, uiGridSelectionConstants, gridUtil) {
-
       var service = {
 
         initializeGrid: function (grid) {
@@ -26610,9 +26768,17 @@ module.filter('px', function() {
            *
            *  @description Grid properties and functions added for selection
            */
-          grid.selection = {};
-          grid.selection.lastSelectedRow = null;
-          grid.selection.selectAll = false;
+          grid.selection = {
+            lastSelectedRow: null,
+            /**
+             *  @ngdoc object
+             *  @name focusedRow
+             *  @propertyOf  ui.grid.selection.grid:selection
+             *  @description Focused row.
+             */
+            focusedRow: null,
+            selectAll: false
+          };
 
 
           /**
@@ -26636,6 +26802,16 @@ module.filter('px', function() {
           var publicApi = {
             events: {
               selection: {
+                /**
+                 * @ngdoc event
+                 * @name rowFocusChanged
+                 * @eventOf  ui.grid.selection.api:PublicApi
+                 * @description  is raised after the row.isFocused state is changed
+                 * @param {object} scope the scope associated with the grid
+                 * @param {GridRow} row the row that was focused/unfocused
+                 * @param {Event} evt object if raised from an event
+                 */
+                rowFocusChanged: function (scope, row, evt) {},
                 /**
                  * @ngdoc event
                  * @name rowSelectionChanged
@@ -26928,11 +27104,27 @@ module.filter('px', function() {
            *  @name enableFullRowSelection
            *  @propertyOf  ui.grid.selection.api:GridOptions
            *  @description Enable selection by clicking anywhere on the row.  Defaults to
-           *  false if `enableRowHeaderSelection` is true, otherwise defaults to false.
+           *  false if `enableRowHeaderSelection` is true, otherwise defaults to true.
            */
           if (typeof (gridOptions.enableFullRowSelection) === 'undefined') {
             gridOptions.enableFullRowSelection = !gridOptions.enableRowHeaderSelection;
           }
+          /**
+           *  @ngdoc object
+           *  @name enableFocusRowOnRowHeaderClick
+           *  @propertyOf  ui.grid.selection.api:GridOptions
+           *  @description Enable focuse row by clicking on the row header.  Defaults to
+           *  true if `enableRowHeaderSelection` is true, otherwise defaults to false.
+           */
+          gridOptions.enableFocusRowOnRowHeaderClick = (gridOptions.enableFocusRowOnRowHeaderClick !== false)
+            || !gridOptions.enableRowHeaderSelection;
+          /**
+           *  @ngdoc object
+           *  @name enableSelectRowOnFocus
+           *  @propertyOf  ui.grid.selection.api:GridOptions
+           *  @description Enable focuse row by clicking on the row anywhere.  Defaults true.
+           */
+          gridOptions.enableSelectRowOnFocus = (gridOptions.enableSelectRowOnFocus !== false);
           /**
            *  @ngdoc object
            *  @name enableSelectAll
@@ -26960,7 +27152,6 @@ module.filter('px', function() {
            *  <br/>Defaults to 30px
            */
           gridOptions.selectionRowHeaderWidth = angular.isDefined(gridOptions.selectionRowHeaderWidth) ? gridOptions.selectionRowHeaderWidth : 30;
-
           /**
            *  @ngdoc object
            *  @name enableFooterTotalSelected
@@ -26970,17 +27161,15 @@ module.filter('px', function() {
            *  <br/>GridOptions.showGridFooter must also be set to true.
            */
           gridOptions.enableFooterTotalSelected = gridOptions.enableFooterTotalSelected !== false;
-
           /**
            *  @ngdoc object
            *  @name isRowSelectable
            *  @propertyOf  ui.grid.selection.api:GridOptions
            *  @description Makes it possible to specify a method that evaluates for each row and sets its "enableSelection" property.
            */
-
           gridOptions.isRowSelectable = angular.isDefined(gridOptions.isRowSelectable) ? gridOptions.isRowSelectable : angular.noop;
         },
-
+  
         /**
          * @ngdoc function
          * @name toggleRowSelection
@@ -26993,20 +27182,22 @@ module.filter('px', function() {
          * @param {bool} noUnselect if true then rows cannot be unselected
          */
         toggleRowSelection: function (grid, row, evt, multiSelect, noUnselect) {
-          var selected = row.isSelected;
-
-          if (row.enableSelection === false) {
+          if ( row.enableSelection === false ){
             return;
           }
 
-          var selectedRows;
-          if (!multiSelect && !selected) {
-            service.clearSelectedRows(grid, evt);
-          } else if (!multiSelect && selected) {
-            selectedRows = service.getSelectedRows(grid);
-            if (selectedRows.length > 1) {
-              selected = false; // Enable reselect of the row
+          var selected = row.isSelected,
+              selectedRows;
+          
+          if (!multiSelect) {
+            if (!selected) {
               service.clearSelectedRows(grid, evt);
+            } else {
+              selectedRows = service.getSelectedRows(grid);
+              if (selectedRows.length > 1) {
+                selected = false; // Enable reselect of the row
+                service.clearSelectedRows(grid, evt);
+              }
             }
           }
 
@@ -27240,7 +27431,7 @@ module.filter('px', function() {
           $scope.selectButtonKeyDown = selectButtonKeyDown;
 
           // On IE, prevent mousedowns on the select button from starting a selection.
-          //   If this is not done and you shift+click on another row, the browser will select a big chunk of text
+          // If this is not done and you shift+click on another row, the browser will select a big chunk of text
           if (gridUtil.detectBrowser() === 'ie') {
             $elm.on('mousedown', selectButtonMouseDown);
           }
@@ -27259,7 +27450,8 @@ module.filter('px', function() {
               uiGridSelectionService.shiftSelect(self, row, evt, self.options.multiSelect);
             }
             else if (evt.ctrlKey || evt.metaKey) {
-              uiGridSelectionService.toggleRowSelection(self, row, evt, self.options.multiSelect, self.options.noUnselect);
+              uiGridSelectionService.toggleRowSelection(self, row, evt,
+                self.options.multiSelect, self.options.noUnselect);
             }
             else if (row.groupHeader) {
               uiGridSelectionService.toggleRowSelection(self, row, evt, self.options.multiSelect, self.options.noUnselect);
@@ -27268,8 +27460,10 @@ module.filter('px', function() {
               }
             }
             else {
-              uiGridSelectionService.toggleRowSelection(self, row, evt, (self.options.multiSelect && !self.options.modifierKeysToMultiSelect), self.options.noUnselect);
+              uiGridSelectionService.toggleRowSelection(self, row, evt,
+                (self.options.multiSelect && !self.options.modifierKeysToMultiSelect), self.options.noUnselect);
             }
+            self.options.enableFocusRowOnRowHeaderClick && row.setFocused(!row.isFocused) && self.api.selection.raise.rowFocusChanged(row, evt);
           }
 
           function selectButtonMouseDown(evt) {
@@ -27334,23 +27528,20 @@ module.filter('px', function() {
           priority: -200, // run after default  directive
           scope: false,
           compile: function ($elm, $attrs) {
-            var rowRepeatDiv = angular.element($elm[0].querySelector('.ui-grid-canvas:not(.ui-grid-empty-base-layer-container)').children[0]);
+            var rowRepeatDiv = angular.element($elm[0].querySelector('.ui-grid-canvas:not(.ui-grid-empty-base-layer-container)').children[0]),
+              newNgClass = "'ui-grid-row-selected': row.isSelected, 'ui-grid-row-focused': row.isFocused}",
+              existingNgClass = rowRepeatDiv.attr('ng-class');
 
-            var existingNgClass = rowRepeatDiv.attr("ng-class");
-            var newNgClass = '';
             if (existingNgClass) {
-              newNgClass = existingNgClass.slice(0, -1) + ",'ui-grid-row-selected': row.isSelected}";
+              newNgClass = existingNgClass.slice(0, -1) + ',' + newNgClass;
             } else {
-              newNgClass = "{'ui-grid-row-selected': row.isSelected}";
+              newNgClass = '{' + newNgClass;
             }
-            rowRepeatDiv.attr("ng-class", newNgClass);
+            rowRepeatDiv.attr('ng-class', newNgClass);
 
             return {
-              pre: function ($scope, $elm, $attrs, controllers) {
-
-              },
-              post: function ($scope, $elm, $attrs, controllers) {
-              }
+              pre: function ($scope, $elm, $attrs, controllers) {},
+              post: function ($scope, $elm, $attrs, controllers) {}
             };
           }
         };
@@ -27373,13 +27564,11 @@ module.filter('px', function() {
           require: '?^uiGrid',
           scope: false,
           link: function ($scope, $elm, $attrs, uiGridCtrl) {
-
-            var touchStartTime = 0;
-            var touchTimeout = 300;
+            var touchStartTime = 0,
+              touchTimeout = 300;
 
             // Bind to keydown events in the render container
             if (uiGridCtrl.grid.api.cellNav) {
-
               uiGridCtrl.grid.api.cellNav.on.viewPortKeyDown($scope, function (evt, rowCol) {
                 if (rowCol === null ||
                   rowCol.row !== $scope.row ||
@@ -27387,9 +27576,11 @@ module.filter('px', function() {
                   return;
                 }
 
-                if (evt.keyCode === 32 && $scope.col.colDef.name === "selectionRowHeaderCol") {
+                if (evt.keyCode === uiGridConstants.keymap.SPACE && $scope.col.colDef.name === 'selectionRowHeaderCol') {
                   evt.preventDefault();
-                  uiGridSelectionService.toggleRowSelection($scope.grid, $scope.row, evt, ($scope.grid.options.multiSelect && !$scope.grid.options.modifierKeysToMultiSelect), $scope.grid.options.noUnselect);
+                  uiGridSelectionService.toggleRowSelection($scope.grid, $scope.row, evt,
+                    ($scope.grid.options.multiSelect && !$scope.grid.options.modifierKeysToMultiSelect),
+                    $scope.grid.options.noUnselect);
                   $scope.$apply();
                 }
 
@@ -27417,21 +27608,25 @@ module.filter('px', function() {
                 uiGridSelectionService.shiftSelect($scope.grid, $scope.row, evt, $scope.grid.options.multiSelect);
               }
               else if (evt.ctrlKey || evt.metaKey) {
-                uiGridSelectionService.toggleRowSelection($scope.grid, $scope.row, evt, $scope.grid.options.multiSelect, $scope.grid.options.noUnselect);
+                uiGridSelectionService.toggleRowSelection($scope.grid, $scope.row, evt,
+                  $scope.grid.options.multiSelect, $scope.grid.options.noUnselect);
               }
-              else {
-                uiGridSelectionService.toggleRowSelection($scope.grid, $scope.row, evt, ($scope.grid.options.multiSelect && !$scope.grid.options.modifierKeysToMultiSelect), $scope.grid.options.noUnselect);
+              else if ($scope.grid.options.enableSelectRowOnFocus) {
+                uiGridSelectionService.toggleRowSelection($scope.grid, $scope.row, evt,
+                  false, $scope.grid.options.noUnselect);
               }
+              $scope.row.setFocused(!$scope.row.isFocused);
+              $scope.grid.api.selection.raise.rowFocusChanged($scope.row, evt);
               $scope.$apply();
 
               // don't re-enable the touchend handler for a little while - some devices generate both, and it will
               // take a little while to move your hand from the mouse to the screen if you have both modes of input
-              $timeout(function () {
+              window.setTimeout(function () {
                 $elm.on('touchend', touchEnd);
               }, touchTimeout);
             };
 
-            var touchStart = function (evt) {
+            var touchStart = function () {
               touchStartTime = (new Date()).getTime();
 
               // if we get a touch event, then stop listening for click
@@ -27449,7 +27644,7 @@ module.filter('px', function() {
 
               // don't re-enable the click handler for a little while - some devices generate both, and it will
               // take a little while to move your hand from the screen to the mouse if you have both modes of input
-              $timeout(function () {
+              window.setTimeout(function () {
                 $elm.on('click', selectCells);
               }, touchTimeout);
             };
@@ -27465,10 +27660,9 @@ module.filter('px', function() {
               }
             }
 
-            function deregisterRowSelectionEvents() {
+            function unregisterRowSelectionEvents() {
               if ($scope.registered) {
                 $elm.removeClass('ui-grid-disable-selection');
-
                 $elm.off('touchstart', touchStart);
                 $elm.off('touchend', touchEnd);
                 $elm.off('click', selectCells);
@@ -27478,19 +27672,20 @@ module.filter('px', function() {
             }
 
             registerRowSelectionEvents();
+
             // register a dataChange callback so that we can change the selection configuration dynamically
             // if the user changes the options
-            var dataChangeDereg = $scope.grid.registerDataChangeCallback(function () {
+            var dataChangeUnreg = $scope.grid.registerDataChangeCallback(function () {
               if ($scope.grid.options.enableRowSelection && $scope.grid.options.enableFullRowSelection &&
                 !$scope.registered) {
                 registerRowSelectionEvents();
               } else if ((!$scope.grid.options.enableRowSelection || !$scope.grid.options.enableFullRowSelection) &&
                 $scope.registered) {
-                deregisterRowSelectionEvents();
+                unregisterRowSelectionEvents();
               }
             }, [uiGridConstants.dataChange.OPTIONS]);
 
-            $elm.on('$destroy', dataChangeDereg);
+            $elm.on('$destroy', dataChangeUnreg);
           }
         };
       }]);
@@ -27528,7 +27723,6 @@ module.filter('px', function() {
       }
     };
   }]);
-
 })();
 
 (function () {
@@ -30147,17 +30341,17 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/expandableRowHeader',
-    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><i ng-if=\"!(row.groupHeader==true || row.entity.subGridOptions.disableRowExpandable)\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click=\"grid.api.expandable.toggleRowExpansion(row.entity)\"></i></div></div>"
+    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><i class=\"clickable\" ng-if=\"!(row.groupHeader==true || row.entity.subGridOptions.disableRowExpandable)\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click=\"grid.api.expandable.toggleRowExpansion(row.entity, $event)\"></i></div></div>"
   );
 
 
   $templateCache.put('ui-grid/expandableScrollFiller',
-    "<div ng-if=\"expandableRow.shouldRenderFiller()\" ng-class=\"{scrollFiller:true, scrollFillerClass:(colContainer.name === 'body')}\" ng-style=\"{ width: (grid.getViewportWidth()) + 'px', height: row.expandedRowHeight + 2 + 'px', 'margin-left': grid.options.rowHeader.rowHeaderWidth + 'px' }\"><i class=\"ui-grid-icon-spin5 ui-grid-animate-spin\" ng-style=\"{'margin-top': ( row.expandedRowHeight/2 - 5) + 'px', 'margin-left' : ((grid.getViewportWidth() - grid.options.rowHeader.rowHeaderWidth)/2 - 5) + 'px'}\"></i></div>"
+    "<div ng-if=\"expandableRow.shouldRenderFiller()\" ng-class=\"{scrollFiller:true, scrollFillerClass:(colContainer.name === 'body')}\" ng-style=\"{ width: (grid.getViewportWidth()) + 'px', height: row.expandedRowHeight + 2 + 'px', 'margin-left': grid.options.rowHeader.rowHeaderWidth + 'px' }\">&nbsp;</div>"
   );
 
 
   $templateCache.put('ui-grid/expandableTopRowHeader',
-    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><span class=\"ui-grid-cell-empty\" ng-if=\"!grid.options.showExpandAllButton\"></span> <button type=\"button\" class=\"ui-grid-icon-button\" ng-if=\"grid.options.showExpandAllButton\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !grid.expandable.expandedAll, 'ui-grid-icon-minus-squared' : grid.expandable.expandedAll }\" ng-click=\"grid.api.expandable.toggleAllRows()\"></button></div></div>"
+    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><span class=\"ui-grid-cell-empty\" ng-if=\"!grid.options.showExpandAllButton\"></span> <button type=\"button\" class=\"ui-grid-icon-button clickable\" ng-if=\"grid.options.showExpandAllButton\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !grid.expandable.expandedAll, 'ui-grid-icon-minus-squared' : grid.expandable.expandedAll }\" ng-click=\"grid.api.expandable.toggleAllRows()\"></button></div></div>"
   );
 
 
@@ -30197,12 +30391,12 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/selectionRowHeader',
-    "<div class=\"ui-grid-cell-contents ui-grid-disable-selection\"><ui-grid-selection-row-header-buttons></ui-grid-selection-row-header-buttons></div>"
+    "<div class=\"ui-grid-cell-contents ui-grid-disable-selection clickable\"><ui-grid-selection-row-header-buttons></ui-grid-selection-row-header-buttons></div>"
   );
 
 
   $templateCache.put('ui-grid/selectionRowHeaderButtons',
-    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
+    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok clickable\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
   );
 
 

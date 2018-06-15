@@ -27,7 +27,7 @@
     "data grid"
   ],
   "license": "MIT",
-  "version": "4.4.11",
+  "version": "4.5.0",
   "files": [
     "i18n",
     "less",
@@ -42,7 +42,6 @@
     "ui-grid.edit.min.js",
     "ui-grid.empty-base-layer.js",
     "ui-grid.empty-base-layer.min.js",
-    "ui-grid.eot",
     "ui-grid.expandable.js",
     "ui-grid.expandable.min.js",
     "ui-grid.exporter.js",
@@ -70,14 +69,11 @@
     "ui-grid.saveState.min.js",
     "ui-grid.selection.js",
     "ui-grid.selection.min.js",
-    "ui-grid.svg",
     "ui-grid.tree-base.js",
     "ui-grid.tree-base.min.js",
     "ui-grid.tree-view.js",
     "ui-grid.tree-view.min.js",
-    "ui-grid.ttf",
     "ui-grid.validate.js",
-    "ui-grid.validate.min.js",
-    "ui-grid.woff"
+    "ui-grid.validate.min.js"
   ]
 }

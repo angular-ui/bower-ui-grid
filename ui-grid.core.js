@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.4.11 - 2018-05-17
+ * ui-grid - v4.5.0 - 2018-06-15
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1994,6 +1994,10 @@ angular.module('ui.grid')
       function isColumnVisible(colDef) {
         return colDef.visible === true || colDef.visible === undefined;
       }
+      
+      function getColumnIcon(colDef) {
+        return isColumnVisible(colDef) ? 'ui-grid-icon-ok' : 'ui-grid-icon-cancel';
+      }
 
       // add header for columns
       showHideColumns.push({
@@ -2008,15 +2012,19 @@ angular.module('ui.grid')
         if ( colDef.enableHiding !== false ){
           // add hide menu item - shows an OK icon as we only show when column is already visible
           var menuItem = {
-            icon: isColumnVisible(colDef) ? 'ui-grid-icon-ok' : 'ui-grid-icon-cancel',
+            icon: getColumnIcon(colDef),
             action: function($event) {
               $event.stopPropagation();
 
               service.toggleColumnVisibility( this.context.gridCol );
 
               if ($event.target && $event.target.firstChild) {
-                $event.target.firstChild.className = isColumnVisible(this.context.gridCol.colDef) ?
-                  'ui-grid-icon-ok' : 'ui-grid-icon-cancel';
+                if (angular.element($event.target)[0].nodeName === 'I') {
+                  $event.target.className = getColumnIcon(this.context.gridCol.colDef);
+                }
+                else {
+                  $event.target.firstChild.className = getColumnIcon(this.context.gridCol.colDef);
+                }
               }
             },
             shown: function() {
@@ -3075,7 +3083,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
             });
           },
           post: function($scope, $elm, $attrs, controllers) {
-
+            $scope.row.element = $elm;
           }
         };
       }
@@ -3705,13 +3713,16 @@ function uiGridDirective($window, gridUtil, uiGridConstants) {
 (function(){
   'use strict';
 
-  // TODO: rename this file to ui-grid-pinned-container.js
-
   angular.module('ui.grid').directive('uiGridPinnedContainer', ['gridUtil', function (gridUtil) {
     return {
       restrict: 'EA',
       replace: true,
-      template: '<div class="ui-grid-pinned-container"><div ui-grid-render-container container-id="side" row-container-name="\'body\'" col-container-name="side" bind-scroll-vertical="true" class="{{ side }} ui-grid-render-container-{{ side }}"></div></div>',
+      template: '<div class="ui-grid-pinned-container">'
+              + '<div ui-grid-render-container container-id="side"'
+              + ' row-container-name="\'body\'" col-container-name="side"'
+              + ' bind-scroll-vertical="true"'
+              + ' class="{{ side }} ui-grid-render-container-{{ side }}"></div>'
+              + '</div>',
       scope: {
         side: '=uiGridPinnedContainer'
       },
@@ -6094,6 +6105,9 @@ angular.module('ui.grid')
     return p.promise;
   };
 
+  function getPrevScrollValue(rowsAdded, prevScrollVal) {
+    return rowsAdded || prevScrollVal > 0 ? prevScrollVal : null;
+  }
 
   /**
    * @ngdoc function
@@ -6109,18 +6123,16 @@ angular.module('ui.grid')
     var self = this;
 
     for (var i in self.renderContainers) {
-      var container = self.renderContainers[i];
+      var container = self.renderContainers[i],
+        prevScrollTop = getPrevScrollValue(rowsAdded, container.prevScrollTop),
+        prevScrollLeft = getPrevScrollValue(rowsAdded, container.prevScrollLeft),
+        prevScrolltopPercentage = rowsAdded || prevScrollTop > 0 ? null : container.prevScrolltopPercentage,
+        prevScrollleftPercentage = rowsAdded || prevScrollLeft > 0 ? null : container.prevScrollleftPercentage;
 
       // gridUtil.logDebug('redrawing container', i);
 
-      if (rowsAdded) {
-        container.adjustRows(container.prevScrollTop, null);
-        container.adjustColumns(container.prevScrollLeft, null);
-      }
-      else {
-        container.adjustRows(null, container.prevScrolltopPercentage);
-        container.adjustColumns(null, container.prevScrollleftPercentage);
-      }
+      container.adjustRows(prevScrollTop, prevScrolltopPercentage);
+      container.adjustColumns(prevScrollLeft, prevScrollleftPercentage);
     }
   };
 
@@ -6860,7 +6872,7 @@ angular.module('ui.grid')
    * @ngdoc property
    * @name displayName
    * @propertyOf ui.grid.class:GridColumn
-   * @description Column name that will be shown in the header.  If displayName is not
+   * @description Column name that will be shown in the header. If displayName is not
    * provided then one is generated using the name.
    *
    */
@@ -6869,7 +6881,7 @@ angular.module('ui.grid')
    * @ngdoc property
    * @name displayName
    * @propertyOf ui.grid.class:GridOptions.columnDef
-   * @description Column name that will be shown in the header.  If displayName is not
+   * @description Column name that will be shown in the header. If displayName is not
    * provided then one is generated using the name.
    *
    */
@@ -7262,6 +7274,13 @@ angular.module('ui.grid')
    *
    */
 
+  // Use colDef.displayName as long as it's not undefined, otherwise default to the field name
+  function getDisplayName(colDef) {
+    return (colDef.displayName === undefined)
+      ? gridUtil.readableColumnName(colDef.name)
+      : colDef.displayName;
+  }
+
   /**
    * @ngdoc method
    * @methodOf ui.grid.class:GridColumn
@@ -7282,7 +7301,7 @@ angular.module('ui.grid')
       throw new Error('colDef.name is required for column at index ' + self.grid.options.columnDefs.indexOf(colDef));
     }
 
-    self.displayName = (colDef.displayName === undefined) ? gridUtil.readableColumnName(colDef.name) : colDef.displayName;
+    self.displayName = getDisplayName(colDef);
 
     if (!angular.isNumber(self.width) || !self.hasCustomWidth || colDef.allowCustomWidthOverride) {
       var colDefWidth = colDef.width;
@@ -7356,9 +7375,7 @@ angular.module('ui.grid')
     }
 
     self.name = colDef.name;
-
-    // Use colDef.displayName as long as it's not undefined, otherwise default to the field name
-    self.displayName = (colDef.displayName === undefined) ? gridUtil.readableColumnName(colDef.name) : colDef.displayName;
+    self.displayName = getDisplayName(colDef);
 
     //self.originalIndex = index;
 
@@ -9700,7 +9717,7 @@ angular.module('ui.grid')
           if (grid.options.rowTemplate) {
             var rowTemplateFnPromise = $q.defer();
             grid.getRowTemplateFn = rowTemplateFnPromise.promise;
-            
+
             gridUtil.getTemplate(grid.options.rowTemplate)
               .then(
                 function (template) {
@@ -9774,10 +9791,12 @@ angular.module('ui.grid')
               .then(
                 function (template) {
                   if ( angular.isFunction(template) ) { template = template(); }
-                  var tooltipCall = ( tooltipType === 'cellTooltip' ) ? 'col.cellTooltip(row,col)' : 'col.headerTooltip(col)';
+                  var tooltipCall = ( tooltipType === 'cellTooltip' )
+                      ? 'col.cellTooltip(row,col)'
+                      : 'col.headerTooltip(col)';
                   if ( tooltipType && col[tooltipType] === false ){
                     template = template.replace(uiGridConstants.TOOLTIP, '');
-                  } else if ( tooltipType && col[tooltipType] ){
+                  } else if ( tooltipType && col[tooltipType] ) {
                     template = template.replace(uiGridConstants.TOOLTIP, 'title="{{' + tooltipCall + ' CUSTOM_FILTERS }}"');
                   }
 
@@ -9867,7 +9886,7 @@ angular.module('ui.grid')
               .then(function (template) {
                 // Compile the template
                 var rowTemplateFn = $compile(template);
-                
+
                 // Resolve the compiled template function promise
                 perRowTemplateFnPromise.resolve(rowTemplateFn);
               },
@@ -12795,17 +12814,17 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/expandableRowHeader',
-    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><i ng-if=\"!(row.groupHeader==true || row.entity.subGridOptions.disableRowExpandable)\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click=\"grid.api.expandable.toggleRowExpansion(row.entity)\"></i></div></div>"
+    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><i class=\"clickable\" ng-if=\"!(row.groupHeader==true || row.entity.subGridOptions.disableRowExpandable)\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !row.isExpanded, 'ui-grid-icon-minus-squared' : row.isExpanded }\" ng-click=\"grid.api.expandable.toggleRowExpansion(row.entity, $event)\"></i></div></div>"
   );
 
 
   $templateCache.put('ui-grid/expandableScrollFiller',
-    "<div ng-if=\"expandableRow.shouldRenderFiller()\" ng-class=\"{scrollFiller:true, scrollFillerClass:(colContainer.name === 'body')}\" ng-style=\"{ width: (grid.getViewportWidth()) + 'px', height: row.expandedRowHeight + 2 + 'px', 'margin-left': grid.options.rowHeader.rowHeaderWidth + 'px' }\"><i class=\"ui-grid-icon-spin5 ui-grid-animate-spin\" ng-style=\"{'margin-top': ( row.expandedRowHeight/2 - 5) + 'px', 'margin-left' : ((grid.getViewportWidth() - grid.options.rowHeader.rowHeaderWidth)/2 - 5) + 'px'}\"></i></div>"
+    "<div ng-if=\"expandableRow.shouldRenderFiller()\" ng-class=\"{scrollFiller:true, scrollFillerClass:(colContainer.name === 'body')}\" ng-style=\"{ width: (grid.getViewportWidth()) + 'px', height: row.expandedRowHeight + 2 + 'px', 'margin-left': grid.options.rowHeader.rowHeaderWidth + 'px' }\">&nbsp;</div>"
   );
 
 
   $templateCache.put('ui-grid/expandableTopRowHeader',
-    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><span class=\"ui-grid-cell-empty\" ng-if=\"!grid.options.showExpandAllButton\"></span> <button type=\"button\" class=\"ui-grid-icon-button\" ng-if=\"grid.options.showExpandAllButton\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !grid.expandable.expandedAll, 'ui-grid-icon-minus-squared' : grid.expandable.expandedAll }\" ng-click=\"grid.api.expandable.toggleAllRows()\"></button></div></div>"
+    "<div class=\"ui-grid-row-header-cell ui-grid-expandable-buttons-cell\"><div class=\"ui-grid-cell-contents\"><span class=\"ui-grid-cell-empty\" ng-if=\"!grid.options.showExpandAllButton\"></span> <button type=\"button\" class=\"ui-grid-icon-button clickable\" ng-if=\"grid.options.showExpandAllButton\" ng-class=\"{ 'ui-grid-icon-plus-squared' : !grid.expandable.expandedAll, 'ui-grid-icon-minus-squared' : grid.expandable.expandedAll }\" ng-click=\"grid.api.expandable.toggleAllRows()\"></button></div></div>"
   );
 
 
@@ -12845,12 +12864,12 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/selectionRowHeader',
-    "<div class=\"ui-grid-cell-contents ui-grid-disable-selection\"><ui-grid-selection-row-header-buttons></ui-grid-selection-row-header-buttons></div>"
+    "<div class=\"ui-grid-cell-contents ui-grid-disable-selection clickable\"><ui-grid-selection-row-header-buttons></ui-grid-selection-row-header-buttons></div>"
   );
 
 
   $templateCache.put('ui-grid/selectionRowHeaderButtons',
-    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
+    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok clickable\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
   );
 
 
