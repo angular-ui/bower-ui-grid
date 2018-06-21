@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.5.1 - 2018-06-18
+ * ui-grid - v4.6.0 - 2018-06-21
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -510,6 +510,127 @@
             aggregate_min: 'Agg: Minimum',
             aggregate_avg: 'Agg: Mittelwert',
             aggregate_remove: 'Aggregation entfernen'
+        }
+      });
+      return $delegate;
+    }]);
+  }]);
+})();
+
+(function () {
+  angular.module('ui.grid').config(['$provide', function($provide) {
+    $provide.decorator('i18nService', ['$delegate', function($delegate) {
+      $delegate.add('es-ct', {
+        headerCell: {
+          aria: {
+            defaultFilterLabel: 'Filtre per columna',
+            removeFilter: 'Elimina el filtre',
+            columnMenuButtonLabel: 'Menú de Columna',
+            column: 'Columna'
+          },
+          priority: 'Priority:',
+          filterLabel: 'Filtre per columna: '
+        },
+        aggregate: {
+          label: 'items'
+        },
+        groupPanel: {
+          description: 'Arrossegueu una capçalera de columna aquí i deixeu-lo anar per agrupar per aquesta columna.'
+        },
+        search: {
+          aria: {
+            selected: 'Fila seleccionada',
+            notSelected: 'Fila no seleccionada'
+          },
+          placeholder: 'Cerca...',
+          showingItems: 'Ítems Mostrats:',
+          selectedItems: 'Ítems Seleccionats:',
+          totalItems: 'Ítems Totals:',
+          size: 'Mida de la pàgina:',
+          first: 'Primera Pàgina',
+          next: 'Propera Pàgina',
+          previous: 'Pàgina Anterior',
+          last: 'Última Pàgina'
+        },
+        menu: {
+          text: 'Triar Columnes:'
+        },
+        sort: {
+          ascending: 'Ordena Ascendent',
+          descending: 'Ordena Descendent',
+          none: 'Sense Ordre',
+          remove: 'Eliminar Ordre'
+        },
+        column: {
+          hide: 'Amaga la Columna'
+        },
+        aggregation: {
+          count: 'Files Totals: ',
+          sum: 'total: ',
+          avg: 'mitjà: ',
+          min: 'mín: ',
+          max: 'màx: '
+        },
+        pinning: {
+          pinLeft: "Fixar a l'Esquerra",
+          pinRight: 'Fixar a la Dreta',
+          unpin: 'Treure Fixació'
+        },
+        columnMenu: {
+          close: 'Tanca'
+        },
+        gridMenu: {
+          aria: {
+            buttonLabel: 'Menú de Quadrícula'
+          },
+          columns: 'Columnes:',
+          importerTitle: 'Importa el fitxer',
+          exporterAllAsCsv: 'Exporta tot com CSV',
+          exporterVisibleAsCsv: 'Exporta les dades visibles com a CSV',
+          exporterSelectedAsCsv: 'Exporta les dades seleccionades com a CSV',
+          exporterAllAsPdf: 'Exporta tot com PDF',
+          exporterVisibleAsPdf: 'Exporta les dades visibles com a PDF',
+          exporterSelectedAsPdf: 'Exporta les dades seleccionades com a PDF',
+          exporterAllAsExcel: 'Exporta tot com Excel',
+          exporterVisibleAsExcel: 'Exporta les dades visibles com Excel',
+          exporterSelectedAsExcel: 'Exporta les dades seleccionades com Excel',
+          clearAllFilters: 'Netejar tots els filtres'
+        },
+        importer: {
+          noHeaders: "No va ser possible derivar els noms de les columnes, té encapçalats l'arxiu?",
+          noObjects: "No va ser possible obtenir registres, conté dades l'arxiu, a part de les capçaleres?",
+          invalidCsv: "No va ser possible processar l'arxiu, ¿és un CSV vàlid?",
+          invalidJson: "No va ser possible processar l'arxiu, ¿és un JSON vàlid?",
+          jsonNotArray: 'El fitxer json importat ha de contenir una matriu, avortant.'
+        },
+        pagination: {
+          aria: {
+            pageToFirst: 'Page to first',
+            pageBack: 'Page back',
+            pageSelected: 'Selected page',
+            pageForward: 'Page forward',
+            pageToLast: 'Page to last'
+          },
+          sizes: 'ítems per pàgina',
+          totalItems: 'ítems',
+          through: 'a',
+          of: 'de'
+        },
+        grouping: {
+          group: 'Agrupar',
+          ungroup: 'Desagrupar',
+          aggregate_count: 'Agr: Compte',
+          aggregate_sum: 'Agr: Sum',
+          aggregate_max: 'Agr: Máx',
+          aggregate_min: 'Agr: Mín',
+          aggregate_avg: 'Agr: Mitjà',
+          aggregate_remove: 'Agr: Treure'
+        },
+        validate: {
+          error: 'Error:',
+          minLength: 'El valor ha de tenir almenys caràcters THRESHOLD.',
+          maxLength: 'El valor ha de tenir com a màxim caràcters THRESHOLD.',
+          required: 'Un valor és necessari.'
         }
       });
       return $delegate;
@@ -2079,6 +2200,127 @@
   }]);
 })();
 
+(function () {
+    angular.module('ui.grid').config(['$provide', function($provide) {
+      $provide.decorator('i18nService', ['$delegate', function($delegate) {
+        $delegate.add('rs-lat', {
+          headerCell: {
+            aria: {
+              defaultFilterLabel: 'Filter za kolonu',
+              removeFilter: 'Ukloni Filter',
+              columnMenuButtonLabel: 'Meni Kolone',
+              column: 'Kolona'
+            },
+            priority: 'Prioritet:',
+            filterLabel: "Filter za kolonu: "
+          },
+          aggregate: {
+            label: 'stavke'
+          },
+          groupPanel: {       
+            description: 'Ovde prevuci zaglavlje kolone i spusti do grupe pored te kolone.'
+          },
+          search: {
+            aria: {
+              selected: 'Red odabran',
+              notSelected: 'Red nije odabran'
+            },
+            placeholder: 'Pretraga...',
+            showingItems: 'Prikazane Stavke:',
+            selectedItems: 'Odabrane Stavke:',
+            totalItems: 'Ukupno Stavki:',
+            size: 'Veličina Stranice:',
+            first: 'Prva Stranica',
+            next: 'Sledeća Stranica',
+            previous: 'Prethodna Stranica',
+            last: 'Poslednja Stranica'
+          },
+          menu: {
+            text: 'Odaberite kolonu:'
+          },
+          sort: {
+            ascending: 'Sortiraj po rastućem redosledu',
+            descending: 'Sortiraj po opadajućem redosledu',
+            none: 'Bez Sortiranja',
+            remove: 'Ukloni Sortiranje'
+          },
+          column: {
+            hide: 'Sakrij Kolonu'
+          },
+          aggregation: {
+            count: 'ukupno redova: ',
+            sum: 'ukupno: ',
+            avg: 'prosecno: ',
+            min: 'minimum: ',
+            max: 'maksimum: '
+          },
+          pinning: {
+            pinLeft: 'Zakači Levo',
+            pinRight: 'Zakači Desno',
+            unpin: 'Otkači'
+          },
+          columnMenu: {
+            close: 'Zatvori'
+          },
+          gridMenu: {
+            aria: {
+              buttonLabel: 'Rešetkasti Meni'
+            },
+            columns: 'Kolone:',
+            importerTitle: 'Importuj fajl',
+            exporterAllAsCsv: 'Eksportuj sve podatke kao csv',
+            exporterVisibleAsCsv: 'Eksportuj vidljive podatke kao csv',
+            exporterSelectedAsCsv: 'Eksportuj obeležene podatke kao csv',
+            exporterAllAsPdf: 'Eksportuj sve podatke kao pdf',
+            exporterVisibleAsPdf: 'Eksportuj vidljive podake kao pdf',
+            exporterSelectedAsPdf: 'Eksportuj odabrane podatke kao pdf',
+            exporterAllAsExcel: 'Eksportuj sve podatke kao excel',
+            exporterVisibleAsExcel: 'Eksportuj vidljive podatke kao excel',
+            exporterSelectedAsExcel: 'Eksportuj odabrane podatke kao excel',
+            clearAllFilters: 'Obriši sve filtere'
+          },
+          importer: {
+            noHeaders: 'Kolone se nisu mogle podeliti, da li fajl poseduje heder?',
+            noObjects: 'Objecti nisu mogli biti podeljeni, da li je bilo i drugih podataka sem hedera?',
+            invalidCsv: 'Fajl nije bilo moguće procesirati, da li je ispravni CSV?',
+            invalidJson: 'Fajl nije bilo moguće procesirati, da li je ispravni JSON',
+            jsonNotArray: 'Importovani json fajl mora da sadrži niz, prekidam operaciju.'
+          },
+          pagination: {
+            aria: {
+              pageToFirst: 'Prva stranica',
+              pageBack: 'Stranica pre',
+              pageSelected: 'Odabrana stranica',
+              pageForward: 'Sledeća stranica',
+              pageToLast: 'Poslednja stranica'
+            },
+            sizes: 'stavki po stranici',
+            totalItems: 'stavke',
+            through: 'kroz',
+            of: 'od'
+          },
+          grouping: {
+            group: 'Grupiši',
+            ungroup: 'Odrupiši',
+            aggregate_count: 'Agg: Broj',
+            aggregate_sum: 'Agg: Suma',
+            aggregate_max: 'Agg: Maksimum',
+            aggregate_min: 'Agg: Minimum',
+            aggregate_avg: 'Agg: Prosečna',
+            aggregate_remove: 'Agg: Ukloni'
+          },
+          validate: {
+            error: 'Greška:',
+            minLength: 'Vrednost bi trebala da bude duga bar THRESHOLD karaktera.',
+            maxLength: 'Vrednost bi trebalo da bude najviše duga THRESHOLD karaktera.',
+            required: 'Portreba je vrednost.'
+          }
+        });
+        return $delegate;
+      }]);
+    }]);
+  })();
+  
 (function () {
   angular.module('ui.grid').config(['$provide', function($provide) {
     $provide.decorator('i18nService', ['$delegate', function($delegate) {

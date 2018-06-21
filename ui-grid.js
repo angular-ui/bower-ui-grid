@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.5.1 - 2018-06-18
+ * ui-grid - v4.6.0 - 2018-06-21
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -2842,46 +2842,46 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
       compile: function () {
         return {
           pre: function prelink($scope, $elm, $attrs, controllers) {
-
-            var uiGridCtrl = controllers[0];
-            var containerCtrl = controllers[1];
-            var grid = $scope.grid = uiGridCtrl.grid;
+            var rowContainer, colContainer, gridContainerPrefix,
+              uiGridCtrl = controllers[0],
+              containerCtrl = controllers[1],
+              grid = $scope.grid = uiGridCtrl.grid,
+              gridContainerId = 'grid-container';
 
             // Verify that the render container for this element exists
             if (!$scope.rowContainerName) {
-              throw new Error("No row render container name specified");
+              throw new Error('No row render container name specified');
             }
             if (!$scope.colContainerName) {
-              throw new Error("No column render container name specified");
+              throw new Error('No column render container name specified');
             }
 
             if (!grid.renderContainers[$scope.rowContainerName]) {
-              throw new Error("Row render container '" + $scope.rowContainerName + "' is not registered.");
+              throw new Error('Row render container "' + $scope.rowContainerName + '" is not registered.');
             }
             if (!grid.renderContainers[$scope.colContainerName]) {
-              throw new Error("Column render container '" + $scope.colContainerName + "' is not registered.");
+              throw new Error('Column render container "' + $scope.colContainerName + '" is not registered.');
             }
 
-            var rowContainer = $scope.rowContainer = grid.renderContainers[$scope.rowContainerName];
-            var colContainer = $scope.colContainer = grid.renderContainers[$scope.colContainerName];
+            rowContainer = $scope.rowContainer = grid.renderContainers[$scope.rowContainerName];
+            colContainer = $scope.colContainer = grid.renderContainers[$scope.colContainerName];
+            gridContainerPrefix = $scope.containerId !== 'body' ? $scope.containerId + '-' : '';
 
+            containerCtrl.gridContainerId = gridContainerPrefix + gridContainerId;
             containerCtrl.containerId = $scope.containerId;
             containerCtrl.rowContainer = rowContainer;
             containerCtrl.colContainer = colContainer;
+            containerCtrl.grid = grid;
           },
           post: function postlink($scope, $elm, $attrs, controllers) {
-
-            var uiGridCtrl = controllers[0];
-            var containerCtrl = controllers[1];
-
-            var grid = uiGridCtrl.grid;
-            var rowContainer = containerCtrl.rowContainer;
-            var colContainer = containerCtrl.colContainer;
-            var scrollTop = null;
-            var scrollLeft = null;
-
-
-            var renderContainer = grid.renderContainers[$scope.containerId];
+            var uiGridCtrl = controllers[0],
+              containerCtrl = controllers[1],
+              grid = uiGridCtrl.grid,
+              rowContainer = containerCtrl.rowContainer,
+              colContainer = containerCtrl.colContainer,
+              scrollTop = null,
+              scrollLeft = null,
+              renderContainer = grid.renderContainers[$scope.containerId];
 
             // Put the container name on this element as a class
             $elm.addClass('ui-grid-render-container-' + $scope.containerId);
@@ -2939,9 +2939,10 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
             });
 
             $elm.bind('$destroy', function() {
-              $elm.unbind('keydown');
+              var eventsToUnbind = ['touchstart', 'touchmove', 'touchend','keydown', 'wheel', 'mousewheel',
+                'DomMouseScroll', 'MozMousePixelScroll'];
 
-              ['touchstart', 'touchmove', 'touchend','keydown', 'wheel', 'mousewheel', 'DomMouseScroll', 'MozMousePixelScroll'].forEach(function (eventName) {
+              eventsToUnbind.forEach(function(eventName) {
                 $elm.unbind(eventName);
               });
             });
@@ -2971,9 +2972,11 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
               headerViewportWidth = footerViewportWidth = colContainer.getHeaderViewportWidth();
 
               // Set canvas dimensions
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-canvas { width: ' + canvasWidth + 'px; height: ' + canvasHeight + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                + ' .ui-grid-canvas { width: ' + canvasWidth + 'px; height: ' + canvasHeight + 'px; }';
 
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-header-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                + ' .ui-grid-header-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
 
               if (renderContainer.explicitHeaderCanvasHeight) {
                 // get height from body container
@@ -2984,22 +2987,23 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
                   renderContainer.explicitHeaderCanvasHeight = reHCHeight.offsetHeight;
                 }
 
-                ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
-                  ' .ui-grid-header-canvas { height: ' + renderContainer.explicitHeaderCanvasHeight + 'px; }';
+                ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                  + ' .ui-grid-header-canvas { height: ' + renderContainer.explicitHeaderCanvasHeight + 'px; }';
               }
               else {
-                ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId + ' .ui-grid-header-canvas { height: inherit; }';
+                ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                  + ' .ui-grid-header-canvas { height: inherit; }';
               }
   
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
-                ' .ui-grid-viewport { width: ' + viewportWidth + 'px; height: ' + viewportHeight + 'px; }';
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
-                ' .ui-grid-header-viewport { width: ' + headerViewportWidth + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                + ' .ui-grid-viewport { width: ' + viewportWidth + 'px; height: ' + viewportHeight + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                + ' .ui-grid-header-viewport { width: ' + headerViewportWidth + 'px; }';
 
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
-                ' .ui-grid-footer-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
-              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId +
-                ' .ui-grid-footer-viewport { width: ' + footerViewportWidth + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                + ' .ui-grid-footer-canvas { width: ' + (canvasWidth + grid.scrollbarWidth) + 'px; }';
+              ret += '\n .grid' + uiGridCtrl.grid.id + ' .ui-grid-render-container-' + $scope.containerId
+                + ' .ui-grid-footer-viewport { width: ' + footerViewportWidth + 'px; }';
 
               return ret;
             }
@@ -8184,11 +8188,13 @@ angular.module('ui.grid')
        * Defaults to 4
        */
       baseOptions.excessRows = typeof(baseOptions.excessRows) !== "undefined" ? baseOptions.excessRows : 4;
+
       /**
        * @ngdoc property
        * @name scrollThreshold
        * @propertyOf ui.grid.class:GridOptions
-       * @description Defaults to 4
+       * @description Throttles the grid scrolling by the amount of rows set, which helps with smoothness of scrolling.
+       * Defaults to 4.
        */
       baseOptions.scrollThreshold = typeof(baseOptions.scrollThreshold) !== "undefined" ? baseOptions.scrollThreshold : 4;
 
@@ -8200,14 +8206,6 @@ angular.module('ui.grid')
        * Defaults to 4
        */
       baseOptions.excessColumns = typeof(baseOptions.excessColumns) !== "undefined" ? baseOptions.excessColumns : 4;
-      /**
-       * @ngdoc property
-       * @name horizontalScrollThreshold
-       * @propertyOf ui.grid.class:GridOptions
-       * @description Defaults to 4
-       */
-      baseOptions.horizontalScrollThreshold = typeof(baseOptions.horizontalScrollThreshold) !== "undefined" ? baseOptions.horizontalScrollThreshold : 2;
-
 
       /**
        * @ngdoc property
@@ -12887,6 +12885,127 @@ module.filter('px', function() {
 (function () {
   angular.module('ui.grid').config(['$provide', function($provide) {
     $provide.decorator('i18nService', ['$delegate', function($delegate) {
+      $delegate.add('es-ct', {
+        headerCell: {
+          aria: {
+            defaultFilterLabel: 'Filtre per columna',
+            removeFilter: 'Elimina el filtre',
+            columnMenuButtonLabel: 'Menú de Columna',
+            column: 'Columna'
+          },
+          priority: 'Priority:',
+          filterLabel: 'Filtre per columna: '
+        },
+        aggregate: {
+          label: 'items'
+        },
+        groupPanel: {
+          description: 'Arrossegueu una capçalera de columna aquí i deixeu-lo anar per agrupar per aquesta columna.'
+        },
+        search: {
+          aria: {
+            selected: 'Fila seleccionada',
+            notSelected: 'Fila no seleccionada'
+          },
+          placeholder: 'Cerca...',
+          showingItems: 'Ítems Mostrats:',
+          selectedItems: 'Ítems Seleccionats:',
+          totalItems: 'Ítems Totals:',
+          size: 'Mida de la pàgina:',
+          first: 'Primera Pàgina',
+          next: 'Propera Pàgina',
+          previous: 'Pàgina Anterior',
+          last: 'Última Pàgina'
+        },
+        menu: {
+          text: 'Triar Columnes:'
+        },
+        sort: {
+          ascending: 'Ordena Ascendent',
+          descending: 'Ordena Descendent',
+          none: 'Sense Ordre',
+          remove: 'Eliminar Ordre'
+        },
+        column: {
+          hide: 'Amaga la Columna'
+        },
+        aggregation: {
+          count: 'Files Totals: ',
+          sum: 'total: ',
+          avg: 'mitjà: ',
+          min: 'mín: ',
+          max: 'màx: '
+        },
+        pinning: {
+          pinLeft: "Fixar a l'Esquerra",
+          pinRight: 'Fixar a la Dreta',
+          unpin: 'Treure Fixació'
+        },
+        columnMenu: {
+          close: 'Tanca'
+        },
+        gridMenu: {
+          aria: {
+            buttonLabel: 'Menú de Quadrícula'
+          },
+          columns: 'Columnes:',
+          importerTitle: 'Importa el fitxer',
+          exporterAllAsCsv: 'Exporta tot com CSV',
+          exporterVisibleAsCsv: 'Exporta les dades visibles com a CSV',
+          exporterSelectedAsCsv: 'Exporta les dades seleccionades com a CSV',
+          exporterAllAsPdf: 'Exporta tot com PDF',
+          exporterVisibleAsPdf: 'Exporta les dades visibles com a PDF',
+          exporterSelectedAsPdf: 'Exporta les dades seleccionades com a PDF',
+          exporterAllAsExcel: 'Exporta tot com Excel',
+          exporterVisibleAsExcel: 'Exporta les dades visibles com Excel',
+          exporterSelectedAsExcel: 'Exporta les dades seleccionades com Excel',
+          clearAllFilters: 'Netejar tots els filtres'
+        },
+        importer: {
+          noHeaders: "No va ser possible derivar els noms de les columnes, té encapçalats l'arxiu?",
+          noObjects: "No va ser possible obtenir registres, conté dades l'arxiu, a part de les capçaleres?",
+          invalidCsv: "No va ser possible processar l'arxiu, ¿és un CSV vàlid?",
+          invalidJson: "No va ser possible processar l'arxiu, ¿és un JSON vàlid?",
+          jsonNotArray: 'El fitxer json importat ha de contenir una matriu, avortant.'
+        },
+        pagination: {
+          aria: {
+            pageToFirst: 'Page to first',
+            pageBack: 'Page back',
+            pageSelected: 'Selected page',
+            pageForward: 'Page forward',
+            pageToLast: 'Page to last'
+          },
+          sizes: 'ítems per pàgina',
+          totalItems: 'ítems',
+          through: 'a',
+          of: 'de'
+        },
+        grouping: {
+          group: 'Agrupar',
+          ungroup: 'Desagrupar',
+          aggregate_count: 'Agr: Compte',
+          aggregate_sum: 'Agr: Sum',
+          aggregate_max: 'Agr: Máx',
+          aggregate_min: 'Agr: Mín',
+          aggregate_avg: 'Agr: Mitjà',
+          aggregate_remove: 'Agr: Treure'
+        },
+        validate: {
+          error: 'Error:',
+          minLength: 'El valor ha de tenir almenys caràcters THRESHOLD.',
+          maxLength: 'El valor ha de tenir com a màxim caràcters THRESHOLD.',
+          required: 'Un valor és necessari.'
+        }
+      });
+      return $delegate;
+    }]);
+  }]);
+})();
+
+(function () {
+  angular.module('ui.grid').config(['$provide', function($provide) {
+    $provide.decorator('i18nService', ['$delegate', function($delegate) {
       $delegate.add('es', {
         aggregate: {
           label: 'Artículos'
@@ -14447,6 +14566,127 @@ module.filter('px', function() {
 })();
 
 (function () {
+    angular.module('ui.grid').config(['$provide', function($provide) {
+      $provide.decorator('i18nService', ['$delegate', function($delegate) {
+        $delegate.add('rs-lat', {
+          headerCell: {
+            aria: {
+              defaultFilterLabel: 'Filter za kolonu',
+              removeFilter: 'Ukloni Filter',
+              columnMenuButtonLabel: 'Meni Kolone',
+              column: 'Kolona'
+            },
+            priority: 'Prioritet:',
+            filterLabel: "Filter za kolonu: "
+          },
+          aggregate: {
+            label: 'stavke'
+          },
+          groupPanel: {       
+            description: 'Ovde prevuci zaglavlje kolone i spusti do grupe pored te kolone.'
+          },
+          search: {
+            aria: {
+              selected: 'Red odabran',
+              notSelected: 'Red nije odabran'
+            },
+            placeholder: 'Pretraga...',
+            showingItems: 'Prikazane Stavke:',
+            selectedItems: 'Odabrane Stavke:',
+            totalItems: 'Ukupno Stavki:',
+            size: 'Veličina Stranice:',
+            first: 'Prva Stranica',
+            next: 'Sledeća Stranica',
+            previous: 'Prethodna Stranica',
+            last: 'Poslednja Stranica'
+          },
+          menu: {
+            text: 'Odaberite kolonu:'
+          },
+          sort: {
+            ascending: 'Sortiraj po rastućem redosledu',
+            descending: 'Sortiraj po opadajućem redosledu',
+            none: 'Bez Sortiranja',
+            remove: 'Ukloni Sortiranje'
+          },
+          column: {
+            hide: 'Sakrij Kolonu'
+          },
+          aggregation: {
+            count: 'ukupno redova: ',
+            sum: 'ukupno: ',
+            avg: 'prosecno: ',
+            min: 'minimum: ',
+            max: 'maksimum: '
+          },
+          pinning: {
+            pinLeft: 'Zakači Levo',
+            pinRight: 'Zakači Desno',
+            unpin: 'Otkači'
+          },
+          columnMenu: {
+            close: 'Zatvori'
+          },
+          gridMenu: {
+            aria: {
+              buttonLabel: 'Rešetkasti Meni'
+            },
+            columns: 'Kolone:',
+            importerTitle: 'Importuj fajl',
+            exporterAllAsCsv: 'Eksportuj sve podatke kao csv',
+            exporterVisibleAsCsv: 'Eksportuj vidljive podatke kao csv',
+            exporterSelectedAsCsv: 'Eksportuj obeležene podatke kao csv',
+            exporterAllAsPdf: 'Eksportuj sve podatke kao pdf',
+            exporterVisibleAsPdf: 'Eksportuj vidljive podake kao pdf',
+            exporterSelectedAsPdf: 'Eksportuj odabrane podatke kao pdf',
+            exporterAllAsExcel: 'Eksportuj sve podatke kao excel',
+            exporterVisibleAsExcel: 'Eksportuj vidljive podatke kao excel',
+            exporterSelectedAsExcel: 'Eksportuj odabrane podatke kao excel',
+            clearAllFilters: 'Obriši sve filtere'
+          },
+          importer: {
+            noHeaders: 'Kolone se nisu mogle podeliti, da li fajl poseduje heder?',
+            noObjects: 'Objecti nisu mogli biti podeljeni, da li je bilo i drugih podataka sem hedera?',
+            invalidCsv: 'Fajl nije bilo moguće procesirati, da li je ispravni CSV?',
+            invalidJson: 'Fajl nije bilo moguće procesirati, da li je ispravni JSON',
+            jsonNotArray: 'Importovani json fajl mora da sadrži niz, prekidam operaciju.'
+          },
+          pagination: {
+            aria: {
+              pageToFirst: 'Prva stranica',
+              pageBack: 'Stranica pre',
+              pageSelected: 'Odabrana stranica',
+              pageForward: 'Sledeća stranica',
+              pageToLast: 'Poslednja stranica'
+            },
+            sizes: 'stavki po stranici',
+            totalItems: 'stavke',
+            through: 'kroz',
+            of: 'od'
+          },
+          grouping: {
+            group: 'Grupiši',
+            ungroup: 'Odrupiši',
+            aggregate_count: 'Agg: Broj',
+            aggregate_sum: 'Agg: Suma',
+            aggregate_max: 'Agg: Maksimum',
+            aggregate_min: 'Agg: Minimum',
+            aggregate_avg: 'Agg: Prosečna',
+            aggregate_remove: 'Agg: Ukloni'
+          },
+          validate: {
+            error: 'Greška:',
+            minLength: 'Vrednost bi trebala da bude duga bar THRESHOLD karaktera.',
+            maxLength: 'Vrednost bi trebalo da bude najviše duga THRESHOLD karaktera.',
+            required: 'Portreba je vrednost.'
+          }
+        });
+        return $delegate;
+      }]);
+    }]);
+  })();
+  
+(function () {
   angular.module('ui.grid').config(['$provide', function($provide) {
     $provide.decorator('i18nService', ['$delegate', function($delegate) {
       $delegate.add('ru', {
@@ -15092,8 +15332,17 @@ module.filter('px', function() {
       var langCache = {
         _langs: {},
         current: null,
+        fallback: i18nConstants.DEFAULT_LANG,
         get: function (lang) {
-          return this._langs[lang.toLowerCase()];
+          var self = this,
+            fallbackLang = self.getFallbackLang();
+
+          if (lang !== self.fallback) {
+            return angular.merge({}, self._langs[fallbackLang],
+              self._langs[lang.toLowerCase()]);
+          }
+
+          return self._langs[lang.toLowerCase()];
         },
         add: function (lang, strings) {
           var lower = lang.toLowerCase();
@@ -15117,8 +15366,14 @@ module.filter('px', function() {
         setCurrent: function (lang) {
           this.current = lang.toLowerCase();
         },
+        setFallback: function (lang) {
+          this.fallback = lang.toLowerCase();
+        },
         getCurrentLang: function () {
           return this.current;
+        },
+        getFallbackLang: function () {
+          return this.fallback.toLowerCase();
         }
       };
 
@@ -15196,11 +15451,12 @@ module.filter('px', function() {
          * </pre>
          */
         getSafeText: function (path, lang) {
-          var language = lang || service.getCurrentLang();
-          var trans = langCache.get(language);
+          var language = lang || service.getCurrentLang(),
+            trans = langCache.get(language),
+            missing = i18nConstants.MISSING + path;
 
           if (!trans) {
-            return i18nConstants.MISSING;
+            return missing;
           }
 
           var paths = path.split('.');
@@ -15208,14 +15464,13 @@ module.filter('px', function() {
 
           for (var i = 0; i < paths.length; ++i) {
             if (current[paths[i]] === undefined || current[paths[i]] === null) {
-              return i18nConstants.MISSING;
+              return missing;
             } else {
               current = current[paths[i]];
             }
           }
 
           return current;
-
         },
 
         /**
@@ -15223,18 +15478,36 @@ module.filter('px', function() {
          * @name setCurrentLang
          * @methodOf ui.grid.i18n.service:i18nService
          * @description sets the current language to use in the application
-         * $broadcasts the i18nConstants.UPDATE_EVENT on the $rootScope
+         * $broadcasts and $emits the i18nConstants.UPDATE_EVENT on the $rootScope
          * @param {string} lang to set
          * @example
          * <pre>
          * i18nService.setCurrentLang('fr');
          * </pre>
          */
-
         setCurrentLang: function (lang) {
           if (lang) {
             langCache.setCurrent(lang);
             $rootScope.$broadcast(i18nConstants.UPDATE_EVENT);
+            $rootScope.$emit(i18nConstants.UPDATE_EVENT);
+          }
+        },
+
+        /**
+         * @ngdoc service
+         * @name setFallbackLang
+         * @methodOf ui.grid.i18n.service:i18nService
+         * @description sets the fallback language to use in the application.
+         * The default fallback language is english.
+         * @param {string} lang to set
+         * @example
+         * <pre>
+         * i18nService.setFallbackLang('en');
+         * </pre>
+         */
+        setFallbackLang: function (lang) {
+          if (lang) {
+            langCache.setFallback(lang);
           }
         },
 
@@ -15251,15 +15524,23 @@ module.filter('px', function() {
             langCache.setCurrent(lang);
           }
           return lang;
-        }
+        },
 
+        /**
+         * @ngdoc service
+         * @name getFallbackLang
+         * @methodOf ui.grid.i18n.service:i18nService
+         * @description returns the fallback language used in the application
+         */
+        getFallbackLang: function () {
+          return langCache.getFallbackLang();
+        }
       };
 
       return service;
-
     }]);
 
-  var localeDirective = function (i18nService, i18nConstants) {
+  function localeDirective(i18nService, i18nConstants) {
     return {
       compile: function () {
         return {
@@ -15280,66 +15561,69 @@ module.filter('px', function() {
         };
       }
     };
-  };
+  }
 
   module.directive('uiI18n', ['i18nService', 'i18nConstants', localeDirective]);
 
   // directive syntax
-  var uitDirective = function ($parse, i18nService, i18nConstants) {
+  function uitDirective(i18nService, i18nConstants) {
     return {
       restrict: 'EA',
       compile: function () {
         return {
           pre: function ($scope, $elm, $attrs) {
-            var alias1 = DIRECTIVE_ALIASES[0],
-              alias2 = DIRECTIVE_ALIASES[1];
-            var token = $attrs[alias1] || $attrs[alias2] || $elm.html();
-            var missing = i18nConstants.MISSING + token;
-            var observer;
+            var listener, observer, prop,
+              alias1 = DIRECTIVE_ALIASES[0],
+              alias2 = DIRECTIVE_ALIASES[1],
+              token = $attrs[alias1] || $attrs[alias2] || $elm.html();
+
+            function translateToken(property) {
+              var safeText = i18nService.getSafeText(property);
+
+              $elm.html(safeText);
+            }
+
             if ($attrs.$$observers) {
-              var prop = $attrs[alias1] ? alias1 : alias2;
+              prop = $attrs[alias1] ? alias1 : alias2;
               observer = $attrs.$observe(prop, function (result) {
                 if (result) {
-                  $elm.html($parse(result)(i18nService.getCurrentLang()) || missing);
+                  translateToken(result);
                 }
               });
             }
-            var getter = $parse(token);
-            var listener = $scope.$on(i18nConstants.UPDATE_EVENT, function (evt) {
+
+            listener = $scope.$on(i18nConstants.UPDATE_EVENT, function() {
               if (observer) {
                 observer($attrs[alias1] || $attrs[alias2]);
               } else {
                 // set text based on i18n current language
-                $elm.html(getter(i18nService.get()) || missing);
+                translateToken(token);
               }
             });
             $scope.$on('$destroy', listener);
 
-            $elm.html(getter(i18nService.get()) || missing);
+            translateToken(token);
           }
         };
       }
     };
-  };
+  }
 
-  angular.forEach( DIRECTIVE_ALIASES, function ( alias ) {
-    module.directive( alias, ['$parse', 'i18nService', 'i18nConstants', uitDirective] );
-  } );
+  angular.forEach(DIRECTIVE_ALIASES, function ( alias ) {
+    module.directive(alias, ['i18nService', 'i18nConstants', uitDirective]);
+  });
 
   // optional filter syntax
-  var uitFilter = function ($parse, i18nService, i18nConstants) {
-    return function (data) {
-      var getter = $parse(data);
+  function uitFilter(i18nService) {
+    return function (data, lang) {
       // set text based on i18n current language
-      return getter(i18nService.get()) || i18nConstants.MISSING + data;
+      return i18nService.getSafeText(data, lang);
     };
-  };
+  }
 
-  angular.forEach( FILTER_ALIASES, function ( alias ) {
-    module.filter( alias, ['$parse', 'i18nService', 'i18nConstants', uitFilter] );
-  } );
-
-
+  angular.forEach(FILTER_ALIASES, function ( alias ) {
+    module.filter(alias, ['i18nService', uitFilter]);
+  });
 })();
 
 (function() {
@@ -30291,7 +30575,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/uiGridHeaderCell',
-    "<div role=\"columnheader\" ng-class=\"{ 'sortable': sortable, 'ui-grid-header-cell-last-col': isLastCol }\" ui-grid-one-bind-aria-labelledby-grid=\"col.uid + '-header-text ' + col.uid + '-sortdir-text'\" aria-sort=\"{{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending' : (!col.sort.direction ? 'none' : 'other'))}}\"><div role=\"button\" tabindex=\"0\" ng-keydown=\"handleKeyDown($event)\" class=\"ui-grid-cell-contents ui-grid-header-cell-primary-focus\" col-index=\"renderIndex\" title=\"TOOLTIP\"><span class=\"ui-grid-header-cell-label\" ui-grid-one-bind-id-grid=\"col.uid + '-header-text'\">{{ col.displayName CUSTOM_FILTERS }} </span><span ui-grid-one-bind-id-grid=\"col.uid + '-sortdir-text'\" ui-grid-visible=\"col.sort.direction\" aria-label=\"{{getSortDirectionAriaLabel()}}\"><i ng-class=\"{ 'ui-grid-icon-up-dir': col.sort.direction == asc, 'ui-grid-icon-down-dir': col.sort.direction == desc, 'ui-grid-icon-blank': !col.sort.direction }\" title=\"{{isSortPriorityVisible() ? i18n.headerCell.priority + ' ' + ( col.sort.priority + 1 )  : null}}\" aria-hidden=\"true\"></i> <sub ui-grid-visible=\"isSortPriorityVisible()\" class=\"ui-grid-sort-priority-number\">{{col.sort.priority + 1}}</sub></span></div><div role=\"button\" tabindex=\"0\" ui-grid-one-bind-id-grid=\"col.uid + '-menu-button'\" class=\"ui-grid-column-menu-button\" ng-if=\"grid.options.enableColumnMenus && !col.isRowHeader  && col.colDef.enableColumnMenu !== false\" ng-click=\"toggleMenu($event)\" ng-keydown=\"headerCellArrowKeyDown($event)\" ui-grid-one-bind-aria-label=\"i18n.headerCell.aria.columnMenuButtonLabel\" aria-haspopup=\"true\"><i class=\"ui-grid-icon-angle-down\" aria-hidden=\"true\">&nbsp;</i></div><div ui-grid-filter></div></div>"
+    "<div role=\"columnheader\" ng-class=\"{ 'sortable': sortable, 'ui-grid-header-cell-last-col': isLastCol }\" ui-grid-one-bind-aria-labelledby-grid=\"col.uid + '-header-text ' + col.uid + '-sortdir-text'\" aria-sort=\"{{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending' : (!col.sort.direction ? 'none' : 'other'))}}\"><div role=\"button\" tabindex=\"0\" ng-keydown=\"handleKeyDown($event)\" class=\"ui-grid-cell-contents ui-grid-header-cell-primary-focus\" col-index=\"renderIndex\" title=\"TOOLTIP\"><span class=\"ui-grid-header-cell-label\" ui-grid-one-bind-id-grid=\"col.uid + '-header-text'\">{{ col.displayName CUSTOM_FILTERS }}</span> <span ui-grid-one-bind-id-grid=\"col.uid + '-sortdir-text'\" ui-grid-visible=\"col.sort.direction\" aria-label=\"{{getSortDirectionAriaLabel()}}\"><i ng-class=\"{ 'ui-grid-icon-up-dir': col.sort.direction == asc, 'ui-grid-icon-down-dir': col.sort.direction == desc, 'ui-grid-icon-blank': !col.sort.direction }\" title=\"{{isSortPriorityVisible() ? i18n.headerCell.priority + ' ' + ( col.sort.priority + 1 )  : null}}\" aria-hidden=\"true\"></i> <sub ui-grid-visible=\"isSortPriorityVisible()\" class=\"ui-grid-sort-priority-number\">{{col.sort.priority + 1}}</sub></span></div><div role=\"button\" tabindex=\"0\" ui-grid-one-bind-id-grid=\"col.uid + '-menu-button'\" class=\"ui-grid-column-menu-button\" ng-if=\"grid.options.enableColumnMenus && !col.isRowHeader  && col.colDef.enableColumnMenu !== false\" ng-click=\"toggleMenu($event)\" ng-keydown=\"headerCellArrowKeyDown($event)\" ui-grid-one-bind-aria-label=\"i18n.headerCell.aria.columnMenuButtonLabel\" aria-haspopup=\"true\"><i class=\"ui-grid-icon-angle-down\" aria-hidden=\"true\">&nbsp;</i></div><div ui-grid-filter></div></div>"
   );
 
 
@@ -30306,7 +30590,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/uiGridRenderContainer',
-    "<div role=\"presentation\" ui-grid-one-bind-id-grid=\"containerId + '-grid-container'\" class=\"ui-grid-render-container\" ng-style=\"{ 'margin-left': colContainer.getMargin('left') + 'px', 'margin-right': colContainer.getMargin('right') + 'px' }\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height:colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"grid.options.showColumnFooter\"></ui-grid-footer></div>"
+    "<div role=\"presentation\" ui-grid-one-bind-id-grid=\"RenderContainer.gridContainerId\" class=\"ui-grid-render-container\" ng-style=\"{ 'margin-left': RenderContainer.colContainer.getMargin('left') + 'px', 'margin-right': RenderContainer.colContainer.getMargin('right') + 'px' }\"><!-- All of these dom elements are replaced in place --><div ui-grid-header></div><div ui-grid-viewport></div><div ng-if=\"RenderContainer.colContainer.needsHScrollbarPlaceholder()\" class=\"ui-grid-scrollbar-placeholder\" ng-style=\"{height: RenderContainer.colContainer.grid.scrollbarHeight + 'px'}\"></div><ui-grid-footer ng-if=\"RenderContainer.grid.options.showColumnFooter\"></ui-grid-footer></div>"
   );
 
 

@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.5.1 - 2018-06-18
+ * ui-grid - v4.6.0 - 2018-06-21
  * Copyright (c) 2018 ; License: MIT 
  */
 @media screen and (max-width: 767px) {
@@ -1808,7 +1808,7 @@ select[multiple].ui-grid-pager-row-count-picker select {
 * @section font library path
 */
 /*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-.ui-grid-render-container-left .ui-grid-row.ui-grid-row-selected > [ui-grid-row] > .ui-grid-cell,
+.ui-grid-row.ui-grid-row-selected > [ui-grid-row] > .ui-grid-cell,
 .ui-grid-row.ui-grid-row-focused > [ui-grid-row] > .ui-grid-cell {
   background-color: #C9DDE1;
 }
