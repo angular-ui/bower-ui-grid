@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.6.3 - 2018-08-04
+ * ui-grid - v4.6.4 - 2018-10-30
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -689,7 +689,13 @@
         }
 
         column.treeAggregation = { type: uiGridGroupingConstants.aggregation.COUNT, source: 'grouping' };
-        column.treeAggregationFn = uiGridTreeBaseService.nativeAggregations()[uiGridGroupingConstants.aggregation.COUNT].aggregationFn;
+
+        if ( column.colDef && angular.isFunction(column.colDef.customTreeAggregationFn) ) {
+          column.treeAggregationFn = column.colDef.customTreeAggregationFn;
+        } else {
+          column.treeAggregationFn = uiGridTreeBaseService.nativeAggregations()[uiGridGroupingConstants.aggregation.COUNT].aggregationFn;
+        }
+
         column.treeAggregationFinalizerFn = service.groupedFinalizerFn;
 
         grid.api.grouping.raise.groupingChanged(column);

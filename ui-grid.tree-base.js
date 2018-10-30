@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.6.3 - 2018-08-04
+ * ui-grid - v4.6.4 - 2018-10-30
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1100,7 +1100,7 @@
         var aggregations = service.getAggregations( grid );
 
         function createNode( row ) {
-          if ( typeof(row.entity.$$treeLevel) !== 'undefined' && row.treeLevel !== row.entity.$$treeLevel ) {
+          if ( !row.internalRow && row.treeLevel !== row.entity.$$treeLevel ) {
             row.treeLevel = row.entity.$$treeLevel;
           }
 

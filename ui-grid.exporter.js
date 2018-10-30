@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.6.3 - 2018-08-04
+ * ui-grid - v4.6.4 - 2018-10-30
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1138,7 +1138,10 @@
           if (typeof(field.value) === 'string') {
             return '"' + field.value.replace(/"/g,'""') + '"';
           }
-
+          if (typeof(field.value) === 'object' && !(field.value instanceof Date)) {
+            return '"' + JSON.stringify(field.value).replace(/"/g,'""') + '"';
+          }
+          // if field type is date, numberStr
           return JSON.stringify(field.value);
         },
 
