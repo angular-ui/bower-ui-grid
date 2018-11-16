@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.6.4 - 2018-10-30
+ * ui-grid - v4.6.6 - 2018-11-16
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -1174,7 +1174,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
             };
             $scope.isSortPriorityVisible = function() {
               // show sort priority if column is sorted and there is at least one other sorted column
-              return angular.isNumber($scope.col.sort.priority) && $scope.grid.columns.some(function(element, index) {
+              return $scope.col && $scope.col.sort && angular.isNumber($scope.col.sort.priority) && $scope.grid.columns.some(function(element, index) {
                   return angular.isNumber(element.sort.priority) && element !== $scope.col;
                 });
             };
@@ -1183,7 +1183,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
               // Trying to recreate this sort of thing but it was getting messy having it in the template.
               // Sort direction {{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending': 'none')}}.
               // {{col.sort.priority ? {{columnPriorityText}} {{col.sort.priority}} : ''}
-              var label = col.sort.direction === uiGridConstants.ASC ? $scope.i18n.sort.ascending : ( col.sort.direction === uiGridConstants.DESC ? $scope.i18n.sort.descending : $scope.i18n.sort.none);
+              var label = col.sort && col.sort.direction === uiGridConstants.ASC ? $scope.i18n.sort.ascending : ( col.sort && col.sort.direction === uiGridConstants.DESC ? $scope.i18n.sort.descending : $scope.i18n.sort.none);
 
               if ($scope.isSortPriorityVisible()) {
                 label = label + '. ' + $scope.i18n.headerCell.priority + ' ' + (col.sort.priority + 1);
@@ -5654,7 +5654,7 @@ angular.module('ui.grid')
 
     if (!direction) {
       // Find the current position in the cycle (or -1).
-      var i = column.sortDirectionCycle.indexOf(column.sort.direction ? column.sort.direction : null);
+      var i = column.sortDirectionCycle.indexOf(column.sort && column.sort.direction ? column.sort.direction : null);
       // Proceed to the next position in the cycle (or start at the beginning).
       i = (i+1) % column.sortDirectionCycle.length;
       // If suppressRemoveSort is set, and the next position in the cycle would
@@ -10403,7 +10403,7 @@ module.service('rowSorter', ['$parse', 'uiGridConstants', function ($parse, uiGr
    */
   rowSorter.prioritySort = function (a, b) {
     // Both columns have a sort priority
-    if (a.sort.priority !== undefined && b.sort.priority !== undefined) {
+    if (a.sort && a.sort.priority !== undefined && b.sort && b.sort.priority !== undefined) {
       // A is higher priority
       if (a.sort.priority < b.sort.priority) {
         return -1;
@@ -10418,11 +10418,11 @@ module.service('rowSorter', ['$parse', 'uiGridConstants', function ($parse, uiGr
       }
     }
     // Only A has a priority
-    else if (a.sort.priority !== undefined) {
+    else if (a.sort && a.sort.priority !== undefined) {
       return -1;
     }
     // Only B has a priority
-    else if (b.sort.priority !== undefined) {
+    else if (b.sort && b.sort.priority !== undefined) {
       return 1;
     }
     // Neither has a priority
@@ -10516,16 +10516,11 @@ module.service('rowSorter', ['$parse', 'uiGridConstants', function ($parse, uiGr
 
         sortFn = rowSorter.getSortFn(grid, col, r);
 
-        var propA, propB;
-
-        if ( col.sortCellFiltered ) {
-          propA = grid.getCellDisplayValue(rowA, col);
-          propB = grid.getCellDisplayValue(rowB, col);
-        } else {
-          propA = grid.getCellValue(rowA, col);
-          propB = grid.getCellValue(rowB, col);
-        }
-
+        // Webpack's compress will hoist and combine propA, propB into one var and break sorting functionality
+        // Wrapping in function prevents that unexpected behavior
+        var props = getCellValues(grid, rowA, rowB, col);
+        var propA = props[0];
+        var propB = props[1];
         tem = sortFn(propA, propB, rowA, rowB, direction, col);
 
         idx++;
@@ -10557,6 +10552,20 @@ module.service('rowSorter', ['$parse', 'uiGridConstants', function ($parse, uiGr
 
     return newRows;
   };
+
+  function getCellValues(grid, rowA, rowB, col) {
+    var propA, propB;
+
+    if ( col.sortCellFiltered ) {
+      propA = grid.getCellDisplayValue(rowA, col);
+      propB = grid.getCellDisplayValue(rowB, col);
+    } else {
+      propA = grid.getCellValue(rowA, col);
+      propB = grid.getCellValue(rowB, col);
+    }
+
+    return [propA, propB];
+  }
 
   return rowSorter;
 }]);

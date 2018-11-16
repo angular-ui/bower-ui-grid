@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.6.4 - 2018-10-30
+ * ui-grid - v4.6.6 - 2018-11-16
  * Copyright (c) 2018 ; License: MIT 
  */
 
@@ -7,6 +7,16 @@
   angular.module('ui.grid').config(['$provide', function($provide) {
     $provide.decorator('i18nService', ['$delegate', function($delegate) {
       $delegate.add('sv', {
+        headerCell: {
+          aria: {
+            defaultFilterLabel: 'Kolumnfilter',
+            removeFilter: 'Ta bort filter',
+            columnMenuButtonLabel: 'Kolumnmeny',
+            column: 'Kolumn'
+          },
+          priority: 'Prioritet:',
+          filterLabel: "Filter för kolumn: "
+        },
         aggregate: {
           label: 'Artiklar'
         },
@@ -14,6 +24,10 @@
           description: 'Dra en kolumnrubrik hit och släpp den för att gruppera efter den kolumnen.'
         },
         search: {
+          aria: {
+            selected: 'Rad är vald',
+            notSelected: 'Rad är inte vald'
+          },
           placeholder: 'Sök...',
           showingItems: 'Visar artiklar:',
           selectedItems: 'Valda artiklar:',
@@ -30,6 +44,7 @@
         sort: {
           ascending: 'Sortera stigande',
           descending: 'Sortera fallande',
+          none: 'Ingen sortering',
           remove: 'Inaktivera sortering'
         },
         column: {
@@ -47,7 +62,13 @@
           pinRight: 'Fäst höger',
           unpin: 'Lösgör'
         },
+        columnMenu: {
+          close: 'Stäng'
+        },
         gridMenu: {
+          aria: {
+              buttonLabel: 'Meny'
+          },
           columns: 'Kolumner:',
           importerTitle: 'Importera fil',
           exporterAllAsCsv: 'Exportera all data som CSV',
@@ -56,6 +77,9 @@
           exporterAllAsPdf: 'Exportera all data som PDF',
           exporterVisibleAsPdf: 'Exportera synlig data som PDF',
           exporterSelectedAsPdf: 'Exportera markerad data som PDF',
+          exporterAllAsExcel: 'Exportera all data till Excel',
+          exporterVisibleAsExcel: 'Exportera synlig data till Excel',
+          exporterSelectedAsExcel: 'Exportera markerad data till Excel',
           clearAllFilters: 'Rengör alla filter'
         },
         importer: {
@@ -66,8 +90,33 @@
           jsonNotArray: 'Importerad JSON-fil måste innehålla ett fält. Import avbruten.'
         },
         pagination: {
+          aria: {
+            pageToFirst: 'Gå till första sidan',
+            pageBack: 'Gå en sida bakåt',
+            pageSelected: 'Vald sida',
+            pageForward: 'Gå en sida framåt',
+            pageToLast: 'Gå till sista sidan'
+          },
           sizes: 'Artiklar per sida',
-          totalItems: 'Artiklar'
+          totalItems: 'Artiklar',
+          through: 'genom',
+          of: 'av'
+        },
+        grouping: {
+          group: 'Gruppera',
+          ungroup: 'Dela upp',
+          aggregate_count: 'Agg: Antal',
+          aggregate_sum: 'Agg: Summa',
+          aggregate_max: 'Agg: Max',
+          aggregate_min: 'Agg: Min',
+          aggregate_avg: 'Agg: Genomsnitt',
+          aggregate_remove: 'Agg: Ta bort'
+        },
+        validate: {
+          error: 'Error:',
+          minLength: 'Värdet borde vara minst THRESHOLD tecken långt.',
+          maxLength: 'Värdet borde vara max THRESHOLD tecken långt.',
+          required: 'Ett värde krävs.'
         }
       });
       return $delegate;
