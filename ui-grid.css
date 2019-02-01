@@ -1,39 +1,7 @@
 /*!
- * ui-grid - v4.6.6 - 2018-11-16
- * Copyright (c) 2018 ; License: MIT 
+ * ui-grid - v4.7.0 - 2019-02-01
+ * Copyright (c) 2019 ; License: MIT 
  */
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/*---------------------------------------------------
-    LESS Elements 0.9
-  ---------------------------------------------------
-    A set of useful LESS mixins
-    More info at: http://lesselements.com
-  ---------------------------------------------------*/
 .ui-grid {
   border: 1px solid #d4d4d4;
   box-sizing: content-box;
@@ -897,32 +865,6 @@ select.ui-grid-filter-select:hover {
   }
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-cell-focus {
   outline: 0;
   background-color: #b3c4c7;
@@ -949,32 +891,6 @@ select.ui-grid-filter-select:hover {
   clip: rect(0px, 0px, 0px, 0px);
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-cell input {
   border-radius: inherit;
   padding: 0;
@@ -999,32 +915,6 @@ select.ui-grid-filter-select:hover {
   border: 1px solid #d4d4d4;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-viewport .ui-grid-empty-base-layer-container {
   position: absolute;
   overflow: hidden;
@@ -1032,32 +922,6 @@ select.ui-grid-filter-select:hover {
   z-index: -1;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .expandableRow .ui-grid-row:nth-child(odd) .ui-grid-cell {
   background-color: #fdfdfd;
 }
@@ -1075,116 +939,12 @@ select.ui-grid-filter-select:hover {
   border: 1px solid #d4d4d4;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-tree-header-row {
   font-weight: bold !important;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .movingColumn {
   position: absolute;
   top: 0;
@@ -1495,32 +1255,6 @@ select.ui-grid-filter-select:hover {
   text-decoration: none;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-pinned-container {
   position: absolute;
   display: inline;
@@ -1589,32 +1323,6 @@ select.ui-grid-filter-select:hover {
   background-color: #aeaeae;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-column-resizer {
   top: 0;
   bottom: 0;
@@ -1654,32 +1362,6 @@ select.ui-grid-filter-select:hover {
   background-color: #aeaeae;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-row-saving .ui-grid-cell {
   color: #848484 !important;
 }
@@ -1690,32 +1372,6 @@ select.ui-grid-filter-select:hover {
   color: #FF0000 !important;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-row.ui-grid-row-selected > [ui-grid-row] > .ui-grid-cell {
   background-color: #C9DDE1;
 }
@@ -1742,63 +1398,11 @@ select.ui-grid-filter-select:hover {
   opacity: 1;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-tree-row-header-buttons.ui-grid-tree-header {
   cursor: pointer;
   opacity: 1;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-tree-header-row {
   font-weight: bold !important;
 }
@@ -1806,32 +1410,6 @@ select.ui-grid-filter-select:hover {
   pointer-events: all;
 }
 
-/* This file contains variable declarations (do not remove this line) */
-/*-- VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
-/**
-* @section Grid styles
-*/
-/**
-* @section Header styles
-*/
-/** @description Colors for header gradient */
-/**
-* @section Grid body styles
-*/
-/** @description Colors used for row alternation */
-/**
-* @section Grid Menu colors
-*/
-/**
-* @section Sort arrow colors
-*/
-/**
-* @section Scrollbar styles
-*/
-/**
-* @section font library path
-*/
-/*-- END VARIABLES (DO NOT REMOVE THESE COMMENTS) --*/
 .ui-grid-cell-contents.invalid {
   border: 1px solid #fc8f8f;
 }
