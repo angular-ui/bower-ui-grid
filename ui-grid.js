@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.7.1 - 2019-02-07
+ * ui-grid - v4.8.0 - 2019-05-02
  * Copyright (c) 2019 ; License: MIT 
  */
 
@@ -2618,7 +2618,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
                   $scope.col.filters.forEach( function(filter, i) {
                     filterDeregisters.push($scope.$watch('col.filters[' + i + '].term', function(n, o) {
                       if (n !== o) {
-                        uiGridCtrl.grid.api.core.raise.filterChanged();
+                        uiGridCtrl.grid.api.core.raise.filterChanged( $scope.col );
                         uiGridCtrl.grid.api.core.notifyDataChange( uiGridConstants.dataChange.COLUMN );
                         uiGridCtrl.grid.queueGridRefresh();
                       }
@@ -4838,6 +4838,9 @@ function uiGridDirective($window, gridUtil, uiGridConstants) {
 
           // Resize the grid on window resize events
           function gridResize() {
+            if (!$elm.is(':visible')) {
+              return;
+            }
             grid.gridWidth = $scope.gridWidth = gridUtil.elementWidth($elm);
             grid.gridHeight = $scope.gridHeight = gridUtil.elementHeight($elm);
 
@@ -19547,6 +19550,14 @@ module.filter('px', function() {
           jsonNotArray: 'El archivo json importado debe contener un array, abortando.'
         },
         pagination: {
+          aria: {
+										pageToFirst: 'Página para primero',
+										pageBack: 'Página atrás',
+										pageSelected: 'Página seleccionada',
+										pageForward: 'Avance de página',
+										pageToLast: 'Página para durar'
+									},
+          through: 'mediante',
           sizes: 'registros por página',
           totalItems: 'registros',
           of: 'de'
@@ -21233,7 +21244,10 @@ module.filter('px', function() {
           exporterAllAsPdf: 'Экспортировать всё в PDF',
           exporterVisibleAsPdf: 'Экспортировать видимые данные в PDF',
           exporterSelectedAsPdf: 'Экспортировать выбранные данные в PDF',
-          clearAllFilters: 'Очистите все фильтры'
+          exporterAllAsExcel: 'Экспортировать всё в Excel',
+          exporterVisibleAsExcel: 'Экспортировать видимые данные в Excel',
+          exporterSelectedAsExcel: 'Экспортировать выбранные данные в Excel',
+          clearAllFilters: 'Очистить все фильтры'
         },
         importer: {
           noHeaders: 'Не удалось получить названия столбцов, есть ли в файле заголовок?',
@@ -26512,7 +26526,7 @@ module.filter('px', function() {
                     delete currentCol.filters[index].term;
                   }
                 });
-                grid.api.core.raise.filterChanged();
+                grid.api.core.raise.filterChanged( currentCol );
               }
 
               if ( !!grid.api.pinning && grid.options.savePinning && currentCol.renderContainer !== columnState.pinned ) {

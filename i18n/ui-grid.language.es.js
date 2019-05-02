@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.7.1 - 2019-02-07
+ * ui-grid - v4.8.0 - 2019-05-02
  * Copyright (c) 2019 ; License: MIT 
  */
 
@@ -69,6 +69,14 @@
           jsonNotArray: 'El archivo json importado debe contener un array, abortando.'
         },
         pagination: {
+          aria: {
+										pageToFirst: 'Página para primero',
+										pageBack: 'Página atrás',
+										pageSelected: 'Página seleccionada',
+										pageForward: 'Avance de página',
+										pageToLast: 'Página para durar'
+									},
+          through: 'mediante',
           sizes: 'registros por página',
           totalItems: 'registros',
           of: 'de'

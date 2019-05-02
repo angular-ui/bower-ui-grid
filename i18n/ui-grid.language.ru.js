@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.7.1 - 2019-02-07
+ * ui-grid - v4.8.0 - 2019-05-02
  * Copyright (c) 2019 ; License: MIT 
  */
 
@@ -72,7 +72,10 @@
           exporterAllAsPdf: 'Экспортировать всё в PDF',
           exporterVisibleAsPdf: 'Экспортировать видимые данные в PDF',
           exporterSelectedAsPdf: 'Экспортировать выбранные данные в PDF',
-          clearAllFilters: 'Очистите все фильтры'
+          exporterAllAsExcel: 'Экспортировать всё в Excel',
+          exporterVisibleAsExcel: 'Экспортировать видимые данные в Excel',
+          exporterSelectedAsExcel: 'Экспортировать выбранные данные в Excel',
+          clearAllFilters: 'Очистить все фильтры'
         },
         importer: {
           noHeaders: 'Не удалось получить названия столбцов, есть ли в файле заголовок?',
