@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.8.0 - 2019-05-02
+ * ui-grid - v4.8.1 - 2019-06-27
  * Copyright (c) 2019 ; License: MIT 
  */
 
@@ -2186,6 +2186,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
             };
 
             $scope.$on( '$destroy', function() {
+              delete $scope.col.filterable;
               delete $scope.col.updateFilters;
             });
           },
@@ -4298,7 +4299,7 @@ function ($compile, $timeout, $window, $document, gridUtil, uiGridConstants, i18
    </div>
    </doc:source>
    <doc:scenario>
-      it('should apply the right class to the element', function () {
+      xit('should apply the right class to the element', function () {
         element(by.css('.blah')).getCssValue('border-top-width')
           .then(function(c) {
             expect(c).toContain('1px');
@@ -4838,7 +4839,7 @@ function uiGridDirective($window, gridUtil, uiGridConstants) {
 
           // Resize the grid on window resize events
           function gridResize() {
-            if (!$elm.is(':visible')) {
+            if (!gridUtil.isVisible($elm)) {
               return;
             }
             grid.gridWidth = $scope.gridWidth = gridUtil.elementWidth($elm);
@@ -12462,6 +12463,10 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
 
     },
 
+    isVisible: function (elem) {
+      return !!( elem[0].offsetWidth || elem[0].offsetHeight || elem[0].getClientRects().length )
+    },
+
     // Thanks to http://stackoverflow.com/a/13382873/888165
     getScrollbarWidth: function() {
         var outer = document.createElement("div");
@@ -12475,6 +12480,7 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
         var widthNoScroll = outer.offsetWidth;
         // force scrollbars
         outer.style.overflow = "scroll";
+        outer.style.position = "absolute"; // force Firefox to draw a scrollbar
 
         // add innerdiv
         var inner = document.createElement("div");
@@ -14320,7 +14326,7 @@ module.filter('px', function() {
 
                 // Undbind the touchend handler, we don't need it anymore
                 $elm.off('touchend', touchEnd);
-              });
+              }).catch(angular.noop);
             }
 
             // Cancel any touchstart timeout
@@ -20444,7 +20450,7 @@ module.filter('px', function() {
           exporterAllAsExcel: 'Exporteer alle data als excel',
           exporterVisibleAsExcel: 'Exporteer zichtbare data als excel',
           exporterSelectedAsExcel: 'Exporteer alle data als excel',
-          clearAllFilters: 'Reinig alle filters'
+          clearAllFilters: 'Alle filters wissen'
         },
         importer: {
           noHeaders: 'Kolomnamen kunnen niet worden afgeleid. Heeft het bestand een header?',
@@ -21422,7 +21428,7 @@ module.filter('px', function() {
           filterLabel: "Filter för kolumn: "
         },
         aggregate: {
-          label: 'Artiklar'
+          label: 'Poster'
         },
         groupPanel: {
           description: 'Dra en kolumnrubrik hit och släpp den för att gruppera efter den kolumnen.'
@@ -21433,9 +21439,9 @@ module.filter('px', function() {
             notSelected: 'Rad är inte vald'
           },
           placeholder: 'Sök...',
-          showingItems: 'Visar artiklar:',
-          selectedItems: 'Valda artiklar:',
-          totalItems: 'Antal artiklar:',
+          showingItems: 'Visar:',
+          selectedItems: 'Valda:',
+          totalItems: 'Antal:',
           size: 'Sidstorlek:',
           first: 'Första sidan',
           next: 'Nästa sida',
@@ -21484,7 +21490,7 @@ module.filter('px', function() {
           exporterAllAsExcel: 'Exportera all data till Excel',
           exporterVisibleAsExcel: 'Exportera synlig data till Excel',
           exporterSelectedAsExcel: 'Exportera markerad data till Excel',
-          clearAllFilters: 'Rengör alla filter'
+          clearAllFilters: 'Nollställ alla filter'
         },
         importer: {
           noHeaders: 'Kolumnnamn kunde inte härledas. Har filen ett sidhuvud?',
@@ -21501,8 +21507,8 @@ module.filter('px', function() {
             pageForward: 'Gå en sida framåt',
             pageToLast: 'Gå till sista sidan'
           },
-          sizes: 'Artiklar per sida',
-          totalItems: 'Artiklar',
+          sizes: 'Poster per sida',
+          totalItems: 'Poster',
           through: 'genom',
           of: 'av'
         },
