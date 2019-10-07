@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.8.1 - 2019-06-27
+ * ui-grid - v4.8.2 - 2019-10-07
  * Copyright (c) 2019 ; License: MIT 
  */
 .ui-grid {
@@ -485,8 +485,6 @@ select.ui-grid-filter-select:hover {
 }
 .ui-grid-footer-viewport,
 .ui-grid-footer-canvas {
-  display: flex;
-  flex: 1 1 auto;
   height: 100%;
 }
 .ui-grid-footer-viewport {
