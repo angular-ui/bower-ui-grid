@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.8.2 - 2019-10-07
+ * ui-grid - v4.8.3 - 2019-10-21
  * Copyright (c) 2019 ; License: MIT 
  */
 
@@ -17410,9 +17410,8 @@ module.filter('px', function() {
          * @ngdoc function
          * @name formatFieldAsExcel
          * @methodOf  ui.grid.exporter.service:uiGridExporterService
-         * @description Renders a single field as a csv field, including
-         * quotes around the value
-         * @param {field} field the field to be turned into a csv string,
+         * @description Renders a single field as a excel-ified field
+         * @param {field} field the field to be excel-ified,
          * may be of any type
          * @returns {string} a excel-ified version of the field
          */
@@ -17420,14 +17419,11 @@ module.filter('px', function() {
           if (field.value == null) { // we want to catch anything null-ish, hence just == not ===
             return '';
           }
-          if (typeof(field.value) === 'number') {
+          if ((typeof(field.value) === 'number') || (typeof(field.value) === 'string')) {
             return field.value;
           }
           if (typeof(field.value) === 'boolean') {
             return (field.value ? 'TRUE' : 'FALSE') ;
-          }
-          if (typeof(field.value) === 'string') {
-            return field.value.replace(/"/g,'""');
           }
 
           return JSON.stringify(field.value);
@@ -27561,7 +27557,7 @@ module.filter('px', function() {
           }
 
           function selectButtonKeyDown(row, evt) {
-            if (evt.keyCode === 32) {
+            if (evt.keyCode === 32 || evt.keyCode === 13) {
               evt.preventDefault();
               selectButtonClick(row, evt);
             }
@@ -29459,6 +29455,11 @@ module.filter('px', function() {
           evt.stopPropagation();
           uiGridTreeBaseService.toggleRowTreeState(self, row, evt);
         };
+        $scope.treeButtonKeyDown = function (row, evt) {
+          if (evt.keyCode === 32 || evt.keyCode === 13) {
+            $scope.treeButtonClick(row, evt);
+          }
+        };
       }
     };
   }]);
@@ -29493,6 +29494,11 @@ module.filter('px', function() {
             uiGridTreeBaseService.collapseAllRows(self, evt);
           } else {
             uiGridTreeBaseService.expandAllRows(self, evt);
+          }
+        };
+        $scope.headerButtonKeyDown = function (evt) {
+          if (evt.keyCode === 32 || evt.keyCode === 13) {
+            $scope.headerButtonClick(self, evt);
           }
         };
       }
@@ -30519,17 +30525,17 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/selectionRowHeaderButtons',
-    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok clickable\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
+    "<div class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok clickable\" ng-class=\"{'ui-grid-row-selected': row.isSelected}\" tabindex=\"0\" ng-click=\"selectButtonClick(row, $event)\" ng-keydown=\"selectButtonKeyDown(row, $event)\" role=\"checkbox\" ng-model=\"row.isSelected\">&nbsp;</div>"
   );
 
 
   $templateCache.put('ui-grid/selectionSelectAllButtons',
-    "<div role=\"button\" class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
+    "<div role=\"button\" tabindex=\"0\" class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
   );
 
 
   $templateCache.put('ui-grid/treeBaseExpandAllButtons',
-    "<div class=\"ui-grid-tree-base-row-header-buttons\" ng-class=\"headerButtonClass()\" ng-click=\"headerButtonClick($event)\"></div>"
+    "<div class=\"ui-grid-tree-base-row-header-buttons\" tabindex=\"0\" ng-class=\"headerButtonClass()\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
   );
 
 
@@ -30544,7 +30550,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/treeBaseRowHeaderButtons',
-    "<div class=\"ui-grid-tree-base-row-header-buttons\" ng-class=\"{'ui-grid-tree-base-header': row.treeLevel > -1 }\" ng-click=\"treeButtonClick(row, $event)\"><i ng-class=\"treeButtonClass(row)\" ng-style=\"{'padding-left': grid.options.treeIndent * row.treeLevel + 'px'}\"></i> &nbsp;</div>"
+    "<div class=\"ui-grid-tree-base-row-header-buttons\" ng-class=\"{'ui-grid-tree-base-header': row.treeLevel > -1 }\" tabindex=\"0\" ng-keydown=\"treeButtonKeyDown(row, $event)\" ng-click=\"treeButtonClick(row, $event)\"><i ng-class=\"treeButtonClass(row)\" ng-style=\"{'padding-left': grid.options.treeIndent * row.treeLevel + 'px'}\"></i> &nbsp;</div>"
   );
 
 
