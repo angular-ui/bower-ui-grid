@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.8.5 - 2020-09-14
+ * ui-grid - v4.9.0 - 2020-09-27
  * Copyright (c) 2020 ; License: MIT 
  */
 
@@ -13529,6 +13529,11 @@ module.filter('px', function() {
         }
       };
 
+      function getMissingText(path) {
+        $log.warn(i18nConstants.MISSING + path);
+        return '';
+      }
+
       var service = {
 
         /**
@@ -13605,14 +13610,13 @@ module.filter('px', function() {
         getSafeText: function (path, lang) {
           var language = lang || service.getCurrentLang(),
             trans = langCache.get(language),
-            missing = i18nConstants.MISSING + path,
             getter = $parse(path);
 
           if (!trans) {
-            return missing;
+            return getMissingText(path);
           }
 
-          return getter(trans) || missing;
+          return getter(trans) || getMissingText(path);
         },
 
         /**
@@ -14745,6 +14749,9 @@ module.filter('px', function() {
                     }
                   });
 
+                  if ($elm[0]) {
+                    $elm[0].focus();
+                  }
                   $elm.on('blur', $scope.stopEdit);
                 });
 
@@ -24799,6 +24806,9 @@ module.filter('px', function() {
           if (position === 'left') {
             // Get the column to the left of this one
             var colIndex = renderContainer.visibleColumnCache.indexOf(col);
+            if (colIndex === 0) {
+              return renderContainer.visibleColumnCache[0];
+            }
             return renderContainer.visibleColumnCache[colIndex - 1 * rtlMultiplier];
           } else {
             return col;
