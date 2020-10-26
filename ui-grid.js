@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.9.0 - 2020-09-27
+ * ui-grid - v4.9.1 - 2020-10-26
  * Copyright (c) 2020 ; License: MIT 
  */
 
@@ -13017,7 +13017,7 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
       return rtlScrollType.type;
     }
 
-    var definer = angular.element('<div dir="rtl" style="font-size: 14px; width: 1px; height: 1px; position: absolute; top: -1000px; overflow: scroll">A</div>')[0],
+    var definer = angular.element('<div dir="rtl" style="width: 1px; height: 1px; position: fixed; top: 0px; left: 0px; overflow: hidden"><div style="width: 2px"><span style="display: inline-block; width: 1px"></span><span style="display: inline-block; width: 1px"></span></div></div>')[0],
         type = 'reverse';
 
     document.body.appendChild(definer);
@@ -13026,9 +13026,16 @@ module.service('gridUtil', ['$log', '$window', '$document', '$http', '$templateC
       type = 'default';
     }
     else {
-      definer.scrollLeft = 1;
-      if (definer.scrollLeft === 0) {
-        type = 'negative';
+      if (typeof Element !== 'undefined' && Element.prototype.scrollIntoView) {
+        definer.children[0].children[1].scrollIntoView();
+        if (definer.scrollLeft < 0) {
+          type = 'negative';
+        }
+      } else {
+        definer.scrollLeft = 1;
+        if (definer.scrollLeft === 0) {
+          type = 'negative';
+        }
       }
     }
 
@@ -16811,21 +16818,24 @@ module.filter('px', function() {
          * recurse down into the children to get to the raw data element
          * which is a row without children (a leaf).
          * @param {Node} aNode the tree node on the grid
-         * @returns {Array} an array of leaf nodes
+         * @returns {Array} an array with all child nodes from aNode
          */
         getRowsFromNode: function(aNode) {
           var rows = [];
-          for (var i = 0; i<aNode.children.length; i++) {
-            if (aNode.children[i].children && aNode.children[i].children.length === 0) {
-              rows.push(aNode.children[i]);
-            } else {
-              var nodeRows = this.getRowsFromNode(aNode.children[i]);
-              rows = rows.concat(nodeRows);
-            }
+
+          // Push parent node if it is not undefined and has values other than 'children'
+          var nodeKeys = aNode ? Object.keys(aNode) : ['children'];
+          if (nodeKeys.length > 1 || nodeKeys[0] != 'children') {
+            rows.push(aNode);
+          }
+
+          if (aNode && aNode.children && aNode.children.length > 0) {
+              for (var i = 0; i < aNode.children.length; i++) {
+                  rows = rows.concat(this.getRowsFromNode(aNode.children[i]));
+              }
           }
           return rows;
         },
-
         /**
          * @ngdoc function
          * @name getDataSorted
