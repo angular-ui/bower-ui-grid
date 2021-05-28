@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.0 - 2021-02-01
+ * ui-grid - v4.10.1 - 2021-05-28
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -23,6 +23,9 @@
           next: 'Página Siguiente',
           previous: 'Página Anterior',
           last: 'Última Página'
+        },
+        selection: {
+          selectAll: 'Seleccionar Todo'
         },
         menu: {
           text: 'Elegir columnas:'

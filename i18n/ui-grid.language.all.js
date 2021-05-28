@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.0 - 2021-02-01
+ * ui-grid - v4.10.1 - 2021-05-28
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -552,6 +552,9 @@
           previous: 'Pàgina Anterior',
           last: 'Última Pàgina'
         },
+        selection: {
+          selectAll: 'Seleccionar Todo'
+        },
         menu: {
           text: 'Triar Columnes:'
         },
@@ -658,6 +661,9 @@
           next: 'Página Siguiente',
           previous: 'Página Anterior',
           last: 'Última Página'
+        },
+        selection: {
+          selectAll: 'Seleccionar Todo'
         },
         menu: {
           text: 'Elegir columnas:'
@@ -920,6 +926,9 @@
           next: 'Page Suivante',
           previous: 'Page précédente',
           last: 'Dernière page'
+        },
+        selection: {
+          selectAll: 'Tout Sélectionner'
         },
         menu: {
           text: 'Choisir des colonnes :'
@@ -1277,6 +1286,9 @@
           next: 'Prossima',
           previous: 'Precedente',
           last: 'Ultima'
+        },
+        selection: {
+          selectAll: 'Seleziona Tutto'
         },
         menu: {
           text: 'Scegli le colonne:'
@@ -1894,6 +1906,9 @@
           previous: 'Página Anterior',
           last: 'Última Página'
         },
+        selection: {
+          selectAll: 'Selecionar Tudo'
+        },
         menu: {
           text: 'Selecione as colunas:'
         },
@@ -2014,6 +2029,9 @@
           next: 'Próxima Página',
           previous: 'Página Anterior',
           last: 'Última Página'
+        },
+        selection: {
+          selectAll: 'Selecionar Tudo'
         },
         menu: {
           text: 'Selecione as colunas:'

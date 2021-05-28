@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.0 - 2021-02-01
+ * ui-grid - v4.10.1 - 2021-05-28
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -2669,9 +2669,7 @@ function ($timeout, gridUtil, uiGridConstants, uiGridColumnMenuService, $documen
               var oldFilterable = $scope.col.filterable;
               $scope.col.filterable = Boolean(uiGridCtrl.grid.options.enableFiltering && $scope.col.enableFiltering);
 
-              $scope.$applyAsync(function () {
-                setFilter(oldFilterable !== $scope.col.filterable);
-              });
+              setFilter(oldFilterable !== $scope.col.filterable);
 
               // figure out whether we support column menus
               $scope.colMenu = ($scope.col.grid.options && $scope.col.grid.options.enableColumnMenus !== false &&
@@ -4993,6 +4991,9 @@ function uiGridDirective($window, gridUtil, uiGridConstants) {
           next: 'Next Page',
           previous: 'Previous Page',
           last: 'Last Page'
+        },
+        selection: {
+          selectAll: 'Select All'
         },
         menu: {
           text: 'Choose Columns:'
@@ -19425,6 +19426,9 @@ module.filter('px', function() {
           previous: 'Pàgina Anterior',
           last: 'Última Pàgina'
         },
+        selection: {
+          selectAll: 'Seleccionar Todo'
+        },
         menu: {
           text: 'Triar Columnes:'
         },
@@ -19531,6 +19535,9 @@ module.filter('px', function() {
           next: 'Página Siguiente',
           previous: 'Página Anterior',
           last: 'Última Página'
+        },
+        selection: {
+          selectAll: 'Seleccionar Todo'
         },
         menu: {
           text: 'Elegir columnas:'
@@ -19793,6 +19800,9 @@ module.filter('px', function() {
           next: 'Page Suivante',
           previous: 'Page précédente',
           last: 'Dernière page'
+        },
+        selection: {
+          selectAll: 'Tout Sélectionner'
         },
         menu: {
           text: 'Choisir des colonnes :'
@@ -20150,6 +20160,9 @@ module.filter('px', function() {
           next: 'Prossima',
           previous: 'Precedente',
           last: 'Ultima'
+        },
+        selection: {
+          selectAll: 'Seleziona Tutto'
         },
         menu: {
           text: 'Scegli le colonne:'
@@ -20767,6 +20780,9 @@ module.filter('px', function() {
           previous: 'Página Anterior',
           last: 'Última Página'
         },
+        selection: {
+          selectAll: 'Selecionar Tudo'
+        },
         menu: {
           text: 'Selecione as colunas:'
         },
@@ -20887,6 +20903,9 @@ module.filter('px', function() {
           next: 'Próxima Página',
           previous: 'Página Anterior',
           last: 'Última Página'
+        },
+        selection: {
+          selectAll: 'Selecionar Tudo'
         },
         menu: {
           text: 'Selecione as colunas:'
@@ -27422,7 +27441,7 @@ module.filter('px', function() {
         clearSelectedRows: function (grid, evt) {
           var changedRows = [];
           service.getSelectedRows(grid).forEach(function (row) {
-            if (row.isSelected) {
+            if (row.isSelected && row.enableSelection !== false && grid.options.isRowSelectable(row) !== false) {
               row.setSelected(false);
               service.decideRaiseSelectionEvent(grid, row, changedRows, evt);
             }
@@ -30462,7 +30481,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/uiGridHeaderCell',
-    "<div role=\"columnheader\" ng-class=\"{ 'sortable': sortable, 'ui-grid-header-cell-last-col': isLastCol }\" ui-grid-one-bind-aria-labelledby-grid=\"col.uid + '-header-text ' + col.uid + '-sortdir-text'\" aria-sort=\"{{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending' : (!col.sort.direction ? 'none' : 'other'))}}\"><div role=\"button\" tabindex=\"0\" ng-keydown=\"handleKeyDown($event)\" class=\"ui-grid-cell-contents ui-grid-header-cell-primary-focus\" col-index=\"renderIndex\" title=\"TOOLTIP\"><span class=\"ui-grid-header-cell-label\" ui-grid-one-bind-id-grid=\"col.uid + '-header-text'\">{{ col.displayName CUSTOM_FILTERS }}</span> <span ui-grid-one-bind-id-grid=\"col.uid + '-sortdir-text'\" ui-grid-visible=\"col.sort.direction\" aria-label=\"{{getSortDirectionAriaLabel()}}\"><i ng-class=\"{ 'ui-grid-icon-up-dir': col.sort.direction == asc, 'ui-grid-icon-down-dir': col.sort.direction == desc, 'ui-grid-icon-blank': !col.sort.direction }\" title=\"{{isSortPriorityVisible() ? i18n.headerCell.priority + ' ' + ( col.sort.priority + 1 )  : null}}\" aria-hidden=\"true\"></i> <sub ui-grid-visible=\"isSortPriorityVisible()\" class=\"ui-grid-sort-priority-number\">{{col.sort.priority + 1}}</sub></span></div><div role=\"button\" tabindex=\"0\" ui-grid-one-bind-id-grid=\"col.uid + '-menu-button'\" class=\"ui-grid-column-menu-button\" ng-if=\"grid.options.enableColumnMenus && !col.isRowHeader  && col.colDef.enableColumnMenu !== false\" ng-click=\"toggleMenu($event)\" ng-keydown=\"headerCellArrowKeyDown($event)\" ui-grid-one-bind-aria-label=\"i18n.headerCell.aria.columnMenuButtonLabel\" aria-haspopup=\"true\"><i class=\"ui-grid-icon-angle-down\" aria-hidden=\"true\">&nbsp;</i></div><div ui-grid-filter ng-if=\"col.filterContainer === 'headerCell'\"></div></div>"
+    "<div role=\"columnheader\" ng-class=\"{ 'sortable': sortable, 'ui-grid-header-cell-last-col': isLastCol }\" ui-grid-one-bind-aria-labelledby-grid=\"col.uid + '-header-text ' + col.uid + '-sortdir-text'\" aria-sort=\"{{col.sort.direction == asc ? 'ascending' : ( col.sort.direction == desc ? 'descending' : (!col.sort.direction ? 'none' : 'other'))}}\"><div role=\"button\" tabindex=\"0\" ng-keydown=\"handleKeyDown($event)\" class=\"ui-grid-cell-contents ui-grid-header-cell-primary-focus\" col-index=\"renderIndex\" title=\"TOOLTIP\"><span class=\"ui-grid-header-cell-label\" ui-grid-one-bind-id-grid=\"col.uid + '-header-text'\">{{ col.displayName CUSTOM_FILTERS }}</span> <span ui-grid-one-bind-id-grid=\"col.uid + '-sortdir-text'\" ui-grid-visible=\"col.sort.direction\" aria-label=\"{{getSortDirectionAriaLabel()}}\"><i ng-class=\"{ 'ui-grid-icon-up-dir': col.sort.direction == asc, 'ui-grid-icon-down-dir': col.sort.direction == desc, 'ui-grid-icon-blank': !col.sort.direction }\" title=\"{{isSortPriorityVisible() ? i18n.headerCell.priority + ' ' + ( col.sort.priority + 1 )  : null}}\" aria-hidden=\"true\"></i> <sub ui-grid-visible=\"isSortPriorityVisible()\" class=\"ui-grid-sort-priority-number\">{{col.sort.priority + 1}}</sub></span></div><div role=\"button\" tabindex=\"0\" ui-grid-one-bind-id-grid=\"col.uid + '-menu-button'\" class=\"ui-grid-column-menu-button\" ng-if=\"grid.options.enableColumnMenus && !col.isRowHeader  && col.colDef.enableColumnMenu !== false\" ng-click=\"toggleMenu($event)\" ng-keydown=\"headerCellArrowKeyDown($event)\" ui-grid-one-bind-aria-label=\"i18n.headerCell.aria.columnMenuButtonLabel\" aria-haspopup=\"true\"><i class=\"ui-grid-icon-angle-down\" aria-hidden=\"true\">&nbsp;</i></div><div ui-grid-filter ng-hide=\"col.filterContainer === 'columnMenu'\"></div></div>"
   );
 
 
@@ -30572,7 +30591,7 @@ angular.module('ui.grid').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('ui-grid/selectionSelectAllButtons',
-    "<div role=\"button\" tabindex=\"0\" class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
+    "<div role=\"checkbox\" tabindex=\"0\" class=\"ui-grid-selection-row-header-buttons ui-grid-icon-ok\" ui-grid-one-bind-aria-label=\"'selection.selectAll' | t\" aria-checked=\"{{grid.selection.selectAll}}\" ng-class=\"{'ui-grid-all-selected': grid.selection.selectAll}\" ng-click=\"headerButtonClick($event)\" ng-keydown=\"headerButtonKeyDown($event)\"></div>"
   );
 
 
