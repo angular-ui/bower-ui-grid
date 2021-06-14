@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.1 - 2021-05-28
+ * ui-grid - v4.10.2 - 2021-06-14
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -553,7 +553,11 @@
           last: 'Última Pàgina'
         },
         selection: {
-          selectAll: 'Seleccionar Todo'
+          aria: {
+            row: 'Fila'
+          },
+          selectAll: 'Seleccionar Todo',
+          displayName: 'Seleccionar Fila'
         },
         menu: {
           text: 'Triar Columnes:'
@@ -663,7 +667,11 @@
           last: 'Última Página'
         },
         selection: {
-          selectAll: 'Seleccionar Todo'
+          aria: {
+            row: 'Fila'
+          },
+          selectAll: 'Seleccionar Todo',
+          displayName: 'Seleccionar Fila'
         },
         menu: {
           text: 'Elegir columnas:'
@@ -928,7 +936,11 @@
           last: 'Dernière page'
         },
         selection: {
-          selectAll: 'Tout Sélectionner'
+          aria: {
+            row: 'Ligne'
+          },
+          selectAll: 'Tout Sélectionner',
+          displayName: 'Sélectionnez la ligne'
         },
         menu: {
           text: 'Choisir des colonnes :'
@@ -1288,7 +1300,11 @@
           last: 'Ultima'
         },
         selection: {
-          selectAll: 'Seleziona Tutto'
+          aria: {
+            row: 'Riga'
+          },
+          selectAll: 'Seleccionar Todo',
+          displayName: 'Seleziona Riga'
         },
         menu: {
           text: 'Scegli le colonne:'
@@ -1907,7 +1923,11 @@
           last: 'Última Página'
         },
         selection: {
-          selectAll: 'Selecionar Tudo'
+          aria: {
+            row: 'Linha'
+          },
+          selectAll: 'Selecionar Tudo',
+          displayName: 'Caixa de Seleção da Linha'
         },
         menu: {
           text: 'Selecione as colunas:'
@@ -2031,7 +2051,11 @@
           last: 'Última Página'
         },
         selection: {
-          selectAll: 'Selecionar Tudo'
+          aria: {
+            row: 'Linha'
+          },
+          selectAll: 'Selecionar Tudo',
+          displayName: 'Caixa de Seleção da Linha'
         },
         menu: {
           text: 'Selecione as colunas:'

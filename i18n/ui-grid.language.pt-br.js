@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.1 - 2021-05-28
+ * ui-grid - v4.10.2 - 2021-06-14
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -39,7 +39,11 @@
           last: 'Última Página'
         },
         selection: {
-          selectAll: 'Selecionar Tudo'
+          aria: {
+            row: 'Linha'
+          },
+          selectAll: 'Selecionar Tudo',
+          displayName: 'Caixa de Seleção da Linha'
         },
         menu: {
           text: 'Selecione as colunas:'

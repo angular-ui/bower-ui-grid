@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.1 - 2021-05-28
+ * ui-grid - v4.10.2 - 2021-06-14
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -25,7 +25,11 @@
           last: 'Ultima'
         },
         selection: {
-          selectAll: 'Seleziona Tutto'
+          aria: {
+            row: 'Riga'
+          },
+          selectAll: 'Seleccionar Todo',
+          displayName: 'Seleziona Riga'
         },
         menu: {
           text: 'Scegli le colonne:'
