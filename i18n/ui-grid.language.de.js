@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.2 - 2021-06-14
+ * ui-grid - v4.10.3 - 2021-08-01
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -37,6 +37,13 @@
           next: 'Nächste Seite',
           previous: 'Vorherige Seite',
           last: 'Letzte Seite'
+        },
+        selection: {
+          aria: {
+            row: 'Zeile'
+          },
+          selectAll: 'Alle auswählen',
+          displayName: 'Zeilenauswahlkasten'
         },
         menu: {
           text: 'Spalten auswählen:'
@@ -111,6 +118,12 @@
             aggregate_min: 'Agg: Minimum',
             aggregate_avg: 'Agg: Mittelwert',
             aggregate_remove: 'Aggregation entfernen'
+        },
+        validate: {
+          error: 'Fehler:',
+          minLength: 'Der Wert sollte mindestens THRESHOLD Zeichen lang sein.',
+          maxLength: 'Der Wert sollte maximal THRESHOLD Zeichen lang sein.',
+          required: 'Ein Wert wird benötigt.'
         }
       });
       return $delegate;
