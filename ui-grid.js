@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.10.3 - 2021-08-01
+ * ui-grid - v4.11.0 - 2021-08-12
  * Copyright (c) 2021 ; License: MIT 
  */
 
@@ -1663,6 +1663,9 @@ function ( i18nService, uiGridConstants, gridUtil ) {
       $scope.$on( '$destroy', deregFunction );
     },
 
+    getGridOption: function( $scope, option ) {
+      return typeof($scope.grid) !== 'undefined' && $scope.grid && $scope.grid.options && $scope.grid.options[option];
+    },
 
     /**
      * @ngdoc boolean
@@ -1680,7 +1683,7 @@ function ( i18nService, uiGridConstants, gridUtil ) {
      *
      */
     sortable: function( $scope ) {
-      return Boolean( $scope.grid.options.enableSorting && typeof($scope.col) !== 'undefined' && $scope.col && $scope.col.enableSorting);
+      return Boolean( this.getGridOption($scope, 'enableSorting') && typeof($scope.col) !== 'undefined' && $scope.col && $scope.col.enableSorting);
     },
 
     /**
@@ -1727,7 +1730,12 @@ function ( i18nService, uiGridConstants, gridUtil ) {
      *
      */
     hideable: function( $scope ) {
-      return !(typeof($scope.col) !== 'undefined' && $scope.col && $scope.col.colDef && $scope.col.colDef.enableHiding === false );
+      return Boolean(
+        (this.getGridOption($scope, 'enableHiding') &&
+        typeof($scope.col) !== 'undefined' && $scope.col &&
+        ($scope.col.colDef && $scope.col.colDef.enableHiding !== false || !$scope.col.colDef)) ||
+        (!this.getGridOption($scope, 'enableHiding') && $scope.col && $scope.col.colDef && $scope.col.colDef.enableHiding)
+      );
     },
 
 
@@ -3178,17 +3186,10 @@ angular.module('ui.grid')
         return isColumnVisible(colDef) ? 'ui-grid-icon-ok' : 'ui-grid-icon-cancel';
       }
 
-      // add header for columns
-      showHideColumns.push({
-        title: i18nService.getSafeText('gridMenu.columns'),
-        order: 300,
-        templateUrl: 'ui-grid/ui-grid-menu-header-item'
-      });
-
       $scope.grid.options.gridMenuTitleFilter = $scope.grid.options.gridMenuTitleFilter ? $scope.grid.options.gridMenuTitleFilter : function( title ) { return title; };
 
       $scope.grid.options.columnDefs.forEach( function( colDef, index ) {
-        if ( colDef.enableHiding !== false ) {
+        if ( $scope.grid.options.enableHiding !== false && colDef.enableHiding !== false || colDef.enableHiding ) {
           // add hide menu item - shows an OK icon as we only show when column is already visible
           var menuItem = {
             icon: getColumnIcon(colDef),
@@ -3217,6 +3218,16 @@ angular.module('ui.grid')
           showHideColumns.push( menuItem );
         }
       });
+
+      // add header for columns
+      if ( showHideColumns.length ) {
+        showHideColumns.unshift({
+          title: i18nService.getSafeText('gridMenu.columns'),
+          order: 300,
+          templateUrl: 'ui-grid/ui-grid-menu-header-item'
+        });
+      }
+
       return showHideColumns;
     },
 
@@ -6763,7 +6774,7 @@ angular.module('ui.grid')
 
     // gridUtil.logDebug('viewPortHeight', viewPortHeight);
 
-    return viewPortHeight;
+    return viewPortHeight > 0 ? viewPortHeight : 0;
   };
 
   Grid.prototype.getViewportWidth = function getViewportWidth() {
@@ -7035,7 +7046,7 @@ angular.module('ui.grid')
       direction = directionOrAdd;
     }
 
-    if (!add) {
+    if (!add || (self.options && self.options.suppressMultiSort)) {
       self.resetColumnSorting(column);
       column.sort.priority = undefined;
       // Get the actual priority since there may be columns which have suppressRemoveSort set
@@ -9431,6 +9442,17 @@ angular.module('ui.grid')
 
       /**
        * @ngdoc boolean
+       * @name enableHiding
+       * @propertyOf ui.grid.class:GridOptions
+       * @description True by default. When enabled, this setting adds ability to hide
+       * the column headers, allowing hiding of the column from the grid.
+       * Column hiding can then be disabled / enabled on individual columns using the columnDefs,
+       * if it set, it will override GridOptions enableHiding setting.
+       */
+      baseOptions.enableHiding = baseOptions.enableHiding !== false;
+
+      /**
+       * @ngdoc boolean
        * @name enableSorting
        * @propertyOf ui.grid.class:GridOptions
        * @description True by default. When enabled, this setting adds sort
@@ -9439,6 +9461,16 @@ angular.module('ui.grid')
        * if it set, it will override GridOptions enableSorting setting.
        */
       baseOptions.enableSorting = baseOptions.enableSorting !== false;
+
+      /**
+       * @ngdoc boolean
+       * @name suppressMultiSort
+       * @propertyOf ui.grid.class:GridOptions
+       * @description False by default. When enabled, this setting disables the ability
+       * to sort multiple columns by using the shift key or interacting with the column
+       * menu. Instead, each column sort will remove all other sorting.
+       */
+      baseOptions.suppressMultiSort = baseOptions.suppressMultiSort === true;
 
       /**
        * @ngdoc boolean
@@ -9863,7 +9895,7 @@ angular.module('ui.grid')
 
     viewPortHeight = viewPortHeight + adjustment.height;
 
-    return viewPortHeight;
+    return viewPortHeight > 0 ? viewPortHeight : 0;
   };
 
   GridRenderContainer.prototype.getViewportWidth = function getViewportWidth() {
