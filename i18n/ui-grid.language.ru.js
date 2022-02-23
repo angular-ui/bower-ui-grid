@@ -1,6 +1,6 @@
 /*!
- * ui-grid - v4.11.0 - 2021-08-12
- * Copyright (c) 2021 ; License: MIT 
+ * ui-grid - v4.11.1 - 2022-02-23
+ * Copyright (c) 2022 ; License: MIT 
  */
 
 (function () {
@@ -100,7 +100,7 @@
         grouping: {
           group: 'Группировать',
           ungroup: 'Разгруппировать',
-          aggregate_count: 'Группировать: Count',
+          aggregate_count: 'Группировать: Количество',
           aggregate_sum: 'Для группы: Сумма',
           aggregate_max: 'Для группы: Максимум',
           aggregate_min: 'Для группы: Минимум',
