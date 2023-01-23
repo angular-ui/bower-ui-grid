@@ -1,13 +1,8 @@
 /*!
- * ui-grid - v4.12.0-9c6a9c83 - 2023-01-19
- *   http://ui-grid.info/
- *   Copyright (c) 2023 UI Grid Team; License: MIT
+ * ui-grid - v4.12.2 - 2023-01-23
+* http://ui-grid.info/
+ * Copyright (c) 2023 ; License: MIT 
  */
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
-
-/***/ 692:
-/***/ (() => {
 
 (function () {
   'use strict';
@@ -1294,50 +1289,3 @@
   }]);
 
 })();
-
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other entry modules.
-(() => {
-__webpack_require__(692);
-
-})();
-
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-// extracted by mini-css-extract-plugin
-
-})();
-
-/******/ })()
-;
