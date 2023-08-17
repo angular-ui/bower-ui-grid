@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.12.3 - 2023-08-01
+ * ui-grid - v4.12.4 - 2023-08-17
 * http://ui-grid.info/
  * Copyright (c) 2023 ; License: MIT 
  */
@@ -5091,6 +5091,9 @@ angular.module('ui.grid')
       if ( oldRow ) {
         newRow = oldRow;
         newRow.entity = newEntity;
+        if (newRow.index !== i) {
+          newRow.index = i;
+        }
       }
 
       // if we didn't find the row, it must be new, so create it

@@ -1,5 +1,5 @@
 /*!
- * ui-grid - v4.12.3 - 2023-08-01
+ * ui-grid - v4.12.4 - 2023-08-17
 * http://ui-grid.info/
  * Copyright (c) 2023 ; License: MIT 
  */
