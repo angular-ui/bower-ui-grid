@@ -1,7 +1,7 @@
 /*!
- * ui-grid - v4.12.4 - 2023-08-17
+ * ui-grid - v4.12.5 - 2024-04-11
 * http://ui-grid.info/
- * Copyright (c) 2023 ; License: MIT 
+ * Copyright (c) 2024 ; License: MIT 
  */
 
 (function() {
@@ -6328,13 +6328,15 @@ angular.module('ui.grid')
           scrollEvent.y = getScrollY(scrollPixels, scrollLength, self.renderContainers.body.prevScrolltopPercentage);
         }
         // Otherwise if the scroll position we need to see the row is MORE than the bottom boundary, i.e. obscured below the bottom of the self...
-        else if (pixelsToSeeRow > Math.ceil(bottomBound)) {
+        // add the height of one row since scrollPixels points to the top pixel of the row
+        else if ((pixelsToSeeRow + self.options.rowHeight) > Math.ceil(bottomBound)) {
           // Get the different between the bottom boundary and the required scroll position and add it to the current scroll position
-          //   to get the full position we need
-          scrollPixels = pixelsToSeeRow - bottomBound + self.renderContainers.body.prevScrollTop;
+          // plus the height of one row since scrollPixels points to the top pixel of the row
+          // to get the full position we need
+          scrollPixels = (pixelsToSeeRow + self.options.rowHeight) - bottomBound + self.renderContainers.body.prevScrollTop;
 
-          // Scroll to full position plus the height of one row since scrollPixels points to the top pixel of the row
-          scrollEvent.y = getScrollY(scrollPixels + self.options.rowHeight, scrollLength, self.renderContainers.body.prevScrolltopPercentage);
+          // Scroll to full position
+          scrollEvent.y = getScrollY(scrollPixels, scrollLength, self.renderContainers.body.prevScrolltopPercentage);
         }
       }
 

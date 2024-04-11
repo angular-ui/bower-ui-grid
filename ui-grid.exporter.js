@@ -1,7 +1,7 @@
 /*!
- * ui-grid - v4.12.4 - 2023-08-17
+ * ui-grid - v4.12.5 - 2024-04-11
 * http://ui-grid.info/
- * Copyright (c) 2023 ; License: MIT 
+ * Copyright (c) 2024 ; License: MIT 
  */
 
 /* global ExcelBuilder */
